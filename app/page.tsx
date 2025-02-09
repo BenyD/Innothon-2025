@@ -8,7 +8,7 @@ import ContactForm from "../components/ContactForm";
 
 export default function Home() {
   return (
-    <div className="space-y-24 py-24">
+    <div className="space-y-16 py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

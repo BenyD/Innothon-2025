@@ -6,13 +6,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
-  GithubIcon,
-  LinkedinIcon,
-  TwitterIcon,
-  MailIcon,
-  PhoneIcon,
-  ArrowUpIcon,
-} from "lucide-react";
+  IoMail,
+  IoCall,
+  IoLogoLinkedin,
+  IoLogoInstagram,
+  IoArrowUp,
+} from "react-icons/io5";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -27,25 +26,19 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             {/* Branding Section */}
             <div className="space-y-4">
-              <div className="flex items-center gap-6">
-                <Image
-                  src="/hits_logo.svg"
-                  alt="College Logo"
-                  width={130}
-                  height={130}
-                  className="w-[110px] h-auto"
-                />
+              <div className="flex items-center">
                 <Image
                   src="/bsp_logo.png"
-                  alt="Club Logo"
-                  width={80}
-                  height={80}
-                  className="w-[75px] h-auto"
+                  alt="Blue Screen Programming Club Logo"
+                  width={100}
+                  height={100}
+                  className="w-[90px] h-auto"
                 />
               </div>
               <p className="text-gray-400">
-                Empowering innovation through technology at Hindustan Institute
-                of Technology and Science.
+                Blue Screen Programming Club - Fostering innovation and
+                technical excellence through coding, competitions, and
+                collaborative learning at HITS.
               </p>
             </div>
 
@@ -79,14 +72,14 @@ const Footer = () => {
                   href="mailto:innothon@hindustanuniv.ac.in"
                   className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
                 >
-                  <MailIcon className="h-4 w-4" />
+                  <IoMail className="h-4 w-4" />
                   innothon@hindustanuniv.ac.in
                 </a>
                 <a
                   href="tel:+919876543210"
                   className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
                 >
-                  <PhoneIcon className="h-4 w-4" />
+                  <IoCall className="h-4 w-4" />
                   +91 98765 43210
                 </a>
               </div>
@@ -97,18 +90,33 @@ const Footer = () => {
               <h3 className="text-lg font-semibold">Connect</h3>
               <div className="flex gap-4">
                 {[
-                  { icon: GithubIcon, href: "#" },
-                  { icon: LinkedinIcon, href: "#" },
-                  { icon: TwitterIcon, href: "#" },
+                  {
+                    icon: IoLogoLinkedin,
+                    href: "https://www.linkedin.com/company/blue-screen-programming-club/",
+                    label: "LinkedIn",
+                  },
+                  {
+                    icon: IoLogoInstagram,
+                    href: "https://www.instagram.com/bsp.hits/",
+                    label: "Instagram",
+                  },
                 ].map((social, index) => (
-                  <Button
+                  <a
                     key={index}
-                    variant="outline"
-                    size="icon"
-                    className="bg-transparent border-white/10 hover:bg-white/5"
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex"
                   >
-                    <social.icon className="h-4 w-4" />
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-black/40 border-white/10 hover:bg-white/5 hover:border-white/20 transition-all"
+                      aria-label={social.label}
+                    >
+                      <social.icon className="h-4 w-4" />
+                    </Button>
+                  </a>
                 ))}
               </div>
             </div>
@@ -119,26 +127,38 @@ const Footer = () => {
           {/* Bottom bar with enhanced design */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              &copy; {new Date().getFullYear()} Innothon. All rights reserved.
+              &copy; {new Date().getFullYear()} Blue Screen Programming Club.
+              All rights reserved.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center md:items-end gap-2">
               <p className="text-gray-400 text-sm">
-                Crafted with{" "}
-                <span className="text-red-500 animate-pulse">❤</span> by Blue
-                Screen Programming Club
+                Developed by{" "}
+                <a
+                  href="https://beny.one"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-400 hover:text-purple-300 hover:underline decoration-2 underline-offset-4 transition-all"
+                >
+                  Beny Dishon K
+                </a>
               </p>
-              <Button
-                variant="outline"
-                size="icon"
-                className="bg-transparent border-white/10 hover:bg-white/5"
-                onClick={scrollToTop}
-              >
-                <ArrowUpIcon className="h-4 w-4" />
-              </Button>
+              <p className="text-gray-400 text-sm">
+                Crafted with ❤️ by Blue Screen Programming Club
+              </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Add a fixed scroll-to-top button */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={scrollToTop}
+        className="fixed bottom-8 right-8 z-50 bg-black/60 border border-white/10 hover:bg-black/80 hover:border-white/20 transition-all duration-300 group"
+      >
+        <IoArrowUp className="h-4 w-4 text-white group-hover:text-white transition-all duration-300 transform group-hover:-translate-y-0.5" />
+      </Button>
     </footer>
   );
 };
