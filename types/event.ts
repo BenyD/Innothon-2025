@@ -10,9 +10,9 @@ export type Event = {
   rules: string[];
   guidelines: string[];
   prizes: {
-    first: string;
-    second: string;
-    third: string;
+    First: string;
+    Second: string;
+    Third: string;
   };
   coordinators: {
     name: string;

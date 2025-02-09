@@ -12,6 +12,7 @@ import {
   IoPaperPlane,
   IoLogoLinkedin,
   IoLogoInstagram,
+  IoCalendar,
 } from "react-icons/io5";
 
 const ContactForm = () => {
@@ -47,7 +48,7 @@ const ContactForm = () => {
                 </h3>
                 <div className="space-y-4">
                   <a
-                    href="mailto:innothon@hindustanuniv.ac.in"
+                    href="mailto:bspc.hits@gmail.com"
                     className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
                   >
                     <div className="p-3 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
@@ -56,12 +57,12 @@ const ContactForm = () => {
                     <div>
                       <p className="font-medium">Email</p>
                       <p className="text-sm text-gray-400">
-                        innothon@hindustanuniv.ac.in
+                        bspc.hits@gmail.com
                       </p>
                     </div>
                   </a>
                   <a
-                    href="tel:+919876543210"
+                    href="tel:+919884819912"
                     className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
                   >
                     <div className="p-3 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
@@ -69,7 +70,7 @@ const ContactForm = () => {
                     </div>
                     <div>
                       <p className="font-medium">Phone</p>
-                      <p className="text-sm text-gray-400">+91 98765 43210</p>
+                      <p className="text-sm text-gray-400">+91 98848 19912</p>
                     </div>
                   </a>
                 </div>
@@ -105,13 +106,13 @@ const ContactForm = () => {
                     {
                       icon: IoLogoLinkedin,
                       label: "LinkedIn",
-                      href: "https://www.linkedin.com/company/blue-screen-programming-club/",
+                      href: "",
                       color: "purple",
                     },
                     {
                       icon: IoLogoInstagram,
                       label: "Instagram",
-                      href: "https://www.instagram.com/bsp.hits/",
+                      href: "https://www.instagram.com/bspc_hits",
                       color: "pink",
                     },
                   ].map((social, index) => (
@@ -247,7 +248,8 @@ const ContactForm = () => {
 
                 <div className="flex flex-col items-center md:items-end gap-6">
                   <div className="text-center md:text-right">
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-2xl font-bold text-white flex items-center justify-center md:justify-end gap-2">
+                      <IoCalendar className="h-6 w-6" />
                       March 21, 2025
                     </p>
                     <p className="text-gray-400">Mark your calendar!</p>

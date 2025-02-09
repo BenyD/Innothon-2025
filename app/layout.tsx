@@ -1,15 +1,15 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import type React from "react"; // Added import for React
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = GeistSans;
 
 export const metadata = {
   title: "Innothon 2025 - Hindustan Institute of Technology and Science",
   description:
-    "Join us for an exciting innovation hackathon hosted by the Department of CSE at Hindustan Institute of Technology and Science.",
+    "Join us at Innothon 2025 - A premier technical and cultural fest at Hindustan Institute of Technology and Science. Experience an exciting blend of technology, innovation, and cultural events as brilliant minds come together to showcase their talents and creativity.",
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-[#030014] text-white overflow-x-hidden`}
+        className={`${geist.className} bg-[#030014] text-white overflow-x-hidden`}
       >
         <div className="relative">
           {/* Animated background elements */}

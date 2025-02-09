@@ -8,7 +8,7 @@ export const events: Event[] = [
       "A cybersecurity CTF competition with cryptography, web exploitation, and more.",
     fullDescription:
       "Join our Capture The Flag competition where teams solve challenges in cryptography, web exploitation, reverse engineering, and forensics. Compete through two intense rounds to prove your cybersecurity skills!",
-    image: "/events/hackquest.jpg",
+    image: "/events/hackquest.jpeg",
     date: "March 21, 2025",
     time: "10:45 AM - 2:15 PM",
     venue: "Computer Science Block, Lab 401",
@@ -26,19 +26,19 @@ export const events: Event[] = [
       "No external help or resources during competition",
     ],
     prizes: {
-      first: "₹15,000",
-      second: "₹10,000",
-      third: "₹5,000",
+      First: "₹5000",
+      Second: "₹3000",
+      Third: "₹2000",
     },
     coordinators: [
       {
-        name: "John Doe",
-        role: "Technical Lead",
+        name: "Beny Dishon K",
+        role: "President",
         contact: "+91 98765 43210",
       },
       {
-        name: "Jane Smith",
-        role: "Event Coordinator",
+        name: "Monish",
+        role: "Cybersecurity Lead",
         contact: "+91 98765 43211",
       },
     ],
@@ -72,9 +72,9 @@ export const events: Event[] = [
       "Internet access will be provided",
     ],
     prizes: {
-      first: "₹12,000",
-      second: "₹8,000",
-      third: "₹4,000",
+      First: "₹12,000",
+      Second: "₹8,000",
+      Third: "₹4,000",
     },
     coordinators: [
       {
@@ -118,9 +118,9 @@ export const events: Event[] = [
       "No external help allowed",
     ],
     prizes: {
-      first: "₹10,000",
-      second: "₹7,000",
-      third: "₹3,000",
+      First: "₹10,000",
+      Second: "₹7,000",
+      Third: "₹3,000",
     },
     coordinators: [
       {
@@ -164,9 +164,9 @@ export const events: Event[] = [
       "Be ready for technical questions",
     ],
     prizes: {
-      first: "₹10,000",
-      second: "₹7,000",
-      third: "₹3,000",
+      First: "₹10,000",
+      Second: "₹7,000",
+      Third: "₹3,000",
     },
     coordinators: [
       {
@@ -210,9 +210,9 @@ export const events: Event[] = [
       "Documentation is mandatory",
     ],
     prizes: {
-      first: "₹20,000",
-      second: "₹15,000",
-      third: "₹10,000",
+      First: "₹20,000",
+      Second: "₹15,000",
+      Third: "₹10,000",
     },
     coordinators: [
       {

@@ -1,13 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  BookOpen, 
-  Users, 
-  AlertCircle, 
-  CheckCircle2, 
-  Shield, 
-  Award
+import {
+  BookOpen,
+  Users,
+  AlertCircle,
+  CheckCircle2,
+  Shield,
 } from "lucide-react";
 import { SectionTitle } from "@/components/ui/section-title";
 import { Separator } from "@/components/ui/separator";
@@ -21,8 +20,8 @@ const Rules = () => {
         "All participants must be currently enrolled students",
         "Valid college ID is required for registration and participation",
         "Participants must adhere to the code of conduct throughout the event",
-        "The decision of the judges and organizers will be final and binding"
-      ]
+        "The decision of the judges and organizers will be final and binding",
+      ],
     },
     {
       icon: Users,
@@ -31,8 +30,8 @@ const Rules = () => {
         "Registration is mandatory for all events",
         "Participants can register for multiple events, but should ensure there are no time conflicts",
         "Team events require all team members to be present during the event",
-        "Use of unfair means will result in immediate disqualification"
-      ]
+        "Use of unfair means will result in immediate disqualification",
+      ],
     },
     {
       icon: AlertCircle,
@@ -41,19 +40,19 @@ const Rules = () => {
         "Bring your own laptop and necessary equipment",
         "Internet access will be provided at the venue",
         "Maintain professional conduct throughout the event",
-        "Follow all safety and security protocols"
-      ]
-    }
+        "Follow all safety and security protocols",
+      ],
+    },
   ];
 
   return (
     <section id="rules" className="py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <SectionTitle 
+        <SectionTitle
           title="Rules & Guidelines"
           subtitle="Please review all rules and guidelines carefully before participating in any event. Failure to comply may result in disqualification."
         />
-        
+
         {/* Add a decorative separator */}
         <div className="relative mb-12">
           <Separator className="bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -72,7 +71,7 @@ const Rules = () => {
             >
               {/* Card Background with Gradient Border */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity" />
-              
+
               <div className="relative h-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-colors">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
@@ -90,7 +89,10 @@ const Rules = () => {
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.1 + itemIndex * 0.1 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: index * 0.1 + itemIndex * 0.1,
+                      }}
                       className="flex items-start gap-3 text-gray-300"
                     >
                       <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />

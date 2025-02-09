@@ -162,7 +162,7 @@ const Hero = () => {
             <div className="space-y-4">
               <div className="relative h-56 rounded-2xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                 <Image
-                  src="/college-1.jpg"
+                  src="/college-1.jpeg"
                   alt="College Campus"
                   fill
                   className="object-cover hover:scale-110 transition-transform duration-500"
@@ -170,7 +170,7 @@ const Hero = () => {
               </div>
               <div className="relative h-72 rounded-2xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                 <Image
-                  src="/event-1.jpg"
+                  src="/event-1.jpeg"
                   alt="Tech Event"
                   fill
                   className="object-cover hover:scale-110 transition-transform duration-500"
@@ -180,7 +180,7 @@ const Hero = () => {
             <div className="space-y-4 pt-8">
               <div className="relative h-72 rounded-2xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                 <Image
-                  src="/college-2.jpg"
+                  src="/college-2.jpeg"
                   alt="College Life"
                   fill
                   className="object-cover hover:scale-110 transition-transform duration-500"
@@ -188,7 +188,7 @@ const Hero = () => {
               </div>
               <div className="relative h-56 rounded-2xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                 <Image
-                  src="/event-2.jpg"
+                  src="/event-2.jpeg"
                   alt="Student Activities"
                   fill
                   className="object-cover hover:scale-110 transition-transform duration-500"

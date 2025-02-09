@@ -69,18 +69,18 @@ const Footer = () => {
               <h3 className="text-lg font-semibold">Contact</h3>
               <div className="space-y-3">
                 <a
-                  href="mailto:innothon@hindustanuniv.ac.in"
+                  href="mailto:bspc.hits@gmail.com"
                   className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
                 >
                   <IoMail className="h-4 w-4" />
-                  innothon@hindustanuniv.ac.in
+                  bspc.hits@gmail.com
                 </a>
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+919884819912"
                   className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
                 >
                   <IoCall className="h-4 w-4" />
-                  +91 98765 43210
+                  +91 98848 19912
                 </a>
               </div>
             </div>
@@ -92,12 +92,12 @@ const Footer = () => {
                 {[
                   {
                     icon: IoLogoLinkedin,
-                    href: "https://www.linkedin.com/company/blue-screen-programming-club/",
+                    href: "",
                     label: "LinkedIn",
                   },
                   {
                     icon: IoLogoInstagram,
-                    href: "https://www.instagram.com/bsp.hits/",
+                    href: "https://www.instagram.com/bspc_hits",
                     label: "Instagram",
                   },
                 ].map((social, index) => (
@@ -111,10 +111,10 @@ const Footer = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="bg-black/40 border-white/10 hover:bg-white/5 hover:border-white/20 transition-all"
+                      className="bg-black/40 border-white/10 hover:bg-white/5 hover:border-white/20 transition-all relative"
                       aria-label={social.label}
                     >
-                      <social.icon className="h-4 w-4" />
+                      <social.icon className="h-4 w-4 text-white hover:text-white" />
                     </Button>
                   </a>
                 ))}
