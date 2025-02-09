@@ -43,10 +43,21 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Subtle haptic feedback
+      }
+      props.onClick?.(e);
+    };
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          "touch-manipulation active:scale-95 transition-transform duration-200"
+        )}
         ref={ref}
+        onClick={handleClick}
         {...props}
       />
     )

@@ -220,9 +220,9 @@ const ContactForm = () => {
         >
           <div className="relative overflow-hidden rounded-3xl border border-white/10">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-3xl" />
-            <div className="relative bg-black/40 p-8 md:p-12">
+            <div className="relative bg-black/40 p-6 sm:p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
+                <div className="space-y-4 text-center md:text-left">
                   <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                     Ready to Join Innothon 2025?
                   </h2>
@@ -230,7 +230,7 @@ const ContactForm = () => {
                     Join the next generation of tech innovators and showcase
                     your skills at the biggest tech event of the year.
                   </p>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <Badge
                       variant="outline"
                       className="text-purple-400 border-purple-400/30 px-4 py-2"

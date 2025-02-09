@@ -1,8 +1,17 @@
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
+import { Inter } from "next/font/google";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import type React from "react"; // Added import for React
+import type React from "react";
+import { cn } from "../lib/utils";
+
+// Initialize Inter font
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 const geist = GeistSans;
 
@@ -18,27 +27,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geist.className} bg-[#030014] text-white overflow-x-hidden`}
-      >
+    <html lang="en" className={cn("scroll-smooth", inter.variable)}>
+      <body className={cn(
+        inter.className,
+        "bg-black text-white selection:bg-purple-500/30 selection:text-white touch-manipulation antialiased min-h-screen"
+      )}>
         <div className="relative">
-          {/* Animated background elements */}
-          <div className="absolute top-0 left-0 w-full h-full z-0">
-            <div className="absolute top-0 right-0 bg-[#4B0082] w-72 h-72 blur-[10rem] rounded-full"></div>
-            <div className="absolute bottom-0 left-0 bg-[#2563eb] w-72 h-72 blur-[10rem] rounded-full"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#4B0082] w-96 h-96 blur-[10rem] rounded-full opacity-30"></div>
+          {/* Animated background elements - Optimized for mobile */}
+          <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#4B0082] w-48 sm:w-72 h-48 sm:h-72 blur-[8rem] sm:blur-[10rem] rounded-full opacity-50 sm:opacity-100"></div>
+            <div className="absolute bottom-0 left-0 bg-[#2563eb] w-48 sm:w-72 h-48 sm:h-72 blur-[8rem] sm:blur-[10rem] rounded-full opacity-50 sm:opacity-100"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#4B0082] w-64 sm:w-96 h-64 sm:h-96 blur-[8rem] sm:blur-[10rem] rounded-full opacity-20 sm:opacity-30"></div>
           </div>
 
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px] z-0"></div>
+          {/* Grid pattern overlay - Optimized for mobile */}
+          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:32px_32px] sm:bg-[length:50px_50px] z-0"></div>
 
-          {/* Main content - Adjusted spacing */}
+          {/* Main content - Improved mobile spacing */}
           <div className="relative z-1">
             <Navbar />
-            <main className="space-y-12">
-              {" "}
-              {/* Reduced from space-y-16 */}
+            <main className="space-y-8 sm:space-y-12"> {/* Reduced spacing for mobile */}
               {children}
             </main>
             <Footer />
