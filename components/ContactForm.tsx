@@ -1,0 +1,290 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Envelope,
+  Phone,
+  PaperPlaneTilt,
+  GithubLogo,
+  LinkedinLogo,
+  TwitterLogo,
+} from "@phosphor-icons/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ExternalLinkIcon } from "lucide-react";
+
+const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    console.log(formData);
+  };
+
+  return (
+    <section id="contact" className="py-16 px-4">
+      <div className="max-w-6xl mx-auto space-y-16">
+        {/* Contact Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="relative"
+        >
+          {/* Section Header */}
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold mb-3">Get in Touch</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Have questions about Innothon 2025? We&apos;re here to help!
+              Reach out to us through the form below or use our direct contact
+              details.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left Column - Three cards with equal height */}
+            <div className="space-y-8">
+              {/* Contact Information Card */}
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+                <div className="relative">
+                  <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                    Contact Information
+                  </h3>
+                  <div className="space-y-4">
+                    <a
+                      href="mailto:innothon@hindustanuniv.ac.in"
+                      className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
+                    >
+                      <div className="p-3 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                        <Envelope className="h-5 w-5" weight="bold" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Email</p>
+                        <p className="text-sm text-gray-400">
+                          innothon@hindustanuniv.ac.in
+                        </p>
+                      </div>
+                    </a>
+                    <a
+                      href="tel:+919876543210"
+                      className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
+                    >
+                      <div className="p-3 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                        <Phone className="h-5 w-5" weight="bold" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Phone</p>
+                        <p className="text-sm text-gray-400">+91 98765 43210</p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Card */}
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+                <div className="relative">
+                  <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
+                    Location
+                  </h3>
+                  <p className="text-gray-300">
+                    Hindustan Institute of Technology and Science
+                    <br />
+                    Old Mahabalipuram Road (OMR)
+                    <br />
+                    Padur, Chennai - 603103
+                  </p>
+                </div>
+              </div>
+
+              {/* Social Media Card */}
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+                <div className="relative">
+                  <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                    Connect With Us
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        icon: GithubLogo,
+                        label: "GitHub",
+                        href: "#",
+                        color: "blue",
+                      },
+                      {
+                        icon: LinkedinLogo,
+                        label: "LinkedIn",
+                        href: "#",
+                        color: "purple",
+                      },
+                      {
+                        icon: TwitterLogo,
+                        label: "Twitter",
+                        href: "#",
+                        color: "pink",
+                      },
+                    ].map((social, index) => (
+                      <a
+                        key={index}
+                        href={social.href}
+                        className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
+                      >
+                        <div
+                          className={`p-3 rounded-lg bg-${social.color}-500/10 group-hover:bg-${social.color}-500/20 transition-colors`}
+                        >
+                          <social.icon className="h-5 w-5" weight="bold" />
+                        </div>
+                        <p className="font-medium">{social.label}</p>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Form - Right side with matching height */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8 h-full">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <form
+                onSubmit={handleSubmit}
+                className="relative space-y-6 h-full flex flex-col"
+              >
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                    placeholder="your.email@example.com"
+                    required
+                  />
+                </div>
+                <div className="flex-grow">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
+                    className="w-full h-[calc(100%-2rem)] px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
+                    placeholder="Your message..."
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium flex items-center justify-center gap-2 transition-all group"
+                >
+                  Send Message
+                  <PaperPlaneTilt
+                    className="h-4 w-4 group-hover:translate-x-1 transition-transform"
+                    weight="bold"
+                  />
+                </button>
+              </form>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA Section - Moved below contact form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="relative"
+        >
+          <div className="relative overflow-hidden rounded-3xl border border-white/10">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-3xl" />
+            <div className="relative bg-black/40 p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="space-y-4">
+                  <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                    Ready to Join Innothon 2025?
+                  </h2>
+                  <p className="text-lg text-gray-400">
+                    Join the next generation of tech innovators and showcase
+                    your skills at the biggest tech event of the year.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <Badge
+                      variant="outline"
+                      className="text-purple-400 border-purple-400/30 px-4 py-2"
+                    >
+                      Registration Open
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="text-blue-400 border-blue-400/30 px-4 py-2"
+                    >
+                      Limited Spots
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center md:items-end gap-6">
+                  <div className="text-center md:text-right">
+                    <p className="text-2xl font-bold text-white">
+                      March 21, 2025
+                    </p>
+                    <p className="text-gray-400">Mark your calendar!</p>
+                  </div>
+                  <Button className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg">
+                    Register Now
+                    <ExternalLinkIcon className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default ContactForm;
