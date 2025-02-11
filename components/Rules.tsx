@@ -84,7 +84,7 @@ const Rules = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16">
+    <section id="rules" className="py-12 sm:py-16 scroll-mt-20">
       <div className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <SectionTitle
           title="Rules & Guidelines"

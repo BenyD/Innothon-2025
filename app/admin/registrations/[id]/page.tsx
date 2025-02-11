@@ -201,14 +201,13 @@ export default function RegistrationDetails() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <Button
+          <button
             onClick={() => router.back()}
-            variant="ghost"
-            className="text-gray-400 hover:text-white"
+            className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all duration-300"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+            <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
+            Back to Registrations
+          </button>
 
           {registration.status === "pending" ? (
             <div className="flex gap-3">
