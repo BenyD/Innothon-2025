@@ -16,6 +16,18 @@ import {
   IoCalendar,
 } from "react-icons/io5";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
+
+// Add validation functions at the top
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isValidIndianPhone = (phone: string) => {
+  const phoneRegex = /^[6-9]\d{9}$/;
+  return phoneRegex.test(phone.replace(/\D/g, ""));
+};
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -27,25 +39,43 @@ const ContactForm = () => {
     message: "",
   });
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, "").slice(0, 10);
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
 
-    // Format as: (XXX) XXX-XXXX
-    if (digits.length === 0) return "";
-    if (digits.length <= 3) return `(${digits}`;
-    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-  };
+    // Format phone number input
+    if (name === "phone") {
+      const formattedValue = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: formattedValue }));
+      return;
+    }
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    setFormData((prev) => ({ ...prev, phone: formatted }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    // Validate email and phone
+    if (!isValidEmail(formData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isValidIndianPhone(formData.phone)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 10-digit Indian mobile number",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -59,18 +89,6 @@ const ContactForm = () => {
         toast({
           title: "Missing information",
           description: "Please fill in all fields",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Phone validation
-      const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-      if (!phoneRegex.test(formData.phone)) {
-        toast({
-          title: "Invalid phone number",
-          description:
-            "Please enter a valid phone number in the format: (123) 456-7890",
           variant: "destructive",
         });
         return;
@@ -206,7 +224,7 @@ const ContactForm = () => {
                     {
                       icon: IoLogoLinkedin,
                       label: "LinkedIn",
-                      href: "",
+                      href: "https://www.linkedin.com/in/bspc-hits-65bb6734b",
                       color: "purple",
                     },
                     {
@@ -243,7 +261,7 @@ const ContactForm = () => {
               onSubmit={handleSubmit}
               className="relative space-y-6 h-full flex flex-col"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 <div className="space-y-2">
                   <label
                     htmlFor="name"
@@ -253,12 +271,11 @@ const ContactForm = () => {
                   </label>
                   <input
                     id="name"
+                    name="name"
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
+                    onChange={handleInputChange}
                     className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
                     placeholder="Your name"
                   />
@@ -272,53 +289,74 @@ const ContactForm = () => {
                   </label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={handleInputChange}
+                    onBlur={(e) => {
+                      if (e.target.value && !isValidEmail(e.target.value)) {
+                        toast({
+                          title: "Invalid Email",
+                          description: "Please enter a valid email address",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
                     className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                    placeholder="your.email@example.com"
+                    placeholder="Your email"
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                  placeholder="(123) 456-7890"
-                  pattern="\(\d{3}\) \d{3}-\d{4}"
-                  title="Please enter a valid phone number: (123) 456-7890"
-                />
-              </div>
-              <div className="flex-grow">
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
-                  className="w-full h-[calc(100%-2rem)] px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
-                  placeholder="Your message..."
-                  required
-                />
+                <div className="space-y-2">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Phone
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    onBlur={(e) => {
+                      if (
+                        e.target.value &&
+                        !isValidIndianPhone(e.target.value)
+                      ) {
+                        toast({
+                          title: "Invalid Phone Number",
+                          description:
+                            "Please enter a valid 10-digit Indian mobile number",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                    placeholder="Enter your 10-digit mobile number"
+                    maxLength={10}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
+                    placeholder="Your message"
+                  />
+                </div>
               </div>
               <button
                 type="submit"
@@ -385,10 +423,12 @@ const ContactForm = () => {
                     </p>
                     <p className="text-gray-400">Mark your calendar!</p>
                   </div>
-                  <Button className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg">
-                    Register Now
-                    <ExternalLinkIcon className="ml-2 h-5 w-5" />
-                  </Button>
+                  <Link href="/register">
+                    <Button className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg">
+                      Register Now
+                      <ExternalLinkIcon className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -2,8 +2,8 @@ import { Event } from "@/types/event";
 
 export const events: Event[] = [
   {
-    id: "hackquest-2025",
-    title: "HackQuest 2025",
+    id: "hackquest",
+    title: "HackQuest",
     shortDescription:
       "A cybersecurity CTF competition with cryptography, web exploitation, and more.",
     fullDescription:

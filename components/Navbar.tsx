@@ -108,13 +108,7 @@ const Navbar = () => {
                   <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </a>
               ))}
-              <a
-                href="#register"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('register');
-                }}
-              >
+              <Link href="/register">
                 <motion.button
                   className="relative group"
                   whileHover={{ scale: 1.05 }}
@@ -125,7 +119,7 @@ const Navbar = () => {
                     Register
                   </span>
                 </motion.button>
-              </a>
+              </Link>
             </div>
 
             {/* Mobile Menu Button with pre-applied gradients */}
@@ -198,7 +192,7 @@ const Navbar = () => {
                   </a>
                 ))}
                 <div className="pt-3">
-                  <Link href="#register" className="block">
+                  <Link href="/register" className="block">
                     <div className="relative group w-full">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg opacity-75 group-hover:opacity-100 blur transition duration-300" />
                       <button

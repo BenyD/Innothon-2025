@@ -7,6 +7,7 @@ import { ArrowRight, Clock, Trophy } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { scrollToSection } from "@/utils/scroll";
+import Link from "next/link";
 
 const Hero = () => {
   const eventDate = useMemo(() => new Date("2025-03-21T08:30:00"), []);
@@ -133,24 +134,28 @@ const Hero = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button
-                  onClick={() => scrollToSection("register")}
-                  className="relative h-12 px-8 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:opacity-90 transition-all duration-300"
-                >
-                  <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity -z-10"></div>
-                  <span className="flex items-center gap-2">
-                    Register Now
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </Button>
+                <Link href="/register">
+                  <Button className="relative h-12 px-8 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:opacity-90 transition-all duration-300">
+                    <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity -z-10"></div>
+                    <span className="flex items-center gap-2">
+                      Register Now
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Button>
+                </Link>
 
-                <Button
-                  onClick={() => scrollToSection("events")}
-                  variant="outline"
-                  className="h-12 px-8 w-full sm:w-auto bg-black/20 border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 text-white hover:text-white transition-colors"
-                >
-                  Explore Events
-                </Button>
+                <div className="relative group w-full sm:w-auto">
+                  <div className="absolute -inset-[3px] bg-gradient-to-r from-blue-600/25 via-purple-600/25 to-pink-600/25 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <button
+                    onClick={() => scrollToSection("events")}
+                    className="relative w-full px-8 py-3 bg-black/20 hover:bg-black/40 border border-white/5 group-hover:border-white/10 rounded-lg text-gray-300 hover:text-white transition-all duration-300"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span>Explore Events</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* Add Prize Information */}

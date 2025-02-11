@@ -12,6 +12,7 @@ import {
   Home,
   Menu,
   X,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -96,6 +97,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       title: "Messages",
       icon: MessageSquare,
       href: "/admin/messages",
+    },
+    {
+      title: "Registrations",
+      icon: Users,
+      href: "/admin/registrations",
     },
   ];
 

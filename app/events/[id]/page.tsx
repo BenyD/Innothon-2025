@@ -204,10 +204,12 @@ export default function EventPage() {
                 </h2>
                 <p className="text-gray-300">{event.registrationFee}</p>
               </div>
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-6 text-lg">
-                Register Now
-                <ExternalLink className="ml-2 w-5 h-5" />
-              </Button>
+              <Link href="/register">
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-6 text-lg">
+                  Register Now
+                  <ExternalLink className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

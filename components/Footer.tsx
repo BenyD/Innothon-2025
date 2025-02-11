@@ -93,7 +93,7 @@ const Footer = () => {
               <h3 className="text-lg font-semibold text-white mb-3">Socials</h3>
               <div className="flex items-center justify-center sm:justify-start gap-4">
                 <motion.a
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/in/bspc-hits-65bb6734b"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
@@ -103,7 +103,7 @@ const Footer = () => {
                   <IoLogoLinkedin className="w-5 h-5 text-blue-400" />
                 </motion.a>
                 <motion.a
-                  href="https://instagram.com"
+                  href="https://instagram.com/bspc_hits"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"

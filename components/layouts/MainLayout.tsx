@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
+  const isRegisterRoute = pathname === '/register';
 
   return (
     <div className="relative">
@@ -27,8 +28,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="relative z-1">
-        {/* Only show Navbar on non-admin pages */}
-        {!isAdminRoute && <Navbar />}
+        {/* Only show Navbar on non-admin and non-register pages */}
+        {!isAdminRoute && !isRegisterRoute && <Navbar />}
         
         <main className={cn(
           "space-y-8 sm:space-y-12",
