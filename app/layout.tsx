@@ -2,15 +2,24 @@ import "./globals.css";
 import { GeistSans } from "geist/font";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Toaster } from "@/components/ui/toaster";
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata } from "next";
 
 // Use Geist as the primary font
 const geist = GeistSans;
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Innothon 2025 - Hindustan Institute of Technology and Science",
-  description: "Join us for Innothon 2025, a 24-hour hackathon at Hindustan Institute of Technology and Science.",
+  description:
+    "Join us for Innothon 2025, a 24-hour hackathon at Hindustan Institute of Technology and Science.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon.ico", sizes: "16x16" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +29,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={geist.className}>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="bg-black text-white selection:bg-purple-500/30 selection:text-white touch-manipulation antialiased min-h-screen">
         <MainLayout>{children}</MainLayout>
         <Toaster />
