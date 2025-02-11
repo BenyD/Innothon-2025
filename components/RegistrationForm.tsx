@@ -291,8 +291,13 @@ const RegistrationForm = () => {
                     {teamMembers.map((member, index) => (
                       <div key={index} className="space-y-6 mb-8">
                         <div className="border-b border-white/10 pb-2">
-                          <h3 className="text-lg font-medium text-white">
+                          <h3 className="text-lg font-medium text-white flex items-center gap-2">
                             Team Member {index + 1}
+                            {teamSize > 1 && index === 0 && (
+                              <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">
+                                Team Leader
+                              </span>
+                            )}
                           </h3>
                         </div>
 
