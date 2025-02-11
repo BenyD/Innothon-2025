@@ -176,47 +176,66 @@ const Hero = () => {
               className="grid grid-cols-2 gap-2 sm:gap-3 p-2 sm:p-4"
             >
               <div className="space-y-3">
-                <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                  <Image
-                    src="/college-1.jpg"
-                    alt="College Campus"
-                    fill
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
-                    className="object-cover hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:opacity-60 transition-opacity duration-500" />
+                    <Image
+                      src="/college-1.jpg"
+                      alt="College Campus"
+                      fill
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      priority
+                    />
+                  </div>
                 </div>
-                <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                  <Image
-                    src="/event-1.png"
-                    alt="Tech Event"
-                    fill
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
-                    className="object-cover hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
+
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 group-hover:opacity-60 transition-opacity duration-500" />
+                    <Image
+                      src="/event-1.png"
+                      alt="Tech Event"
+                      fill
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      priority
+                    />
+                  </div>
                 </div>
               </div>
+
               <div className="space-y-3 pt-6">
-                <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                  <Image
-                    src="/college-2.png"
-                    alt="College Life"
-                    fill
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
-                    className="object-cover hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-blue-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-blue-500/10 group-hover:opacity-60 transition-opacity duration-500" />
+                    <Image
+                      src="/college-2.png"
+                      alt="College Life"
+                      fill
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      priority
+                    />
+                  </div>
                 </div>
-                <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                  <Image
-                    src="/event-2.jpg"
-                    alt="Student Activities"
-                    fill
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
-                    className="object-cover hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
+
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:opacity-60 transition-opacity duration-500" />
+                    <Image
+                      src="/event-2.jpg"
+                      alt="Student Activities"
+                      fill
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      priority
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>
