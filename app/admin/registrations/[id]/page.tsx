@@ -13,10 +13,12 @@ import {
   IndianRupee,
   Users,
   Calendar,
+  Mail,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { sendApprovalEmails } from "@/lib/send-email";
 
 export default function RegistrationDetail() {
   const params = useParams();
@@ -95,7 +97,7 @@ export default function RegistrationDetail() {
       // First, verify we can read the registration
       const { data: existingReg, error: readError } = await supabase
         .from("registrations")
-        .select("*")
+        .select("*, team_members(*)")
         .eq("id", params.id)
         .single();
 
@@ -104,9 +106,7 @@ export default function RegistrationDetail() {
         throw readError;
       }
 
-      console.log("Existing registration:", existingReg);
-
-      // Then update the status
+      // Update the status
       const { data: updateData, error: updateError } = await supabase
         .from("registrations")
         .update({
@@ -116,12 +116,28 @@ export default function RegistrationDetail() {
         .eq("id", params.id)
         .select();
 
-      if (updateError) {
-        console.error("Error updating status:", updateError);
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      console.log("Update response:", updateData);
+      // Send approval emails if status is approved
+      if (status === "approved") {
+        const emailResult = await sendApprovalEmails(
+          existingReg.team_members,
+          existingReg.id,
+          existingReg.selected_events,
+          existingReg.total_amount,
+          existingReg.team_size
+        );
+
+        if (!emailResult.success) {
+          console.error("Error sending approval emails:", emailResult.error);
+          toast({
+            title: "Warning",
+            description:
+              "Registration approved but failed to send notification emails",
+            variant: "destructive",
+          });
+        }
+      }
 
       // Update local state
       if (updateData?.[0]) {
@@ -137,7 +153,9 @@ export default function RegistrationDetail() {
 
       toast({
         title: "Success",
-        description: `Registration ${status} successfully`,
+        description: `Registration ${status} successfully${
+          status === "approved" ? " and notification emails sent" : ""
+        }`,
         variant: status === "approved" ? "default" : "destructive",
       });
     } catch (error) {
@@ -151,6 +169,36 @@ export default function RegistrationDetail() {
       setUpdating(false);
     }
   }
+
+  const handleResendEmails = async () => {
+    try {
+      if (!registration || !registration.team_members) return;
+
+      const emailResult = await sendApprovalEmails(
+        registration.team_members,
+        registration.id,
+        registration.selected_events,
+        registration.total_amount,
+        registration.team_size
+      );
+
+      if (!emailResult.success) {
+        throw new Error(emailResult.error || "Failed to send emails");
+      }
+
+      toast({
+        title: "Success",
+        description: "Approval emails have been resent to all team members",
+      });
+    } catch (error) {
+      console.error("Error resending emails:", error);
+      toast({
+        title: "Error",
+        description: "Failed to resend approval emails",
+        variant: "destructive",
+      });
+    }
+  };
 
   const formatYear = (year: string) => {
     const yearMap: { [key: string]: string } = {
@@ -210,7 +258,7 @@ export default function RegistrationDetail() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          {registration.status === "pending" && (
+          {registration.status === "pending" ? (
             <div className="flex gap-3">
               <Button
                 onClick={() => handleStatusUpdate("approved")}
@@ -229,6 +277,16 @@ export default function RegistrationDetail() {
                 {updating ? "Rejecting..." : "Reject Registration"}
               </Button>
             </div>
+          ) : (
+            registration.status === "approved" && (
+              <Button
+                onClick={handleResendEmails}
+                className="bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/30 transition-colors"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Resend Approval Emails
+              </Button>
+            )
           )}
         </div>
 
@@ -312,8 +370,8 @@ export default function RegistrationDetail() {
                       registration.status === "approved"
                         ? "bg-green-500/10 text-green-400"
                         : registration.status === "rejected"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-yellow-500/10 text-yellow-400"
+                          ? "bg-red-500/10 text-red-400"
+                          : "bg-yellow-500/10 text-yellow-400"
                     }`}
                   >
                     {registration.status.charAt(0).toUpperCase() +
