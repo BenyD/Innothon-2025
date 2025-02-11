@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLinkIcon } from "lucide-react";
 import { SectionTitle } from "@/components/ui/section-title";
+import { useToast } from "@/components/ui/use-toast";
+import { Toast } from "@/components/ui/toast";
 import {
   IoMail,
   IoCall,
@@ -14,18 +16,55 @@ import {
   IoLogoInstagram,
   IoCalendar,
 } from "react-icons/io5";
+import { supabase } from "@/lib/supabase";
 
 const ContactForm = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            message: formData.message,
+          },
+        ]);
+
+      if (error) throw error;
+
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+
+      // Show success toast
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you as soon as possible.",
+        variant: "default",
+        className: "bg-green-500/10 text-green-500 border-green-500/20",
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // Show error toast
+      toast({
+        title: "Failed to send message",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
