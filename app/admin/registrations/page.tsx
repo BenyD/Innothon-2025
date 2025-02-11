@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import type { Registration } from "@/types/registration";
 import { events } from "@/data/events";
 import { useRouter } from "next/navigation";
+import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 
 export default function Registrations() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
@@ -59,21 +60,23 @@ export default function Registrations() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('registration_changes')
+      .channel("registration_changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'registrations'
+          event: "*",
+          schema: "public",
+          table: "registrations",
         },
         async () => {
           const { data, error } = await supabase
             .from("registrations")
-            .select(`
+            .select(
+              `
               *,
               team_members (*)
-            `)
+            `
+            )
             .order("created_at", { ascending: false });
 
           if (!error && data) {
@@ -88,14 +91,17 @@ export default function Registrations() {
     };
   }, []);
 
-  const handleStatusUpdate = async (id: string, status: "approved" | "rejected") => {
+  const handleStatusUpdate = async (
+    id: string,
+    status: "approved" | "rejected"
+  ) => {
     try {
       console.log("Updating status for ID:", id, "to:", status);
-      
+
       // First, verify we can read the registration
       const { data: existingReg, error: readError } = await supabase
         .from("registrations")
-        .select("*")
+        .select("*, team_members(*)")
         .eq("id", id)
         .single();
 
@@ -111,7 +117,7 @@ export default function Registrations() {
         .from("registrations")
         .update({
           status: status,
-          payment_status: status === "approved" ? "completed" : "pending"
+          payment_status: status === "approved" ? "completed" : "pending",
         })
         .eq("id", id)
         .select();
@@ -123,14 +129,53 @@ export default function Registrations() {
 
       console.log("Update response:", updateData);
 
+      // Send appropriate emails based on status
+      if (status === "approved") {
+        const emailResult = await sendApprovalEmails(
+          existingReg.team_members,
+          existingReg.id,
+          existingReg.selected_events,
+          existingReg.total_amount,
+          existingReg.team_size
+        );
+
+        if (!emailResult.success) {
+          console.error("Error sending approval emails:", emailResult.error);
+          toast({
+            title: "Warning",
+            description:
+              "Registration approved but failed to send notification emails",
+            variant: "destructive",
+          });
+        }
+      } else if (status === "rejected") {
+        const emailResult = await sendRejectionEmails(
+          existingReg.team_members,
+          existingReg.id,
+          existingReg.selected_events,
+          existingReg.total_amount,
+          existingReg.team_size
+        );
+
+        if (!emailResult.success) {
+          console.error("Error sending rejection emails:", emailResult.error);
+          toast({
+            title: "Warning",
+            description:
+              "Registration rejected but failed to send notification emails",
+            variant: "destructive",
+          });
+        }
+      }
+
       // Update local state
-      setRegistrations(prevRegistrations =>
-        prevRegistrations.map(reg =>
+      setRegistrations((prevRegistrations) =>
+        prevRegistrations.map((reg) =>
           reg.id === id
             ? {
                 ...reg,
                 status: status,
-                payment_status: status === "approved" ? "completed" : "pending"
+                payment_status: status === "approved" ? "completed" : "pending",
               }
             : reg
         )
@@ -139,10 +184,12 @@ export default function Registrations() {
       // Fetch fresh data
       const { data: refreshData, error: refreshError } = await supabase
         .from("registrations")
-        .select(`
+        .select(
+          `
           *,
           team_members (*)
-        `)
+        `
+        )
         .order("created_at", { ascending: false });
 
       if (refreshError) {
@@ -159,12 +206,11 @@ export default function Registrations() {
         description: `Registration has been ${status}`,
         variant: "success",
       });
-
     } catch (error) {
       console.error("Error in handleStatusUpdate:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update status",
+        description: (error as Error).message || "Failed to update status",
         variant: "destructive",
       });
     }
@@ -205,8 +251,8 @@ export default function Registrations() {
                         registration.status === "approved"
                           ? "bg-green-500/10 text-green-400"
                           : registration.status === "rejected"
-                          ? "bg-red-500/10 text-red-400"
-                          : "bg-yellow-500/10 text-yellow-400"
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-yellow-500/10 text-yellow-400"
                       }`}
                     >
                       {registration.status.charAt(0).toUpperCase() +
@@ -224,7 +270,7 @@ export default function Registrations() {
                   <div className="text-gray-400">
                     <p>{registration.team_members[0]?.college}</p>
                     <p>
-                      {registration.team_members[0]?.department} - {" "}
+                      {registration.team_members[0]?.department} -{" "}
                       {formatYear(registration.team_members[0]?.year)} Year
                     </p>
                   </div>

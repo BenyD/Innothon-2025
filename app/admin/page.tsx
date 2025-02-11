@@ -4,14 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import {
-  X,
-  Users,
-  IndianRupee,
-  Activity,
-  MessageCircle,
-  ChevronRight,
-} from "lucide-react";
+import { X, Users, IndianRupee, Activity, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface DashboardStats {
@@ -330,24 +322,10 @@ export default function AdminDashboard() {
         <div className="relative flex-1">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-xl blur-lg opacity-50" />
           <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 lg:p-6 min-h-[calc(100vh-24rem)]">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center mb-4">
               <h3 className="text-base lg:text-lg font-semibold text-white">
                 Recent Activity
               </h3>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20 transition-colors"
-                asChild
-              >
-                <Link
-                  href="/admin/activity"
-                  className="flex items-center gap-2"
-                >
-                  View All
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
-              </Button>
             </div>
             <div className="space-y-3 lg:space-y-4 h-[calc(100vh-28rem)] overflow-y-auto custom-scrollbar">
               {loading ? (
@@ -427,8 +405,8 @@ export default function AdminDashboard() {
                                 item.status === "approved"
                                   ? "bg-green-500/10 text-green-400"
                                   : item.status === "rejected"
-                                  ? "bg-red-500/10 text-red-400"
-                                  : "bg-yellow-500/10 text-yellow-400"
+                                    ? "bg-red-500/10 text-red-400"
+                                    : "bg-yellow-500/10 text-yellow-400"
                               }`}
                             >
                               {item.status

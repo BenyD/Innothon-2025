@@ -1,11 +1,12 @@
-export type TeamMember = {
+export interface TeamMember {
+  id: string;
   name: string;
   email: string;
   phone: string;
   college: string;
   department: string;
   year: string;
-};
+}
 
 export type Registration = {
   id: string;

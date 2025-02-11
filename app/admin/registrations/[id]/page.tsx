@@ -4,29 +4,31 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/lib/supabase";
-import { Registration } from "@/types/registration";
+import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
-import {
-  Check,
-  X,
-  ArrowLeft,
-  IndianRupee,
-  Users,
-  Calendar,
-  Mail,
-} from "lucide-react";
+import { Check, X, ArrowLeft, Calendar, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
-import { sendApprovalEmails } from "@/lib/send-email";
+import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
+import { events } from "@/data/events";
 
-export default function RegistrationDetail() {
+export default function RegistrationDetails() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+
+  const formatYear = (year: string) => {
+    const yearMap: { [key: string]: string } = {
+      "1": "1st",
+      "2": "2nd",
+      "3": "3rd",
+      "4": "4th",
+    };
+    return yearMap[year] || year;
+  };
 
   const fetchRegistration = useCallback(async () => {
     try {
@@ -61,71 +63,35 @@ export default function RegistrationDetail() {
     } finally {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [params.id, toast]);
 
   useEffect(() => {
     fetchRegistration();
   }, [fetchRegistration]);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("registration_detail_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "registrations",
-          filter: `id=eq.${params.id}`,
-        },
-        () => {
-          fetchRegistration();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [params.id]);
-
-  async function handleStatusUpdate(status: "approved" | "rejected") {
+  const handleStatusUpdate = async (status: "approved" | "rejected") => {
     try {
       setUpdating(true);
       console.log("Updating status to:", status);
 
-      // First, verify we can read the registration
-      const { data: existingReg, error: readError } = await supabase
-        .from("registrations")
-        .select("*, team_members(*)")
-        .eq("id", params.id)
-        .single();
-
-      if (readError) {
-        console.error("Error reading registration:", readError);
-        throw readError;
-      }
-
-      // Update the status
-      const { data: updateData, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from("registrations")
         .update({
           status: status,
           payment_status: status === "approved" ? "completed" : "pending",
         })
-        .eq("id", params.id)
-        .select();
+        .eq("id", params.id);
 
       if (updateError) throw updateError;
 
-      // Send approval emails if status is approved
-      if (status === "approved") {
+      // Send appropriate emails based on status
+      if (status === "approved" && registration?.team_members) {
         const emailResult = await sendApprovalEmails(
-          existingReg.team_members,
-          existingReg.id,
-          existingReg.selected_events,
-          existingReg.total_amount,
-          existingReg.team_size
+          registration.team_members,
+          registration.id,
+          registration.selected_events,
+          registration.total_amount,
+          registration.team_size
         );
 
         if (!emailResult.success) {
@@ -137,43 +103,49 @@ export default function RegistrationDetail() {
             variant: "destructive",
           });
         }
+      } else if (status === "rejected" && registration?.team_members) {
+        const emailResult = await sendRejectionEmails(
+          registration.team_members,
+          registration.id,
+          registration.selected_events,
+          registration.total_amount,
+          registration.team_size
+        );
+
+        if (!emailResult.success) {
+          console.error("Error sending rejection emails:", emailResult.error);
+          toast({
+            title: "Warning",
+            description:
+              "Registration rejected but failed to send notification emails",
+            variant: "destructive",
+          });
+        }
       }
 
-      // Update local state
-      if (updateData?.[0]) {
-        setRegistration((prev) => ({
-          ...prev!,
-          status: status,
-          payment_status: status === "approved" ? "completed" : "pending",
-        }));
-      }
-
-      // Fetch fresh data
       await fetchRegistration();
-
       toast({
         title: "Success",
-        description: `Registration ${status} successfully${
-          status === "approved" ? " and notification emails sent" : ""
-        }`,
-        variant: status === "approved" ? "default" : "destructive",
+        description: `Registration ${status} successfully`,
+        variant: "success",
       });
     } catch (error) {
-      console.error("Error in handleStatusUpdate:", error);
+      console.error("Error updating status:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update registration status",
+        description: "Failed to update registration status",
         variant: "destructive",
       });
     } finally {
       setUpdating(false);
     }
-  }
+  };
 
   const handleResendEmails = async () => {
-    try {
-      if (!registration || !registration.team_members) return;
+    if (!registration?.team_members) return;
 
+    try {
+      setUpdating(true);
       const emailResult = await sendApprovalEmails(
         registration.team_members,
         registration.id,
@@ -183,12 +155,13 @@ export default function RegistrationDetail() {
       );
 
       if (!emailResult.success) {
-        throw new Error(emailResult.error || "Failed to send emails");
+        throw new Error(String(emailResult.error));
       }
 
       toast({
         title: "Success",
-        description: "Approval emails have been resent to all team members",
+        description: "Approval emails resent successfully",
+        variant: "success",
       });
     } catch (error) {
       console.error("Error resending emails:", error);
@@ -197,36 +170,17 @@ export default function RegistrationDetail() {
         description: "Failed to resend approval emails",
         variant: "destructive",
       });
+    } finally {
+      setUpdating(false);
     }
-  };
-
-  const formatYear = (year: string) => {
-    const yearMap: { [key: string]: string } = {
-      "1": "1st",
-      "2": "2nd",
-      "3": "3rd",
-      "4": "4th",
-    };
-    return yearMap[year] || year;
-  };
-
-  const formatPaymentMethod = (method: string) => {
-    const methodMap: { [key: string]: string } = {
-      upi: "UPI",
-      bank: "Bank Transfer",
-    };
-    return methodMap[method] || method;
   };
 
   if (loading) {
     return (
       <AdminLayout>
-        <div className="p-6 space-y-6">
-          <Skeleton className="h-8 w-48" />
-          <div className="space-y-4">
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-40 w-full" />
-          </div>
+        <div className="p-6">
+          <Skeleton className="h-8 w-64 mb-4" />
+          <Skeleton className="h-64 w-full rounded-xl" />
         </div>
       </AdminLayout>
     );
@@ -236,9 +190,7 @@ export default function RegistrationDetail() {
     return (
       <AdminLayout>
         <div className="p-6">
-          <div className="text-center">
-            <p className="text-gray-400">Registration not found</p>
-          </div>
+          <p className="text-red-400">Registration not found</p>
         </div>
       </AdminLayout>
     );
@@ -250,20 +202,20 @@ export default function RegistrationDetail() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button
-            variant="outline"
-            size="sm"
             onClick={() => router.back()}
-            className="border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-white/20 transition-colors"
+            variant="ghost"
+            className="text-gray-400 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
+
           {registration.status === "pending" ? (
             <div className="flex gap-3">
               <Button
                 onClick={() => handleStatusUpdate("approved")}
                 disabled={updating}
-                className="flex-1 bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/30 transition-colors"
+                className="bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/30 transition-colors"
               >
                 <Check className="w-4 h-4 mr-2" />
                 {updating ? "Approving..." : "Approve Registration"}
@@ -271,7 +223,7 @@ export default function RegistrationDetail() {
               <Button
                 onClick={() => handleStatusUpdate("rejected")}
                 disabled={updating}
-                className="flex-1 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors"
+                className="bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors"
               >
                 <X className="w-4 h-4 mr-2" />
                 {updating ? "Rejecting..." : "Reject Registration"}
@@ -295,9 +247,23 @@ export default function RegistrationDetail() {
           {/* Team Details */}
           <div className="space-y-6">
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Team Details
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                  Team Details
+                </h3>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    registration.status === "approved"
+                      ? "bg-green-500/10 text-green-400"
+                      : registration.status === "rejected"
+                        ? "bg-red-500/10 text-red-400"
+                        : "bg-yellow-500/10 text-yellow-400"
+                  }`}
+                >
+                  {registration.status.charAt(0).toUpperCase() +
+                    registration.status.slice(1)}
+                </span>
+              </div>
               <div className="space-y-4">
                 {registration.team_members.map((member, index) => (
                   <div
@@ -327,79 +293,79 @@ export default function RegistrationDetail() {
             </div>
           </div>
 
-          {/* Payment and Status Details */}
+          {/* Event and Payment Details */}
           <div className="space-y-6">
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Registration Details
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-gray-400 mb-1">
-                    <Users className="w-4 h-4" />
-                    <span className="text-sm">Team Size</span>
-                  </div>
-                  <p className="text-white font-medium">
-                    {registration.team_size}
-                  </p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-gray-400 mb-1">
-                    <IndianRupee className="w-4 h-4" />
-                    <span className="text-sm">Amount</span>
-                  </div>
-                  <p className="text-white font-medium">
-                    ₹{registration.total_amount}
-                  </p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-gray-400 mb-1">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm">Registered On</span>
-                  </div>
-                  <p className="text-white font-medium">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                  Event Details
+                </h3>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-sm">
                     {new Date(registration.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-gray-400 mb-1">
-                    <span className="text-sm">Status</span>
-                  </div>
-                  <span
-                    className={`inline-block px-2 py-1 rounded-full text-xs ${
-                      registration.status === "approved"
-                        ? "bg-green-500/10 text-green-400"
-                        : registration.status === "rejected"
-                          ? "bg-red-500/10 text-red-400"
-                          : "bg-yellow-500/10 text-yellow-400"
-                    }`}
-                  >
-                    {registration.status.charAt(0).toUpperCase() +
-                      registration.status.slice(1)}
                   </span>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Selected Events
+                  </h4>
+                  <div className="space-y-2">
+                    {registration.selected_events.map((eventId) => (
+                      <div
+                        key={eventId}
+                        className="bg-white/5 px-3 py-2 rounded-lg text-sm text-gray-300"
+                      >
+                        {events.find((e) => e.id === eventId)?.title}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Payment Details */}
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">
                 Payment Details
               </h3>
               <div className="space-y-4">
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <p className="text-gray-400 mb-1">Transaction ID</p>
-                  <p className="text-white">{registration.transaction_id}</p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                  <p className="text-gray-400 mb-1">Payment Method</p>
-                  <p className="text-white">
-                    {formatPaymentMethod(registration.payment_method)}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Amount
+                  </h4>
+                  <p className="text-2xl font-semibold text-white">
+                    ₹{registration.total_amount}
                   </p>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-400 mb-2">
+                      Payment Method
+                    </h4>
+                    <p className="text-gray-300">
+                      {registration.payment_method === "upi"
+                        ? "UPI"
+                        : registration.payment_method === "bank"
+                          ? "BANK"
+                          : registration.payment_method}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-400 mb-2">
+                      Transaction ID
+                    </h4>
+                    <p className="text-gray-300">
+                      {registration.transaction_id}
+                    </p>
+                  </div>
+                </div>
                 {registration.payment_proof && (
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <p className="text-gray-400 mb-2">Payment Proof</p>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-400 mb-2">
+                      Payment Proof
+                    </h4>
                     <a
                       href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/innothon/${registration.payment_proof}`}
                       target="_blank"

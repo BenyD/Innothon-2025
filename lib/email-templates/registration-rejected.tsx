@@ -13,7 +13,7 @@ import {
 import * as React from "react";
 import type { TeamMember } from "@/types/registration";
 
-interface RegistrationApprovedEmailProps {
+interface RegistrationRejectedEmailProps {
   teamMember: TeamMember;
   registrationId: string;
   selectedEvents: string[];
@@ -22,15 +22,15 @@ interface RegistrationApprovedEmailProps {
   teamSize: number;
 }
 
-export const RegistrationApprovedEmail = ({
+export const RegistrationRejectedEmail = ({
   teamMember,
   registrationId,
   selectedEvents,
   totalAmount,
   isTeamLeader,
   teamSize,
-}: RegistrationApprovedEmailProps) => {
-  const previewText = `Your registration for Innothon'25 has been approved!`;
+}: RegistrationRejectedEmailProps) => {
+  const previewText = `Your registration for Innothon'25 needs attention`;
 
   return (
     <Html>
@@ -61,10 +61,11 @@ export const RegistrationApprovedEmail = ({
             <Text style={paragraph}>Dear {teamMember.name},</Text>
 
             <Text style={paragraph}>
-              We&apos;re excited to inform you that your registration for
-              Innothon&apos;25 has been approved!
+              We noticed some issues with your registration (ID:{" "}
+              {registrationId}) for Innothon&apos;25. This could be due to
+              payment verification issues or incomplete information.
               {isTeamLeader && teamSize > 1
-                ? ` As the team leader, please ensure all team members are informed about the event details.`
+                ? ` As the team leader, please inform your team members about this update.`
                 : ``}
             </Text>
 
@@ -74,59 +75,28 @@ export const RegistrationApprovedEmail = ({
               <Text style={detailText}>
                 Events: {selectedEvents.join(", ")}
               </Text>
-              <Text style={detailText}>Amount Paid: ₹{totalAmount}</Text>
+              <Text style={detailText}>Amount: ₹{totalAmount}</Text>
             </Section>
 
-            <Section style={boxContainer}>
-              <Text style={boxHeader}>Event Schedule</Text>
-              <Text style={detailText}>Date: March 21, 2025</Text>
-              <Text style={detailText}>
-                Opening Ceremony: 9:00 AM - 10:30 AM
-              </Text>
-              <Text style={detailText}>
-                Morning Events: 10:45 AM - 12:00 PM
-              </Text>
-              <Text style={detailText}>Lunch Break: 12:00 PM - 1:00 PM</Text>
-              <Text style={detailText}>
-                Afternoon Events: 1:00 PM - 2:15 PM
-              </Text>
-              <Text style={detailText}>Valedictory: 3:00 PM - 4:00 PM</Text>
-            </Section>
-
-            <Section style={boxContainer}>
-              <Text style={boxHeader}>Venue Details</Text>
-              <Text style={detailText}>
-                Opening & Valedictory: Andromeda Lecture Theatre
-              </Text>
-              <Text style={detailText}>
-                HackQuest: Computer Science Block, Lab 401
-              </Text>
-              <Text style={detailText}>
-                AI Genesis: Computer Science Block, Lab 402
-              </Text>
-              <Text style={detailText}>
-                CodeArena: Computer Science Block, Lab 403
-              </Text>
-              <Text style={detailText}>
-                Digital Divas & IdeaFusion: Seminar Hall
-              </Text>
-            </Section>
-
-            <Text style={paragraph}>Important Guidelines:</Text>
+            <Text style={paragraph}>What you can do:</Text>
             <ul style={list}>
-              <li>Arrive 30 minutes before your event time</li>
-              <li>Bring your college ID and a copy of this email</li>
-              <li>Bring your own laptop (recommended)</li>
-              <li>Internet access will be provided</li>
-              <li>Food and refreshments will be provided</li>
-              <li>Follow the dress code mentioned in the guidelines</li>
+              <li>Submit a new registration with correct payment details</li>
+              <li>
+                If you believe this is an error, please contact us with your
+                registration ID and payment proof
+              </li>
             </ul>
 
-            <Text style={paragraph}>For any queries, contact:</Text>
+            <Text style={paragraph}>Contact us:</Text>
             <Text style={contactText}>
-              Email: bspc.hit@gmail.com
+              Email:{" "}
+              <Link href="mailto:bspc.hit@gmail.com" style={linkStyle}>
+                bspc.hit@gmail.com
+              </Link>
               <br />
               Beny Dishon K (President): +91 98848 19912
+              <br />
+              Santhosh Kumar S (Secretary): +91 93446 76938
             </Text>
 
             <Hr style={divider} />
@@ -162,7 +132,7 @@ export const RegistrationApprovedEmail = ({
   );
 };
 
-// Styles
+// Styles (reusing the same styles from the approval email)
 const main = {
   backgroundColor: "#f6f9fc",
   fontFamily:
@@ -246,6 +216,11 @@ const contactText = {
   margin: "8px 0",
 };
 
+const linkStyle = {
+  color: "#556cd6",
+  textDecoration: "none",
+};
+
 const divider = {
   borderTop: "1px solid #e6e6e6",
   margin: "32px 0",
@@ -272,4 +247,4 @@ const footerLink = {
   display: "block",
 };
 
-export default RegistrationApprovedEmail;
+export default RegistrationRejectedEmail;
