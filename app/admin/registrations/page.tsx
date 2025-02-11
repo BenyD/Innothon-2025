@@ -16,6 +16,16 @@ export default function Registrations() {
   const { toast } = useToast();
   const router = useRouter();
 
+  const formatYear = (year: string) => {
+    const yearMap: { [key: string]: string } = {
+      "1": "1st",
+      "2": "2nd",
+      "3": "3rd",
+      "4": "4th",
+    };
+    return yearMap[year] || year;
+  };
+
   const fetchRegistrations = useCallback(async () => {
     try {
       console.log("Fetching all registrations");
@@ -214,8 +224,8 @@ export default function Registrations() {
                   <div className="text-gray-400">
                     <p>{registration.team_members[0]?.college}</p>
                     <p>
-                      {registration.team_members[0]?.department} -{" "}
-                      {registration.team_members[0]?.year} Year
+                      {registration.team_members[0]?.department} - {" "}
+                      {formatYear(registration.team_members[0]?.year)} Year
                     </p>
                   </div>
                 </div>
