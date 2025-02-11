@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Users, 
-  LineChart,
-  LogOut 
-} from "lucide-react";
+import { LayoutDashboard, Users, LogOut } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -23,11 +18,6 @@ export default function Sidebar() {
       name: "Registrations",
       href: "/admin/registrations",
       icon: Users,
-    },
-    {
-      name: "Analytics",
-      href: "/admin/analytics",
-      icon: LineChart,
     },
   ];
 
@@ -53,7 +43,9 @@ export default function Sidebar() {
         </div>
         <div className="mt-auto pb-6">
           <button
-            onClick={() => {/* Add logout handler */}}
+            onClick={() => {
+              /* Add logout handler */
+            }}
             className="flex w-full items-center gap-x-3 px-6 py-3 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
           >
             <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
@@ -63,4 +55,4 @@ export default function Sidebar() {
       </div>
     </div>
   );
-} 
+}

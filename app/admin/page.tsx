@@ -105,157 +105,155 @@ export default function AdminDashboard() {
   const [retrying, setRetrying] = useState(false);
   const router = useRouter();
 
-  const fetchDashboardData = useCallback(
-    async (isRetry = false) => {
-      try {
-        setLoading(true);
-        setError(null);
-        if (isRetry) setRetrying(true);
+  const fetchDashboardData = useCallback(async (isRetry = false) => {
+    try {
+      setLoading(true);
+      setError(null);
+      if (isRetry) setRetrying(true);
 
-        // Fetch all registrations first (without date filter for total stats)
-        const { data: allRegistrations, error: allRegError } =
-          await supabase.from("registrations").select(`
+      // First fetch registrations
+      const registrationsResult = await supabase.from("registrations").select(`
+          id,
+          created_at,
+          team_size,
+          total_amount,
+          status,
+          payment_status,
+          team_members (
             id,
-            created_at,
-            team_size,
-            total_amount,
-            status,
-            payment_status,
-            team_members (
-              id,
-              name,
-              college
-            )
-          `);
-
-        if (allRegError) throw allRegError;
-
-        // Calculate total stats
-        const totalRegistrations = allRegistrations?.length || 0;
-        const pendingApprovals =
-          allRegistrations?.filter((reg) => reg.status === "pending").length ||
-          0;
-        const totalRevenue =
-          allRegistrations?.reduce(
-            (sum, reg) => sum + (reg.total_amount || 0),
-            0
-          ) || 0;
-
-        // Update stats immediately
-        setStats((prevStats) => ({
-          ...prevStats,
-          totalRegistrations,
-          totalRevenue,
-          pendingApprovals,
-        }));
-
-        // Now fetch recent activity based on date range
-        const now = new Date();
-        const ranges = {
-          "24h": new Date(now.getTime() - 24 * 60 * 60 * 1000),
-          "7d": new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-          "30d": new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
-          "90d": new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
-          all: new Date(0),
-        };
-
-        const startDate = ranges[dateRange];
-
-        const { data: recentRegistrations } = await supabase
-          .from("registrations")
-          .select(
-            `
-            id,
-            created_at,
-            team_size,
-            total_amount,
-            status,
-            team_members (
-              id,
-              name,
-              college
-            )
-          `
+            name,
+            college
           )
-          .gte("created_at", startDate.toISOString())
-          .order("created_at", { ascending: false })
-          .limit(8);
+        `);
 
-        // Update recent activity
-        const recentActivity: ActivityItem[] =
-          recentRegistrations?.map((reg) => ({
-            type: "registration" as const,
-            id: reg.id,
-            created_at: reg.created_at,
-            team_members: reg.team_members,
-            team_size: reg.team_size,
-            total_amount: reg.total_amount,
-            status: reg.status,
-          })) || [];
+      if (registrationsResult.error) throw registrationsResult.error;
+      const registrations = registrationsResult.data || [];
 
-        setRecentActivity(recentActivity);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch dashboard data"
-        );
-      } finally {
-        setLoading(false);
-        setRetrying(false);
-      }
-    },
-    [dateRange]
-  );
+      // Then fetch messages
+      const messagesResult = await supabase
+        .from("contact_messages")
+        .select("*");
 
+      if (messagesResult.error) throw messagesResult.error;
+      const messages = messagesResult.data || [];
+
+      // Calculate stats
+      const totalRegistrations = registrations.length;
+      const pendingApprovals = registrations.filter(
+        (reg) => reg.status === "pending"
+      ).length;
+      const approvedRegistrations = registrations.filter(
+        (reg) => reg.status === "approved"
+      ).length;
+
+      const totalRevenue = registrations.reduce((sum, reg) => {
+        if (reg.status === "approved" && reg.payment_status === "success") {
+          return sum + (Number(reg.total_amount) || 0);
+        }
+        return sum;
+      }, 0);
+
+      const approvalRate =
+        totalRegistrations > 0
+          ? ((approvedRegistrations / totalRegistrations) * 100).toFixed(1)
+          : "0.0";
+
+      const totalMessages = messages.length;
+      const recentMessages = messages.filter((msg) => {
+        const msgDate = new Date(msg.created_at);
+        const now = new Date();
+        const daysDiff =
+          (now.getTime() - msgDate.getTime()) / (1000 * 3600 * 24);
+        return daysDiff <= 7;
+      }).length;
+
+      // Update stats
+      setStats({
+        totalMessages,
+        recentMessages,
+        unreadMessages: 0,
+        conversionRate: approvalRate,
+        totalRegistrations,
+        totalRevenue,
+        pendingApprovals,
+        approvalRate,
+      });
+
+      // Update recent activity
+      const newRecentActivity = [
+        ...registrations.slice(0, 8).map((reg) => ({
+          type: "registration" as const,
+          id: reg.id,
+          created_at: reg.created_at,
+          team_members: reg.team_members,
+          team_size: reg.team_size,
+          total_amount: reg.total_amount,
+          status: reg.status,
+        })),
+        ...messages.slice(0, 8).map((msg) => ({
+          type: "message" as const,
+          id: msg.id,
+          created_at: msg.created_at,
+          name: msg.name,
+          email: msg.email,
+          message: msg.message,
+        })),
+      ]
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .slice(0, 8);
+
+      setRecentActivity(newRecentActivity);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch dashboard data"
+      );
+    } finally {
+      setLoading(false);
+      setRetrying(false);
+    }
+  }, []); // Empty dependency array since all setState functions are stable
+
+  // Fetch data when component mounts or date range changes
   useEffect(() => {
     fetchDashboardData();
-  }, [dateRange, fetchDashboardData]);
+  }, [fetchDashboardData, dateRange]);
 
+  // Add this to debug state updates
+  useEffect(() => {
+    console.log("Stats updated:", stats);
+  }, [stats]);
+
+  // Update the stat cards section
   const statCards = [
     {
       title: "Total Registrations",
-      value: loading ? (
-        <Skeleton className="h-8 w-16" />
-      ) : (
-        stats.totalRegistrations.toString()
-      ),
+      value: stats.totalRegistrations,
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
     {
       title: "Total Revenue",
-      value: loading ? (
-        <Skeleton className="h-8 w-24" />
-      ) : (
-        `₹${stats.totalRevenue.toLocaleString()}`
-      ),
+      value: `₹${stats.totalRevenue.toLocaleString()}`,
       icon: IndianRupee,
       color: "from-green-500 to-green-600",
     },
     {
       title: "Pending Approvals",
-      value: loading ? (
-        <Skeleton className="h-8 w-16" />
-      ) : (
-        stats.pendingApprovals.toString()
-      ),
+      value: stats.pendingApprovals,
       icon: Activity,
       color: "from-yellow-500 to-yellow-600",
-      highlight: stats.pendingApprovals > 0,
     },
     {
       title: "Total Messages",
-      value: loading ? (
-        <Skeleton className="h-8 w-16" />
-      ) : (
-        stats.totalMessages.toString()
-      ),
+      value: stats.totalMessages,
       icon: MessageCircle,
       color: "from-purple-500 to-purple-600",
-      badge:
-        stats.unreadMessages > 0 ? stats.unreadMessages.toString() : undefined,
     },
   ];
 
@@ -286,33 +284,20 @@ export default function AdminDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {statCards.map((stat, index) => (
+          {statCards.map((card) => (
             <motion.div
-              key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="relative group"
+              key={card.title}
+              variants={itemAnimation}
+              className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${card.color} p-6`}
             >
-              <div
-                className="absolute -inset-0.5 bg-gradient-to-r opacity-75 group-hover:opacity-100 blur-sm transition duration-300"
-                style={{
-                  backgroundImage: `linear-gradient(to right, ${stat.color})`,
-                }}
-              />
-              <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 p-6 rounded-xl">
-                <div className="flex items-center justify-between">
-                  <stat.icon className="w-5 h-5 text-gray-400" />
-                  <span
-                    className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r"
-                    style={{
-                      backgroundImage: `linear-gradient(to right, ${stat.color})`,
-                    }}
-                  >
-                    {stat.value}
-                  </span>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white/80 text-sm">{card.title}</p>
+                  <h3 className="text-2xl font-bold text-white mt-2">
+                    {loading ? <Skeleton className="h-8 w-16" /> : card.value}
+                  </h3>
                 </div>
-                <p className="mt-2 text-sm text-gray-400">{stat.title}</p>
+                <card.icon className="w-12 h-12 text-white/20" />
               </div>
             </motion.div>
           ))}
