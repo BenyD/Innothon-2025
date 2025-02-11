@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ExternalLinkIcon } from "lucide-react";
 import { SectionTitle } from "@/components/ui/section-title";
 import { useToast } from "@/components/ui/use-toast";
-import { Toast } from "@/components/ui/toast";
 import {
   IoMail,
   IoCall,
@@ -108,19 +107,14 @@ const ContactForm = () => {
         }
       }
 
-      // Clear form on success
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-      });
-
-      toast({
-        title: "Message sent successfully!",
-        description: "We'll get back to you as soon as possible.",
-        variant: "success",
-      });
+      if (data) {
+        // Handle successful submission
+        toast({
+          title: "Message sent!",
+          description: "We'll get back to you soon.",
+          variant: "success",
+        });
+      }
     } catch (error) {
       console.error("Error details:", error);
       toast({

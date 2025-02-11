@@ -20,7 +20,6 @@ interface Message {
 export default function Messages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
   useEffect(() => {
     fetchMessages();
@@ -41,18 +40,6 @@ export default function Messages() {
       setLoading(false);
     }
   }
-
-  const handleMessageClick = (message: Message) => {
-    setSelectedMessage(message);
-  };
-
-  const handleModalClose = () => {
-    setSelectedMessage(null);
-  };
-
-  const handleMessageResolved = () => {
-    fetchMessages(); // Refresh the messages list
-  };
 
   return (
     <AdminLayout>

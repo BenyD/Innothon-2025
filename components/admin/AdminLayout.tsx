@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { 
-  LogOut, 
-  MessageSquare, 
-  User, 
+import {
+  LogOut,
+  MessageSquare,
+  User,
   LayoutDashboard,
   Home,
   Menu,
-  X
+  X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 interface AdminLayoutProps {
@@ -24,59 +23,80 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{
+    id: string;
+    email: string | undefined;
+    role?: string;
+  } | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const checkUser = useCallback(async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/admin/login");
+      } else {
+        setUser({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        });
+      }
+    } catch {
+      router.push("/admin/login");
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
   useEffect(() => {
     checkUser();
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
-        router.push('/admin/login');
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_OUT") {
+          router.push("/admin/login");
+        }
+        setUser(
+          session?.user
+            ? {
+                id: session.user.id,
+                email: session.user.email,
+                role: session.user.role,
+              }
+            : null
+        );
+        setLoading(false);
       }
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    );
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, checkUser]);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  async function checkUser() {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/admin/login');
-      } else {
-        setUser(user);
-      }
-    } catch (error) {
-      router.push('/admin/login');
-    }
-    setLoading(false);
-  }
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/admin/login');
+    router.push("/admin/login");
   };
 
   const navItems = [
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      href: "/admin"
+      href: "/admin",
     },
     {
       title: "Messages",
       icon: MessageSquare,
-      href: "/admin/messages"
-    }
+      href: "/admin/messages",
+    },
   ];
 
   if (loading) {
@@ -118,14 +138,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             <div className="flex items-center gap-4">
               {/* Back to Home button */}
-              <Link 
+              <Link
                 href="/"
                 className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
               >
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">Back to Site</span>
               </Link>
-              
+
               {/* User menu */}
               <div className="relative">
                 <button
@@ -135,7 +155,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">{user?.email}</span>
                 </button>
-                
+
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 py-2 bg-black border border-white/10 rounded-lg shadow-xl">
                     <button
@@ -165,15 +185,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
-                
+
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive 
-                        ? 'bg-white/10 text-white' 
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      isActive
+                        ? "bg-white/10 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -191,15 +211,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive 
-                      ? 'bg-white/10 text-white' 
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    isActive
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -211,10 +231,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Main Content */}
-        <div className={`flex-1 ${isMobileMenuOpen ? 'hidden' : 'block'} lg:ml-64 p-4 lg:p-8`}>
+        <div
+          className={`flex-1 ${
+            isMobileMenuOpen ? "hidden" : "block"
+          } lg:ml-64 p-4 lg:p-8`}
+        >
           {children}
         </div>
       </div>
     </div>
   );
-} 
+}

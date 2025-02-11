@@ -8,6 +8,11 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Mail, Lock, Loader2 } from "lucide-react";
 
+interface AuthError {
+  message: string;
+  status?: number;
+}
+
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -28,8 +33,9 @@ export default function AdminLogin() {
 
       if (error) throw error;
       router.push('/admin');
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err) {
+      const error = err as AuthError;
+      setError(error.message || "An error occurred during sign in");
     } finally {
       setLoading(false);
     }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { Mail, Calendar, User, Check, X, PhoneCall, ArrowLeft } from "lucide-react";
+import { Mail, Calendar, User, Check, PhoneCall, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,11 +27,7 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
   const { toast } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    fetchMessage();
-  }, [resolvedParams.id]);
-
-  async function fetchMessage() {
+  const fetchMessage = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("contact_messages")
@@ -51,7 +47,11 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
     } finally {
       setLoading(false);
     }
-  }
+  }, [resolvedParams.id, toast]);
+
+  useEffect(() => {
+    fetchMessage();
+  }, [fetchMessage, resolvedParams.id]);
 
   const handleResolve = async () => {
     if (!message) return;
