@@ -11,38 +11,28 @@ const limiter = rateLimit({
 
 export async function GET() {
   try {
-    await limiter.check(10, 'ANALYTICS_API'); // 10 requests per minute
+    await limiter.check(10, 'ANALYTICS_API');
 
-    // Fetch analytics data from Vercel API
-    const [pageViewsRes, visitorsRes, countriesRes] = await Promise.all([
-      // Page Views
+    const [pageViewsRes, visitorsRes] = await Promise.all([
       fetch(`https://api.vercel.com/v1/projects/${PROJECT_ID}/analytics/views`, {
         headers: {
           Authorization: `Bearer ${VERCEL_API_TOKEN}`,
         },
       }),
-      // Unique Visitors
       fetch(`https://api.vercel.com/v1/projects/${PROJECT_ID}/analytics/visitors`, {
         headers: {
           Authorization: `Bearer ${VERCEL_API_TOKEN}`,
         },
       }),
-      // Geographic Distribution
-      fetch(`https://api.vercel.com/v1/projects/${PROJECT_ID}/analytics/countries`, {
-        headers: {
-          Authorization: `Bearer ${VERCEL_API_TOKEN}`,
-        },
-      }),
     ]);
 
-    const [pageViews, visitors, countries] = await Promise.all([
+    const [pageViews, visitors] = await Promise.all([
       pageViewsRes.json(),
       visitorsRes.json(),
-      countriesRes.json(),
     ]);
 
-    // Calculate average time on site (example calculation)
-    const avgTimeOnSite = "2m 45s"; // You'll need to calculate this from your data
+    // Calculate bounce rate (example calculation)
+    const bounceRate = 35; // You'll need to calculate this from your data
 
     return NextResponse.json({
       pageViews: {
@@ -53,8 +43,8 @@ export async function GET() {
         total: visitors.total || 0,
         trend: visitors.data || [],
       },
-      countries: countries.data || [],
-      avgTimeOnSite,
+      bounceRate,
+      avgTimeOnSite: "2m 45s",
     });
   } catch (error) {
     console.error('Error fetching analytics:', error);

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { Globe, Users, Clock, MousePointer, X } from "lucide-react";
+import { Globe, Users, Clock, MousePointer, X, TrendingDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface AnalyticsData {
@@ -14,7 +14,7 @@ interface AnalyticsData {
     total: number;
     trend: Array<{ date: string; visitors: number }>;
   };
-  countries: Array<{ country: string; visitors: number }>;
+  bounceRate: number;
   avgTimeOnSite: string;
 }
 
@@ -23,6 +23,12 @@ interface StatCardProps {
   value: string | number;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
+}
+
+interface AnalyticsSectionProps {
+  data: AnalyticsData | null;
+  loading: boolean;
+  error?: string | null;
 }
 
 const item = {
@@ -42,11 +48,7 @@ export function AnalyticsSection({
   data, 
   loading, 
   error 
-}: { 
-  data: AnalyticsData | null; 
-  loading: boolean;
-  error?: string;
-}) {
+}: AnalyticsSectionProps) {
   if (error) {
     return (
       <div className="relative bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-xl p-4">
@@ -93,10 +95,10 @@ export function AnalyticsSection({
           color="text-pink-400"
         />
         <StatCard
-          title="Countries"
-          value={data.countries.length.toString()}
-          icon={Globe}
-          color="text-green-400"
+          title="Bounce Rate"
+          value={`${data.bounceRate}%`}
+          icon={TrendingDown}
+          color="text-orange-400"
         />
       </div>
 
@@ -130,15 +132,15 @@ export function AnalyticsSection({
           </div>
         </div>
 
-        {/* Geographic Distribution */}
+        {/* Visitor Engagement */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-xl blur-lg opacity-50" />
           <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <h4 className="text-sm font-medium text-gray-400 mb-4">Geographic Distribution</h4>
+            <h4 className="text-sm font-medium text-gray-400 mb-4">Visitor Engagement</h4>
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.countries}>
-                  <XAxis dataKey="country" stroke="#9CA3AF" />
+                <LineChart data={data.visitors.trend}>
+                  <XAxis dataKey="date" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
                   <Tooltip
                     contentStyle={{
@@ -147,8 +149,14 @@ export function AnalyticsSection({
                       borderRadius: '8px'
                     }}
                   />
-                  <Bar dataKey="visitors" fill="#8B5CF6" />
-                </BarChart>
+                  <Line 
+                    type="monotone" 
+                    dataKey="visitors" 
+                    name="Visitors"
+                    stroke="#8B5CF6" 
+                    strokeWidth={2}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
@@ -183,18 +191,7 @@ function AnalyticsSkeletonLoader() {
       <Skeleton className="h-7 w-40" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-xl blur-lg opacity-50" />
-            <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-6 w-16" />
-                </div>
-                <Skeleton className="h-10 w-10 rounded-lg" />
-              </div>
-            </div>
-          </div>
+          <StatCardSkeleton key={i} />
         ))}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -207,6 +204,23 @@ function AnalyticsSkeletonLoader() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function StatCardSkeleton() {
+  return (
+    <div className="relative">
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-xl blur-lg opacity-50" />
+      <div className="relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-6 w-16" />
+          </div>
+          <Skeleton className="h-10 w-10 rounded-lg" />
+        </div>
       </div>
     </div>
   );

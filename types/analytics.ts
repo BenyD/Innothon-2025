@@ -13,9 +13,6 @@ export interface AnalyticsData {
       visitors: number;
     }>;
   };
-  countries: Array<{
-    country: string;
-    visitors: number;
-  }>;
+  bounceRate: number;
   avgTimeOnSite: string;
 } 
