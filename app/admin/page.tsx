@@ -111,20 +111,20 @@ export default function AdminDashboard() {
       setError(null);
       if (isRetry) setRetrying(true);
 
-      // First fetch registrations
+      // First fetch registrations with payment status
       const registrationsResult = await supabase.from("registrations").select(`
+        id,
+        created_at,
+        team_size,
+        total_amount,
+        status,
+        payment_status,
+        team_members (
           id,
-          created_at,
-          team_size,
-          total_amount,
-          status,
-          payment_status,
-          team_members (
-            id,
-            name,
-            college
-          )
-        `);
+          name,
+          college
+        )
+      `);
 
       if (registrationsResult.error) throw registrationsResult.error;
       const registrations = registrationsResult.data || [];
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
       ).length;
 
       const totalRevenue = registrations.reduce((sum, reg) => {
-        if (reg.status === "approved" && reg.payment_status === "success") {
+        if (reg.status === "approved" && reg.payment_status === "completed") {
           return sum + (Number(reg.total_amount) || 0);
         }
         return sum;
@@ -228,6 +228,29 @@ export default function AdminDashboard() {
   useEffect(() => {
     console.log("Stats updated:", stats);
   }, [stats]);
+
+  // Add realtime subscription for dashboard updates
+  useEffect(() => {
+    const channel = supabase
+      .channel("dashboard_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "registrations",
+        },
+        () => {
+          // Refresh dashboard data when changes occur
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchDashboardData]);
 
   // Update the stat cards section
   const statCards = [

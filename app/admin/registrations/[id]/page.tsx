@@ -1,12 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/lib/supabase";
 import { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
-import { Check, X, ArrowLeft, IndianRupee, Users, Calendar } from "lucide-react";
+import {
+  Check,
+  X,
+  ArrowLeft,
+  IndianRupee,
+  Users,
+  Calendar,
+} from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -19,25 +26,31 @@ export default function RegistrationDetail() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    fetchRegistration();
-  }, []);
-
-  async function fetchRegistration() {
+  const fetchRegistration = useCallback(async () => {
     try {
+      console.log("Fetching registration data for ID:", params.id);
       const { data, error } = await supabase
         .from("registrations")
-        .select(`
+        .select(
+          `
           *,
           team_members (*)
-        `)
+        `
+        )
         .eq("id", params.id)
         .single();
 
-      if (error) throw error;
-      setRegistration(data);
+      if (error) {
+        console.error("Error fetching registration:", error);
+        throw error;
+      }
+
+      if (data) {
+        console.log("Fetched registration data:", data);
+        setRegistration(data);
+      }
     } catch (error) {
-      console.error("Error fetching registration:", error);
+      console.error("Error in fetchRegistration:", error);
       toast({
         title: "Error",
         description: "Failed to load registration details",
@@ -46,29 +59,92 @@ export default function RegistrationDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchRegistration();
+  }, [fetchRegistration]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("registration_detail_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "registrations",
+          filter: `id=eq.${params.id}`,
+        },
+        () => {
+          fetchRegistration();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [params.id]);
 
   async function handleStatusUpdate(status: "approved" | "rejected") {
     try {
       setUpdating(true);
-      const { error } = await supabase
+      console.log("Updating status to:", status);
+
+      // First, verify we can read the registration
+      const { data: existingReg, error: readError } = await supabase
         .from("registrations")
-        .update({ status })
-        .eq("id", params.id);
+        .select("*")
+        .eq("id", params.id)
+        .single();
 
-      if (error) throw error;
+      if (readError) {
+        console.error("Error reading registration:", readError);
+        throw readError;
+      }
 
-      setRegistration((prev) => prev ? { ...prev, status } : null);
+      console.log("Existing registration:", existingReg);
+
+      // Then update the status
+      const { data: updateData, error: updateError } = await supabase
+        .from("registrations")
+        .update({
+          status: status,
+          payment_status: status === "approved" ? "completed" : "pending",
+        })
+        .eq("id", params.id)
+        .select();
+
+      if (updateError) {
+        console.error("Error updating status:", updateError);
+        throw updateError;
+      }
+
+      console.log("Update response:", updateData);
+
+      // Update local state
+      if (updateData?.[0]) {
+        setRegistration((prev) => ({
+          ...prev!,
+          status: status,
+          payment_status: status === "approved" ? "completed" : "pending",
+        }));
+      }
+
+      // Fetch fresh data
+      await fetchRegistration();
+
       toast({
         title: "Success",
         description: `Registration ${status} successfully`,
         variant: status === "approved" ? "default" : "destructive",
       });
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error in handleStatusUpdate:", error);
       toast({
         title: "Error",
-        description: "Failed to update registration status",
+        description: error.message || "Failed to update registration status",
         variant: "destructive",
       });
     } finally {
@@ -88,8 +164,8 @@ export default function RegistrationDetail() {
 
   const formatPaymentMethod = (method: string) => {
     const methodMap: { [key: string]: string } = {
-      "upi": "UPI",
-      "bank": "Bank Transfer",
+      upi: "UPI",
+      bank: "Bank Transfer",
     };
     return methodMap[method] || method;
   };
@@ -161,7 +237,9 @@ export default function RegistrationDetail() {
           {/* Team Details */}
           <div className="space-y-6">
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Team Details</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Team Details
+              </h3>
               <div className="space-y-4">
                 {registration.team_members.map((member, index) => (
                   <div
@@ -203,7 +281,9 @@ export default function RegistrationDetail() {
                     <Users className="w-4 h-4" />
                     <span className="text-sm">Team Size</span>
                   </div>
-                  <p className="text-white font-medium">{registration.team_size}</p>
+                  <p className="text-white font-medium">
+                    {registration.team_size}
+                  </p>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-gray-400 mb-1">
@@ -255,7 +335,9 @@ export default function RegistrationDetail() {
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-lg p-4">
                   <p className="text-gray-400 mb-1">Payment Method</p>
-                  <p className="text-white">{formatPaymentMethod(registration.payment_method)}</p>
+                  <p className="text-white">
+                    {formatPaymentMethod(registration.payment_method)}
+                  </p>
                 </div>
                 {registration.payment_proof && (
                   <div className="bg-white/5 border border-white/10 rounded-lg p-4">
@@ -277,4 +359,4 @@ export default function RegistrationDetail() {
       </div>
     </AdminLayout>
   );
-} 
+}

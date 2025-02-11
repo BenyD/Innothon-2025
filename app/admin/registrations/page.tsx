@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
@@ -16,8 +16,9 @@ export default function Registrations() {
   const { toast } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchRegistrations = async () => {
+  const fetchRegistrations = useCallback(async () => {
+    try {
+      console.log("Fetching all registrations");
       const { data, error } = await supabase
         .from("registrations")
         .select(
@@ -30,41 +31,130 @@ export default function Registrations() {
 
       if (error) {
         console.error("Error fetching registrations:", error);
-        return;
+        throw error;
       }
 
-      setRegistrations(data || []);
-    };
-
-    fetchRegistrations();
+      if (data) {
+        console.log("Fetched registrations:", data);
+        setRegistrations(data);
+      }
+    } catch (error) {
+      console.error("Error in fetchRegistrations:", error);
+    }
   }, []);
 
-  const handleStatusUpdate = async (
-    id: string,
-    status: "approved" | "rejected"
-  ) => {
+  useEffect(() => {
+    fetchRegistrations();
+  }, [fetchRegistrations]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('registration_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'registrations'
+        },
+        async () => {
+          const { data, error } = await supabase
+            .from("registrations")
+            .select(`
+              *,
+              team_members (*)
+            `)
+            .order("created_at", { ascending: false });
+
+          if (!error && data) {
+            setRegistrations(data);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleStatusUpdate = async (id: string, status: "approved" | "rejected") => {
     try {
-      const { error } = await supabase
+      console.log("Updating status for ID:", id, "to:", status);
+      
+      // First, verify we can read the registration
+      const { data: existingReg, error: readError } = await supabase
         .from("registrations")
-        .update({ status })
-        .eq("id", id);
+        .select("*")
+        .eq("id", id)
+        .single();
 
-      if (error) throw error;
+      if (readError) {
+        console.error("Error reading registration:", readError);
+        throw readError;
+      }
 
-      setRegistrations(
-        registrations.map((reg) => (reg.id === id ? { ...reg, status } : reg))
+      console.log("Existing registration:", existingReg);
+
+      // Then update the status
+      const { data: updateData, error: updateError } = await supabase
+        .from("registrations")
+        .update({
+          status: status,
+          payment_status: status === "approved" ? "completed" : "pending"
+        })
+        .eq("id", id)
+        .select();
+
+      if (updateError) {
+        console.error("Error updating status:", updateError);
+        throw updateError;
+      }
+
+      console.log("Update response:", updateData);
+
+      // Update local state
+      setRegistrations(prevRegistrations =>
+        prevRegistrations.map(reg =>
+          reg.id === id
+            ? {
+                ...reg,
+                status: status,
+                payment_status: status === "approved" ? "completed" : "pending"
+              }
+            : reg
+        )
       );
+
+      // Fetch fresh data
+      const { data: refreshData, error: refreshError } = await supabase
+        .from("registrations")
+        .select(`
+          *,
+          team_members (*)
+        `)
+        .order("created_at", { ascending: false });
+
+      if (refreshError) {
+        console.error("Error refreshing data:", refreshError);
+        throw refreshError;
+      }
+
+      if (refreshData) {
+        setRegistrations(refreshData);
+      }
 
       toast({
         title: "Status updated",
         description: `Registration has been ${status}`,
         variant: "success",
       });
+
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error in handleStatusUpdate:", error);
       toast({
         title: "Error",
-        description: "Failed to update status",
+        description: error.message || "Failed to update status",
         variant: "destructive",
       });
     }

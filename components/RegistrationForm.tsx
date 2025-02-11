@@ -12,6 +12,9 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { Smartphone, Building2, Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const INITIAL_MEMBER: TeamMember = {
   name: "",
@@ -41,6 +44,7 @@ const isValidIndianPhone = (phone: string) => {
 
 const RegistrationForm = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [teamSize, setTeamSize] = useState<number>(1);
@@ -53,6 +57,7 @@ const RegistrationForm = () => {
     paymentScreenshot: null as File | null,
     paymentMethod: "upi" as "upi" | "bank",
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const calculateTotal = () => {
     return selectedEvents.length * 500;
@@ -208,23 +213,8 @@ const RegistrationForm = () => {
 
       if (teamMembersError) throw teamMembersError;
 
-      toast({
-        title: "Registration Successful!",
-        description:
-          "Your team has been registered. We'll verify your payment and update you soon.",
-        variant: "success",
-      });
-
-      // Reset form
-      setSelectedEvents([]);
-      setTeamSize(1);
-      setTeamMembers([{ ...INITIAL_MEMBER }]);
-      setCurrentStep(1);
-      setPaymentDetails({
-        transactionId: "",
-        paymentScreenshot: null,
-        paymentMethod: "upi",
-      });
+      // Show success modal instead of toast
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -544,13 +534,7 @@ const RegistrationForm = () => {
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                              <Image
-                                src="/upi-icon.png"
-                                width={24}
-                                height={24}
-                                alt="UPI"
-                                className="opacity-80"
-                              />
+                              <Smartphone className="w-6 h-6 text-purple-400" />
                             </div>
                             <div className="text-left">
                               <p className="text-white font-medium">
@@ -579,13 +563,7 @@ const RegistrationForm = () => {
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                              <Image
-                                src="/bank-icon.png"
-                                width={24}
-                                height={24}
-                                alt="Bank"
-                                className="opacity-80"
-                              />
+                              <Building2 className="w-6 h-6 text-blue-400" />
                             </div>
                             <div className="text-left">
                               <p className="text-white font-medium">
@@ -782,6 +760,99 @@ const RegistrationForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowSuccessModal(false)}
+          />
+
+          {/* Modal Content */}
+          <div className="relative h-full flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="bg-gradient-to-b from-gray-900/95 to-black border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            >
+              <div className="flex flex-col items-center text-center">
+                {/* Success Icon with Animation */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.2, duration: 0.6 }}
+                  className="relative"
+                >
+                  <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+                    <div className="absolute inset-0 rounded-full bg-green-500/10 animate-ping" />
+                    <Check className="w-10 h-10 text-green-400" />
+                  </div>
+                </motion.div>
+
+                {/* Content */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    Registration Successful! 🎉
+                  </h3>
+                  <div className="space-y-4 mb-8">
+                    <p className="text-gray-300">
+                      Thank you for registering for our events.
+                    </p>
+                    <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
+                      <p className="text-sm text-gray-300">
+                        We will verify your payment and send a confirmation
+                        email containing your{" "}
+                        <span className="text-purple-400 font-medium">
+                          admit card
+                        </span>{" "}
+                        and other important details within{" "}
+                        <span className="text-purple-400 font-medium">
+                          24-48 hours
+                        </span>
+                        .
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Close Button */}
+                  <button
+                    onClick={() => {
+                      setShowSuccessModal(false);
+                      // Reset form state
+                      setSelectedEvents([]);
+                      setTeamSize(1);
+                      setTeamMembers([{ ...INITIAL_MEMBER }]);
+                      setCurrentStep(1);
+                      setPaymentDetails({
+                        transactionId: "",
+                        paymentScreenshot: null,
+                        paymentMethod: "upi",
+                      });
+                      // Navigate to home page
+                      router.push("/");
+                    }}
+                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium
+                      hover:from-purple-700 hover:to-blue-700 active:from-purple-800 active:to-blue-800
+                      transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
+                      focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  >
+                    Close
+                  </button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
