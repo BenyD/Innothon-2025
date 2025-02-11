@@ -20,50 +20,117 @@ import { supabase } from "@/lib/supabase";
 
 const ContactForm = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+
+    // Format as: (XXX) XXX-XXXX
+    if (digits.length === 0) return "";
+    if (digits.length <= 3) return `(${digits}`;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setFormData((prev) => ({ ...prev, phone: formatted }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('contact_messages')
+      // Basic validation
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.message
+      ) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all fields",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Phone validation
+      const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+      if (!phoneRegex.test(formData.phone)) {
+        toast({
+          title: "Invalid phone number",
+          description:
+            "Please enter a valid phone number in the format: (123) 456-7890",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Insert data
+      const { data, error } = await supabase
+        .from("contact_messages")
         .insert([
           {
             name: formData.name,
             email: formData.email,
+            phone: formData.phone,
             message: formData.message,
+            read: false, // Add default value
           },
-        ]);
+        ])
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === "42P01") {
+          throw new Error(
+            "Database table not found. Please ensure the table exists."
+          );
+        } else if (error.code === "23502") {
+          throw new Error(
+            "Missing required fields. Please fill in all information."
+          );
+        } else {
+          throw new Error(
+            error.message || "An error occurred while sending the message."
+          );
+        }
+      }
 
-      // Clear form
+      // Clear form on success
       setFormData({
         name: "",
         email: "",
+        phone: "",
         message: "",
       });
 
-      // Show success toast
       toast({
         title: "Message sent successfully!",
         description: "We'll get back to you as soon as possible.",
-        variant: "default",
-        className: "bg-green-500/10 text-green-500 border-green-500/20",
+        variant: "success",
       });
     } catch (error) {
-      console.error("Error sending message:", error);
-      // Show error toast
+      console.error("Error details:", error);
       toast({
         title: "Failed to send message",
-        description: "Please try again later.",
+        description:
+          error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -182,42 +249,63 @@ const ContactForm = () => {
               onSubmit={handleSubmit}
               className="relative space-y-6 h-full flex flex-col"
             >
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                  placeholder="Your name"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                    placeholder="your.email@example.com"
+                  />
+                </div>
               </div>
-              <div>
+              <div className="space-y-2">
                 <label
-                  htmlFor="email"
+                  htmlFor="phone"
                   className="block text-sm font-medium text-gray-300 mb-2"
                 >
-                  Email
+                  Phone Number
                 </label>
                 <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                  placeholder="your.email@example.com"
+                  id="phone"
+                  type="tel"
                   required
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                  placeholder="(123) 456-7890"
+                  pattern="\(\d{3}\) \d{3}-\d{4}"
+                  title="Please enter a valid phone number: (123) 456-7890"
                 />
               </div>
               <div className="flex-grow">
@@ -240,10 +328,20 @@ const ContactForm = () => {
               </div>
               <button
                 type="submit"
-                className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium flex items-center justify-center gap-2 transition-all group"
+                disabled={isSubmitting}
+                className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium flex items-center justify-center gap-2 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
-                <IoPaperPlane className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    Send Message
+                    <IoPaperPlane className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
             </form>
           </div>
