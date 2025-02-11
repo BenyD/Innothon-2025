@@ -38,7 +38,7 @@ const Footer = () => {
             <p className="text-sm text-gray-400 leading-relaxed max-w-md">
               Blue Screen Programming Club - Fostering innovation and technical
               excellence through coding, competitions, and collaborative
-              learning at HITS.
+              learning at Hindustan Institute of Technology and Science.
             </p>
           </div>
 

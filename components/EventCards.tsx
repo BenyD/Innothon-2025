@@ -9,7 +9,7 @@ import { SectionTitle } from "@/components/ui/section-title";
 
 const EventCards = () => {
   return (
-    <section id="events" className="py-16 px-4">
+    <section id="events" className="py-24 px-4 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <SectionTitle 
           title="Our Events"
@@ -17,7 +17,7 @@ const EventCards = () => {
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event, index) => (
-            <Link href={`/events/${event.id}`} key={event.id}>
+            <Link href={`/events/${event.id}`} key={event.id} scroll={false}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

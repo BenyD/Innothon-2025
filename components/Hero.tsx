@@ -3,9 +3,10 @@
 import { motion } from "framer-motion";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { useEffect, useState, useMemo } from "react";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, Trophy } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { scrollToSection } from "@/utils/scroll";
 
 const Hero = () => {
   const eventDate = useMemo(() => new Date("2025-03-21T08:30:00"), []);
@@ -133,7 +134,7 @@ const Hero = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button
-                  onClick={() => (window.location.href = "#register")}
+                  onClick={() => scrollToSection("register")}
                   className="relative h-12 px-8 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:opacity-90 transition-all duration-300"
                 >
                   <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity -z-10"></div>
@@ -144,13 +145,27 @@ const Hero = () => {
                 </Button>
 
                 <Button
-                  onClick={() => (window.location.href = "#events")}
+                  onClick={() => scrollToSection("events")}
                   variant="outline"
                   className="h-12 px-8 w-full sm:w-auto bg-black/20 border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 text-white hover:text-white transition-colors"
                 >
                   Explore Events
                 </Button>
               </div>
+
+              {/* Add Prize Information */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex items-center gap-2 justify-center lg:justify-start text-sm text-gray-400"
+              >
+                <Trophy className="w-4 h-4 text-yellow-400" />
+                <span>
+                  Win exciting prizes worth up to{" "}
+                  <span className="text-white font-semibold">₹50,000</span>
+                </span>
+              </motion.div>
             </motion.div>
 
             {/* Right Column - Image Grid */}
@@ -163,7 +178,7 @@ const Hero = () => {
               <div className="space-y-3">
                 <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                   <Image
-                    src="/college-1.jpeg"
+                    src="/college-1.jpg"
                     alt="College Campus"
                     fill
                     sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
@@ -173,7 +188,7 @@ const Hero = () => {
                 </div>
                 <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                   <Image
-                    src="/event-1.jpeg"
+                    src="/event-1.png"
                     alt="Tech Event"
                     fill
                     sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
@@ -185,7 +200,7 @@ const Hero = () => {
               <div className="space-y-3 pt-6">
                 <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                   <Image
-                    src="/college-2.jpeg"
+                    src="/college-2.png"
                     alt="College Life"
                     fill
                     sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
@@ -195,7 +210,7 @@ const Hero = () => {
                 </div>
                 <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                   <Image
-                    src="/event-2.jpeg"
+                    src="/event-2.jpg"
                     alt="Student Activities"
                     fill
                     sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"

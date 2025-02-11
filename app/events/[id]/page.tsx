@@ -22,6 +22,9 @@ export default function EventPage() {
   const [event, setEvent] = useState<Event | undefined>();
 
   useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+
     if (params.id) {
       const eventData = getEventById(params.id as string);
       setEvent(eventData);

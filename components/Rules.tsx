@@ -9,7 +9,6 @@ import {
   Shield,
 } from "lucide-react";
 import { SectionTitle } from "@/components/ui/section-title";
-import { Separator } from "@/components/ui/separator";
 
 const Rules = () => {
   const rules = [
@@ -46,7 +45,7 @@ const Rules = () => {
   ];
 
   return (
-    <section id="rules" className="py-8 sm:py-16 px-4">
+    <section id="rules" className="py-24 px-4 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <SectionTitle
           title="Rules & Guidelines"
@@ -79,7 +78,9 @@ const Rules = () => {
                   <div className="p-2 sm:p-2.5 rounded-lg bg-white/5 border border-white/10">
                     <section.icon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                   </div>
-                  <h3 className="text-base sm:text-lg font-semibold">{section.title}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold">
+                    {section.title}
+                  </h3>
                 </div>
 
                 {/* Rules List with improved mobile spacing */}
@@ -97,7 +98,9 @@ const Rules = () => {
                       className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-gray-300"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-400 shrink-0 mt-0.5" />
-                      <span className="leading-normal sm:leading-relaxed">{item}</span>
+                      <span className="leading-normal sm:leading-relaxed">
+                        {item}
+                      </span>
                     </motion.li>
                   ))}
                 </ul>

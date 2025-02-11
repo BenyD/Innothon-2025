@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { scrollToSection } from "@/utils/scroll";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -93,16 +94,27 @@ const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {["Events", "Rules", "Contact"].map((item) => (
-                <Link
+                <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(item.toLowerCase());
+                    setIsOpen(false);
+                  }}
                   className="relative text-gray-300 hover:text-white transition-colors group"
                 >
                   <span className="relative z-10">{item}</span>
                   <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                </Link>
+                </a>
               ))}
-              <Link href="#register">
+              <a
+                href="#register"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('register');
+                }}
+              >
                 <motion.button
                   className="relative group"
                   whileHover={{ scale: 1.05 }}
@@ -113,7 +125,7 @@ const Navbar = () => {
                     Register
                   </span>
                 </motion.button>
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Menu Button with pre-applied gradients */}
@@ -172,14 +184,18 @@ const Navbar = () => {
             <div className="px-4 py-5 max-h-[calc(100vh-56px)] overflow-y-auto">
               <div className="space-y-1.5">
                 {["Events", "Rules", "Contact"].map((item) => (
-                  <Link
+                  <a
                     key={item}
                     href={`#${item.toLowerCase()}`}
                     className="block px-4 py-2.5 text-base text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 active:bg-white/10"
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(item.toLowerCase());
+                      setIsOpen(false);
+                    }}
                   >
                     {item}
-                  </Link>
+                  </a>
                 ))}
                 <div className="pt-3">
                   <Link href="#register" className="block">
