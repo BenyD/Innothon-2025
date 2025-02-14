@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { RegistrationApprovedEmail } from "@/lib/email-templates/registration-approved";
+import { generateAdmitCard } from "@/lib/generate-admit-card";
 import type { TeamMember } from "@/types/registration";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -23,10 +24,19 @@ export async function POST(request: Request) {
     const emailPromises = teamMembers.map(
       async (member: TeamMember, index: number) => {
         try {
+          // Generate admit card PDF for this team member
+          const admitCardBuffer = await generateAdmitCard(
+            member,
+            registrationId,
+            selectedEvents
+          );
+
+          console.log("PDF Buffer generated successfully:", !!admitCardBuffer);
+
           const result = await resend.emails.send({
             from: "Innothon <noreply@beny.one>",
             to: member.email,
-            subject: "Registration Approved - Innothon'24",
+            subject: "Registration Approved - Innothon'25",
             react: RegistrationApprovedEmail({
               teamMember: member,
               registrationId,
@@ -35,11 +45,19 @@ export async function POST(request: Request) {
               isTeamLeader: index === 0,
               teamSize,
             }) as React.ReactElement,
+            attachments: [
+              {
+                filename: `innothon_admit_card_${registrationId}.pdf`,
+                content: admitCardBuffer,
+              },
+            ],
           });
+
           console.log(`Email sent to ${member.email}:`, result);
           return result;
         } catch (err) {
           console.error(`Failed to send email to ${member.email}:`, err);
+          console.error("Error details:", JSON.stringify(err, null, 2));
           throw err;
         }
       }

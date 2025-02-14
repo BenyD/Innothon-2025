@@ -224,7 +224,7 @@ const ContactForm = () => {
                     {
                       icon: IoLogoLinkedin,
                       label: "LinkedIn",
-                      href: "https://www.linkedin.com/in/bspc-hits-65bb6734b",
+                      href: "https://www.linkedin.com/in/bspc-hits/",
                       color: "purple",
                     },
                     {

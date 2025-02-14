@@ -41,7 +41,7 @@ export const RegistrationRejectedEmail = ({
           {/* Header with Logos */}
           <Section style={logoSection}>
             <Img
-              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo.svg"
+              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo.png"
               width="120"
               height="120"
               alt="HIT Logo"

@@ -93,7 +93,7 @@ const Footer = () => {
               <h3 className="text-lg font-semibold text-white mb-3">Socials</h3>
               <div className="flex items-center justify-center sm:justify-start gap-4">
                 <motion.a
-                  href="https://www.linkedin.com/in/bspc-hits-65bb6734b"
+                  href="https://www.linkedin.com/in/bspc-hits/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
