@@ -6,7 +6,18 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/lib/supabase";
 import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
-import { Check, X, ArrowLeft, Calendar, Mail, Users, User, Building2, Phone } from "lucide-react";
+import {
+  Check,
+  X,
+  ArrowLeft,
+  Calendar,
+  Mail,
+  Users,
+  User,
+  Building2,
+  Phone,
+  Loader2,
+} from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
@@ -233,19 +244,44 @@ export default function RegistrationDetails() {
         {/* Main Content */}
         <div className="space-y-6">
           {/* Status Badge - More prominent on mobile */}
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10">
-            <span className="text-sm text-gray-400">Status:</span>
-            <span
-              className={`px-2 py-1 rounded-full text-sm font-medium ${
-                registration?.status === "approved"
-                  ? "bg-green-500/10 text-green-400"
-                  : registration?.status === "rejected"
-                  ? "bg-red-500/10 text-red-400"
-                  : "bg-yellow-500/10 text-yellow-400"
-              }`}
-            >
-              {registration?.status.charAt(0).toUpperCase() + registration?.status.slice(1)}
-            </span>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10">
+              <span className="text-sm text-gray-400">Status:</span>
+              <span
+                className={`px-2 py-1 rounded-full text-sm font-medium ${
+                  registration?.status === "approved"
+                    ? "bg-green-500/10 text-green-400"
+                    : registration?.status === "rejected"
+                      ? "bg-red-500/10 text-red-400"
+                      : "bg-yellow-500/10 text-yellow-400"
+                }`}
+              >
+                {registration?.status.charAt(0).toUpperCase() +
+                  registration?.status.slice(1)}
+              </span>
+            </div>
+
+            {/* Resend Emails Button - Moved here */}
+            {registration.status === "approved" && (
+              <Button
+                variant="secondary"
+                onClick={handleResendEmails}
+                disabled={updating}
+                className="h-[52px] bg-white/5 hover:bg-white/10 text-white border-white/10"
+              >
+                {updating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <span>Resending...</span>
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    <span>Resend Approval Emails</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
 
           {/* Team Members and Details - Stack on mobile */}
@@ -286,7 +322,9 @@ export default function RegistrationDetails() {
                         <Building2 className="w-4 h-4" />
                         {member.college}
                       </p>
-                      <p>{member.department} - {formatYear(member.year)} Year</p>
+                      <p>
+                        {member.department} - {formatYear(member.year)} Year
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -340,16 +378,22 @@ export default function RegistrationDetails() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Status:</span>
-                      <span className="text-white">{registration?.payment_status}</span>
+                      <span className="text-white">
+                        {registration?.payment_status}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Amount:</span>
-                      <span className="text-white">₹{registration?.total_amount}</span>
+                      <span className="text-white">
+                        ₹{registration?.total_amount}
+                      </span>
                     </div>
                     {registration?.transaction_id && (
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Transaction ID:</span>
-                        <span className="text-white break-all">{registration.transaction_id}</span>
+                        <span className="text-white break-all">
+                          {registration.transaction_id}
+                        </span>
                       </div>
                     )}
                   </div>

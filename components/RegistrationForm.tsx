@@ -605,7 +605,7 @@ const RegistrationForm = () => {
                                 UPI ID
                               </p>
                               <p className="text-white font-medium">
-                                bspc.hit@oksbi
+                                8668090679@iob
                               </p>
                             </div>
                           </div>

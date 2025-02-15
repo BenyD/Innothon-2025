@@ -125,7 +125,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/95 backdrop-blur-sm">
         <div className="max-w-full px-4">
           <div className="flex justify-between h-16">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -137,16 +137,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <Menu className="w-6 h-6" />
                 )}
               </button>
-              <Image
-                src="/bsp_logo.png"
-                alt="BSP Logo"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                Innothon Admin
-              </h1>
+
+              {/* Logo Group */}
+              <div className="flex items-center gap-6">
+                <Image
+                  src="/hits_logo.png"
+                  alt="HITS Logo"
+                  width={120}
+                  height={120}
+                  className="w-[100px] h-auto object-contain"
+                  priority
+                />
+                <Image
+                  src="/bsp_logo.png"
+                  alt="BSP Logo"
+                  width={100}
+                  height={100}
+                  className="w-[60px] h-auto object-contain"
+                  priority
+                />
+                <div className="h-8 w-px bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-pink-500/20" />
+                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                  Innothon Admin
+                </h1>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               {/* Back to Home button */}

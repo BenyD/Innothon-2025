@@ -34,13 +34,15 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
+    gap: 40,
     marginBottom: 25,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
+    objectFit: "contain",
   },
   titleContainer: {
     alignItems: "center",
