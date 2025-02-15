@@ -4,18 +4,19 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Check, X } from "lucide-react";
+import { User, Mail, Phone, Check, X, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import type { Registration } from "@/types/registration";
 import { events } from "@/data/events";
 import { useRouter } from "next/navigation";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
+import { Button } from "@/components/ui/button";
 
 export default function Registrations() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const { toast } = useToast();
   const router = useRouter();
+  const [updating, setUpdating] = useState<string | null>(null);
 
   const formatYear = (year: string) => {
     const yearMap: { [key: string]: string } = {
@@ -92,11 +93,13 @@ export default function Registrations() {
   }, []);
 
   const handleStatusUpdate = async (
+    e: React.MouseEvent,
     id: string,
     status: "approved" | "rejected"
   ) => {
+    e.stopPropagation(); // Prevent navigation when clicking buttons
     try {
-      console.log("Updating status for ID:", id, "to:", status);
+      setUpdating(id);
 
       // First, verify we can read the registration
       const { data: existingReg, error: readError } = await supabase
@@ -105,114 +108,55 @@ export default function Registrations() {
         .eq("id", id)
         .single();
 
-      if (readError) {
-        console.error("Error reading registration:", readError);
-        throw readError;
-      }
+      if (readError) throw readError;
 
-      console.log("Existing registration:", existingReg);
-
-      // Then update the status
-      const { data: updateData, error: updateError } = await supabase
+      // Update the status
+      const { error: updateError } = await supabase
         .from("registrations")
         .update({
           status: status,
           payment_status: status === "approved" ? "completed" : "pending",
         })
-        .eq("id", id)
-        .select();
+        .eq("id", id);
 
-      if (updateError) {
-        console.error("Error updating status:", updateError);
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      console.log("Update response:", updateData);
-
-      // Send appropriate emails based on status
+      // Send appropriate emails
       if (status === "approved") {
-        const emailResult = await sendApprovalEmails(
+        await sendApprovalEmails(
           existingReg.team_members,
           existingReg.id,
           existingReg.selected_events,
           existingReg.total_amount,
           existingReg.team_size
         );
-
-        if (!emailResult.success) {
-          console.error("Error sending approval emails:", emailResult.error);
-          toast({
-            title: "Warning",
-            description:
-              "Registration approved but failed to send notification emails",
-            variant: "destructive",
-          });
-        }
-      } else if (status === "rejected") {
-        const emailResult = await sendRejectionEmails(
+      } else {
+        await sendRejectionEmails(
           existingReg.team_members,
           existingReg.id,
           existingReg.selected_events,
           existingReg.total_amount,
           existingReg.team_size
         );
-
-        if (!emailResult.success) {
-          console.error("Error sending rejection emails:", emailResult.error);
-          toast({
-            title: "Warning",
-            description:
-              "Registration rejected but failed to send notification emails",
-            variant: "destructive",
-          });
-        }
-      }
-
-      // Update local state
-      setRegistrations((prevRegistrations) =>
-        prevRegistrations.map((reg) =>
-          reg.id === id
-            ? {
-                ...reg,
-                status: status,
-                payment_status: status === "approved" ? "completed" : "pending",
-              }
-            : reg
-        )
-      );
-
-      // Fetch fresh data
-      const { data: refreshData, error: refreshError } = await supabase
-        .from("registrations")
-        .select(
-          `
-          *,
-          team_members (*)
-        `
-        )
-        .order("created_at", { ascending: false });
-
-      if (refreshError) {
-        console.error("Error refreshing data:", refreshError);
-        throw refreshError;
-      }
-
-      if (refreshData) {
-        setRegistrations(refreshData);
       }
 
       toast({
-        title: "Status updated",
-        description: `Registration has been ${status}`,
+        title: "Success",
+        description: `Registration ${status} successfully`,
         variant: "success",
       });
+
+      // Refresh the registrations
+      await fetchRegistrations();
     } catch (error) {
-      console.error("Error in handleStatusUpdate:", error);
+      console.error("Error updating status:", error);
       toast({
         title: "Error",
-        description: (error as Error).message || "Failed to update status",
+        description: "Failed to update registration status",
         variant: "destructive",
       });
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -235,7 +179,9 @@ export default function Registrations() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="group relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/5 cursor-pointer transition-colors"
-              onClick={() => router.push(`/admin/registrations/${registration.id}`)}
+              onClick={() =>
+                router.push(`/admin/registrations/${registration.id}`)
+              }
             >
               {/* Team Leader Info */}
               <div className="flex flex-col gap-4">
@@ -252,11 +198,12 @@ export default function Registrations() {
                           registration.status === "approved"
                             ? "bg-green-500/10 text-green-400"
                             : registration.status === "rejected"
-                            ? "bg-red-500/10 text-red-400"
-                            : "bg-yellow-500/10 text-yellow-400"
+                              ? "bg-red-500/10 text-red-400"
+                              : "bg-yellow-500/10 text-yellow-400"
                         }`}
                       >
-                        {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                        {registration.status.charAt(0).toUpperCase() +
+                          registration.status.slice(1)}
                       </span>
                     </div>
                   </div>
@@ -279,7 +226,9 @@ export default function Registrations() {
 
                   {/* College Info */}
                   <div className="text-xs text-gray-400">
-                    <p className="truncate">{registration.team_members[0]?.college}</p>
+                    <p className="truncate">
+                      {registration.team_members[0]?.college}
+                    </p>
                     <p>
                       {registration.team_members[0]?.department} -{" "}
                       {formatYear(registration.team_members[0]?.year)} Year
@@ -319,6 +268,46 @@ export default function Registrations() {
                     </p>
                   </div>
                 </div>
+
+                {/* Add action buttons */}
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    size="sm"
+                    onClick={(e) =>
+                      handleStatusUpdate(e, registration.id, "approved")
+                    }
+                    disabled={
+                      updating === registration.id ||
+                      registration.status === "approved"
+                    }
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {updating === registration.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4 mr-2" />
+                    )}
+                    Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={(e) =>
+                      handleStatusUpdate(e, registration.id, "rejected")
+                    }
+                    disabled={
+                      updating === registration.id ||
+                      registration.status === "rejected"
+                    }
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {updating === registration.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <X className="w-4 h-4 mr-2" />
+                    )}
+                    Reject
+                  </Button>
+                </div>
               </div>
 
               {/* Arrow indicator for mobile */}
@@ -337,6 +326,13 @@ export default function Registrations() {
                   <path d="m9 18 6-6-6-6" />
                 </svg>
               </div>
+
+              {/* Make the entire card clickable except for the buttons */}
+              <div
+                className="absolute inset-0 cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+                style={{ pointerEvents: "auto" }}
+              />
             </motion.div>
           ))}
         </div>
