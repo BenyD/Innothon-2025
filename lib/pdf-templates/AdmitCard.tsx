@@ -29,36 +29,40 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: "40 60",
     backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 25,
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
+  },
+  titleContainer: {
+    alignItems: "center",
+    marginBottom: 30,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontFamily: "Inter-Bold",
     color: "#1a1a1a",
-    textAlign: "center",
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "Inter",
     color: "#4a5568",
-    textAlign: "center",
-    marginBottom: 25,
   },
   mainContent: {
     flexDirection: "row",
-    gap: 20,
+    gap: 40,
+    border: "2 solid #e2e8f0",
+    borderRadius: 12,
+    padding: 30,
   },
   leftSection: {
     flex: 2,
@@ -66,62 +70,61 @@ const styles = StyleSheet.create({
   rightSection: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 20,
+    justifyContent: "flex-start",
+    paddingTop: 10,
+  },
+  section: {
+    marginBottom: 25,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: "Inter-Bold",
+    color: "#2d3748",
+    marginBottom: 12,
+    textTransform: "uppercase",
+  },
+  text: {
+    fontSize: 13,
+    fontFamily: "Inter",
+    color: "#4a5568",
+    marginBottom: 8,
+    lineHeight: 1.4,
   },
   qrCode: {
-    width: 120,
-    height: 120,
-    marginBottom: 10,
+    width: 140,
+    height: 140,
+    marginBottom: 12,
   },
   qrText: {
-    fontSize: 9,
+    fontSize: 10,
     color: "#718096",
     textAlign: "center",
     fontFamily: "Inter",
-    marginTop: 5,
   },
-  section: {
-    marginBottom: 20,
+  eventsList: {
+    marginTop: 8,
   },
-  sectionTitle: {
-    fontSize: 13,
-    fontFamily: "Inter-Bold",
-    color: "#2d3748",
-    marginBottom: 8,
-  },
-  text: {
+  event: {
     fontSize: 12,
     fontFamily: "Inter",
     color: "#4a5568",
-    marginBottom: 4,
-  },
-  eventsList: {
-    marginTop: 6,
-  },
-  event: {
-    fontSize: 11,
-    fontFamily: "Inter",
-    color: "#4a5568",
-    marginBottom: 3,
-  },
-  border: {
-    border: "2 solid #e2e8f0",
-    borderRadius: 8,
-    padding: 25,
-    marginTop: 10,
-    marginBottom: 15,
+    marginBottom: 6,
+    lineHeight: 1.4,
   },
   footer: {
     position: "absolute",
     bottom: 40,
-    left: 40,
-    right: 40,
+    left: 60,
+    right: 60,
     textAlign: "center",
-    fontSize: 9,
+    fontSize: 10,
     color: "#718096",
     fontFamily: "Inter",
-    lineHeight: 1.5,
+    lineHeight: 1.6,
+  },
+  divider: {
+    borderBottom: "1 solid #e2e8f0",
+    marginVertical: 4,
   },
 });
 
@@ -134,7 +137,7 @@ export const AdmitCard: React.FC<AdmitCardProps> = ({
   <Page size="A4" style={styles.page}>
     <View style={styles.header}>
       <Image
-        src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo.png"
+        src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo_black.png"
         style={styles.logo}
       />
       <Image
@@ -143,45 +146,50 @@ export const AdmitCard: React.FC<AdmitCardProps> = ({
       />
     </View>
 
-    <Text style={styles.title}>Innothon&apos;25</Text>
-    <Text style={styles.subtitle}>Official Admit Card</Text>
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>Innothon&apos;25</Text>
+      <Text style={styles.subtitle}>Official Admit Card</Text>
+    </View>
 
-    <View style={styles.border}>
-      <View style={styles.mainContent}>
-        <View style={styles.leftSection}>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Registration Details</Text>
-            <Text style={styles.text}>Registration ID: {registrationId}</Text>
-            <Text style={styles.text}>Date: March 21, 2025</Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Participant Information</Text>
-            <Text style={styles.text}>Name: {teamMember.name}</Text>
-            <Text style={styles.text}>College: {teamMember.college}</Text>
-            <Text style={styles.text}>Department: {teamMember.department}</Text>
-            <Text style={styles.text}>
-              Year: {teamMember.year}
-              {getOrdinalSuffix(parseInt(teamMember.year))} Year
-            </Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Registered Events</Text>
-            <View style={styles.eventsList}>
-              {selectedEvents.map((event, index) => (
-                <Text key={index} style={styles.event}>
-                  • {event}
-                </Text>
-              ))}
-            </View>
-          </View>
+    <View style={styles.mainContent}>
+      <View style={styles.leftSection}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Registration Details</Text>
+          <Text style={styles.text}>Registration ID: {registrationId}</Text>
+          <Text style={styles.text}>Event Date: March 21, 2025</Text>
+          <Text style={styles.text}>Reporting Time: 8:30 AM</Text>
         </View>
 
-        <View style={styles.rightSection}>
-          <Image src={qrCodeDataUrl} style={styles.qrCode} />
-          <Text style={styles.qrText}>Scan to verify registration</Text>
+        <View style={styles.divider} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Participant Information</Text>
+          <Text style={styles.text}>Name: {teamMember.name}</Text>
+          <Text style={styles.text}>College: {teamMember.college}</Text>
+          <Text style={styles.text}>Department: {teamMember.department}</Text>
+          <Text style={styles.text}>
+            Year: {teamMember.year}
+            {getOrdinalSuffix(parseInt(teamMember.year))} Year
+          </Text>
         </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Registered Events</Text>
+          <View style={styles.eventsList}>
+            {selectedEvents.map((event, index) => (
+              <Text key={index} style={styles.event}>
+                • {event}
+              </Text>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.rightSection}>
+        <Image src={qrCodeDataUrl} style={styles.qrCode} />
+        <Text style={styles.qrText}>Scan to verify registration</Text>
       </View>
     </View>
 

@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Users,
+  Calendar,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -102,6 +103,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       title: "Registrations",
       icon: Users,
       href: "/admin/registrations",
+    },
+    {
+      title: "Event Overview",
+      href: "/admin/event-overview",
+      icon: Calendar,
     },
   ];
 

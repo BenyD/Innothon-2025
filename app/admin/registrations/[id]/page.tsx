@@ -6,7 +6,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/lib/supabase";
 import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
-import { Check, X, ArrowLeft, Calendar, Mail } from "lucide-react";
+import { Check, X, ArrowLeft, Calendar, Mail, Users, User, Building2, Phone } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
@@ -198,183 +198,162 @@ export default function RegistrationDetails() {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+      <div className="space-y-6">
+        {/* Back Button and Status Actions */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all duration-300"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
-            Back to Registrations
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Registrations</span>
           </button>
 
-          {registration.status === "pending" ? (
-            <div className="flex gap-3">
-              <Button
-                onClick={() => handleStatusUpdate("approved")}
-                disabled={updating}
-                className="bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/30 transition-colors"
-              >
-                <Check className="w-4 h-4 mr-2" />
-                {updating ? "Approving..." : "Approve Registration"}
-              </Button>
-              <Button
-                onClick={() => handleStatusUpdate("rejected")}
-                disabled={updating}
-                className="bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors"
-              >
-                <X className="w-4 h-4 mr-2" />
-                {updating ? "Rejecting..." : "Reject Registration"}
-              </Button>
-            </div>
-          ) : (
-            registration.status === "approved" && (
-              <Button
-                onClick={handleResendEmails}
-                className="bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/30 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Resend Approval Emails
-              </Button>
-            )
-          )}
+          {/* Status Actions - Stack on mobile */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button
+              onClick={() => handleStatusUpdate("approved")}
+              disabled={updating || registration?.status === "approved"}
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Check className="w-4 h-4 mr-2" />
+              Approve
+            </Button>
+            <Button
+              onClick={() => handleStatusUpdate("rejected")}
+              disabled={updating || registration?.status === "rejected"}
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Reject
+            </Button>
+          </div>
         </div>
 
-        {/* Registration Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Team Details */}
-          <div className="space-y-6">
-            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">
-                  Team Details
-                </h3>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    registration.status === "approved"
-                      ? "bg-green-500/10 text-green-400"
-                      : registration.status === "rejected"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-yellow-500/10 text-yellow-400"
-                  }`}
-                >
-                  {registration.status.charAt(0).toUpperCase() +
-                    registration.status.slice(1)}
-                </span>
-              </div>
-              <div className="space-y-4">
-                {registration.team_members.map((member, index) => (
+        {/* Main Content */}
+        <div className="space-y-6">
+          {/* Status Badge - More prominent on mobile */}
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10">
+            <span className="text-sm text-gray-400">Status:</span>
+            <span
+              className={`px-2 py-1 rounded-full text-sm font-medium ${
+                registration?.status === "approved"
+                  ? "bg-green-500/10 text-green-400"
+                  : registration?.status === "rejected"
+                  ? "bg-red-500/10 text-red-400"
+                  : "bg-yellow-500/10 text-yellow-400"
+              }`}
+            >
+              {registration?.status.charAt(0).toUpperCase() + registration?.status.slice(1)}
+            </span>
+          </div>
+
+          {/* Team Members and Details - Stack on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Team Members Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-400" />
+                Team Members
+              </h3>
+              <div className="space-y-3">
+                {registration?.team_members.map((member, index) => (
                   <div
                     key={member.id}
                     className="bg-white/5 border border-white/10 rounded-lg p-4"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-white font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                      <h4 className="text-base text-white font-medium flex items-center gap-2">
+                        <User className="w-4 h-4 text-purple-400" />
                         {member.name}
                         {index === 0 && (
-                          <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">
+                          <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">
                             Team Leader
                           </span>
                         )}
                       </h4>
                     </div>
-                    <div className="space-y-2 text-sm text-gray-400">
-                      <p>Email: {member.email}</p>
-                      <p>Phone: {member.phone}</p>
-                      <p>College: {member.college}</p>
-                      <p>Department: {member.department}</p>
-                      <p>Year: {formatYear(member.year)} Year</p>
+                    <div className="grid gap-2 text-sm text-gray-400">
+                      <p className="flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        {member.email}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Phone className="w-4 h-4" />
+                        {member.phone}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4" />
+                        {member.college}
+                      </p>
+                      <p>{member.department} - {formatYear(member.year)} Year</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Event and Payment Details */}
-          <div className="space-y-6">
-            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">
+            {/* Event and Payment Details */}
+            <div className="space-y-6">
+              {/* Events Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+                  <Calendar className="w-5 h-5 text-purple-400" />
                   Event Details
                 </h3>
-                <div className="flex items-center gap-2 text-gray-400">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm">
-                    {new Date(registration.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Selected Events
-                  </h4>
-                  <div className="space-y-2">
-                    {registration.selected_events.map((eventId) => (
-                      <div
-                        key={eventId}
-                        className="bg-white/5 px-3 py-2 rounded-lg text-sm text-gray-300"
-                      >
-                        {events.find((e) => e.id === eventId)?.title}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Payment Details
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Amount
-                  </h4>
-                  <p className="text-2xl font-semibold text-white">
-                    ₹{registration.total_amount}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-2">
-                      Payment Method
-                    </h4>
-                    <p className="text-gray-300">
-                      {registration.payment_method === "upi"
-                        ? "UPI"
-                        : registration.payment_method === "bank"
-                          ? "BANK"
-                          : registration.payment_method}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-2">
-                      Transaction ID
-                    </h4>
-                    <p className="text-gray-300">
-                      {registration.transaction_id}
-                    </p>
-                  </div>
-                </div>
-                {registration.payment_proof && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-2">
-                      Payment Proof
-                    </h4>
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/innothon/${registration.payment_proof}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300"
+                <div className="space-y-3">
+                  {registration?.selected_events.map((eventId) => (
+                    <div
+                      key={eventId}
+                      className="bg-white/5 border border-white/10 rounded-lg p-4"
                     >
-                      View Payment Proof
-                    </a>
+                      <h4 className="text-base text-white font-medium mb-2">
+                        {events.find((e) => e.id === eventId)?.title}
+                      </h4>
+                      <p className="text-sm text-gray-400">
+                        {events.find((e) => e.id === eventId)?.shortDescription}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div>
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+                  <svg
+                    className="w-5 h-5 text-purple-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  Payment Details
+                </h3>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Status:</span>
+                      <span className="text-white">{registration?.payment_status}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Amount:</span>
+                      <span className="text-white">₹{registration?.total_amount}</span>
+                    </div>
+                    {registration?.transaction_id && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Transaction ID:</span>
+                        <span className="text-white break-all">{registration.transaction_id}</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>

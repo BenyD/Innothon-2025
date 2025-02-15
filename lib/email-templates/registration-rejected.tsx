@@ -38,19 +38,18 @@ export const RegistrationRejectedEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with Logos */}
           <Section style={logoSection}>
             <Img
-              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo.png"
+              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo_black.png"
               width="120"
-              height="120"
+              height="50"
               alt="HIT Logo"
               style={logo}
             />
             <Img
               src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/bsp_logo.png"
               width="100"
-              height="100"
+              height="50"
               alt="Blue Screen Club Logo"
               style={logo}
             />
@@ -58,6 +57,8 @@ export const RegistrationRejectedEmail = ({
 
           <Section style={content}>
             <Text style={eventTitle}>Innothon&apos;25</Text>
+            <Text style={subtitle}>Registration Update Required</Text>
+
             <Text style={paragraph}>Dear {teamMember.name},</Text>
 
             <Text style={paragraph}>
@@ -165,6 +166,13 @@ const eventTitle = {
   fontWeight: "bold",
   textAlign: "center" as const,
   color: "#1a1a1a",
+  marginBottom: "32px",
+};
+
+const subtitle = {
+  fontSize: "18px",
+  color: "#4a5568",
+  textAlign: "center" as const,
   marginBottom: "32px",
 };
 

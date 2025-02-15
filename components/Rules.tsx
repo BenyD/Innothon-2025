@@ -41,7 +41,7 @@ const Rules = () => {
       icon: Users,
       title: "Team Guidelines",
       rules: [
-        "Team sizes vary by event (1-4 members)",
+        "Team sizes vary by event (1-3 members)",
         "Cross-college teams are allowed",
         "Team changes not permitted after registration",
         "One participant can join multiple events",

@@ -234,41 +234,52 @@ export default function Registrations() {
               key={registration.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="group relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 lg:p-6 hover:bg-white/5 cursor-pointer transition-colors"
-              onClick={() =>
-                router.push(`/admin/registrations/${registration.id}`)
-              }
+              className="group relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/5 cursor-pointer transition-colors"
+              onClick={() => router.push(`/admin/registrations/${registration.id}`)}
             >
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-purple-400" />
-                    <span className="text-white font-medium">
-                      {registration.team_members[0]?.name}
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        registration.status === "approved"
-                          ? "bg-green-500/10 text-green-400"
-                          : registration.status === "rejected"
+              {/* Team Leader Info */}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
+                  {/* Header with Name and Status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <User className="w-4 h-4 shrink-0 text-purple-400" />
+                      <span className="text-sm text-white font-medium">
+                        {registration.team_members[0]?.name}
+                      </span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          registration.status === "approved"
+                            ? "bg-green-500/10 text-green-400"
+                            : registration.status === "rejected"
                             ? "bg-red-500/10 text-red-400"
                             : "bg-yellow-500/10 text-yellow-400"
-                      }`}
-                    >
-                      {registration.status.charAt(0).toUpperCase() +
-                        registration.status.slice(1)}
-                    </span>
+                        }`}
+                      >
+                        {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-400">
-                    <Mail className="w-4 h-4" />
-                    <span>{registration.team_members[0]?.email}</span>
+
+                  {/* Contact Info */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3 h-3 shrink-0 text-gray-400" />
+                      <span className="text-xs text-gray-400 truncate">
+                        {registration.team_members[0]?.email}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3 h-3 shrink-0 text-gray-400" />
+                      <span className="text-xs text-gray-400">
+                        {registration.team_members[0]?.phone}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-400">
-                    <Phone className="w-4 h-4" />
-                    <span>{registration.team_members[0]?.phone}</span>
-                  </div>
-                  <div className="text-gray-400">
-                    <p>{registration.team_members[0]?.college}</p>
+
+                  {/* College Info */}
+                  <div className="text-xs text-gray-400">
+                    <p className="truncate">{registration.team_members[0]?.college}</p>
                     <p>
                       {registration.team_members[0]?.department} -{" "}
                       {formatYear(registration.team_members[0]?.year)} Year
@@ -276,78 +287,55 @@ export default function Registrations() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                {/* Divider */}
+                <div className="h-px bg-white/10" />
+
+                {/* Events and Payment */}
+                <div className="space-y-3">
+                  {/* Registered Events */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    <h4 className="text-xs font-medium text-gray-400 mb-2">
                       Registered Events
                     </h4>
-                    <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
                       {registration.selected_events.map((eventId) => (
                         <div
                           key={eventId}
-                          className="bg-white/5 px-3 py-2 rounded-lg text-sm text-gray-300"
+                          className="bg-white/5 px-2 py-1 rounded-lg text-xs text-gray-300"
                         >
                           {events.find((e) => e.id === eventId)?.title}
                         </div>
                       ))}
                     </div>
                   </div>
+
+                  {/* Total Amount */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    <h4 className="text-xs font-medium text-gray-400 mb-1">
                       Total Amount
                     </h4>
-                    <p className="text-xl font-semibold text-white">
+                    <p className="text-base font-semibold text-white">
                       ₹{registration.total_amount}
                     </p>
                   </div>
-                  {registration.status === "pending" && (
-                    <div className="flex gap-3">
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStatusUpdate(registration.id, "approved");
-                        }}
-                        className="flex-1 bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/30 transition-colors"
-                      >
-                        <Check className="w-4 h-4 mr-2" />
-                        Approve
-                      </Button>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStatusUpdate(registration.id, "rejected");
-                        }}
-                        className="flex-1 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Reject
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
-              <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-400 mb-2">
-                  Payment Details
-                </h4>
-                <div className="space-y-2">
-                  <p className="text-gray-300">
-                    Transaction ID: {registration.transaction_id}
-                  </p>
-                  <p className="text-gray-300">
-                    Payment Method: {registration.payment_method}
-                  </p>
-                  {registration.payment_proof && (
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/innothon/${registration.payment_proof}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      View Payment Proof
-                    </a>
-                  )}
-                </div>
+
+              {/* Arrow indicator for mobile */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 lg:hidden">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </div>
             </motion.div>
           ))}

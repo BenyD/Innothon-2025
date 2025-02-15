@@ -72,7 +72,7 @@ const Navbar = () => {
             >
               <Link href="/" className="flex items-center gap-4 sm:gap-6">
                 <Image
-                  src="/hits_logo.svg"
+                  src="/hits_logo.png"
                   alt="College Logo"
                   width={180}
                   height={180}

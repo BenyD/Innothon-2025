@@ -22,7 +22,7 @@ const RegisterNav = () => {
     <>
       {/* Spacer to prevent content from hiding behind fixed navbar */}
       <div className="h-20" />
-      
+
       {/* Navigation Bar */}
       <motion.nav
         initial={{ y: -100 }}
@@ -35,7 +35,8 @@ const RegisterNav = () => {
           }`}
         >
           {/* Gradient Border Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-300" 
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-300"
             style={{ opacity: scrolled ? 1 : 0 }}
           />
 
@@ -51,7 +52,7 @@ const RegisterNav = () => {
                   <div className="relative group">
                     <div className="absolute -inset-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <Image
-                      src="/hits_logo.svg"
+                      src="/hits_logo.png"
                       alt="College Logo"
                       width={180}
                       height={180}
@@ -94,4 +95,4 @@ const RegisterNav = () => {
   );
 };
 
-export default RegisterNav; 
+export default RegisterNav;

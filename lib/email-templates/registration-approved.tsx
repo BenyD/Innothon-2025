@@ -30,7 +30,7 @@ export const RegistrationApprovedEmail = ({
   isTeamLeader,
   teamSize,
 }: RegistrationApprovedEmailProps) => {
-  const previewText = `Your registration for Innothon'25 has been approved!`;
+  const previewText = `Your registration for Innothon&apos;25 has been approved!`;
 
   return (
     <Html>
@@ -38,19 +38,18 @@ export const RegistrationApprovedEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with Logos */}
           <Section style={logoSection}>
             <Img
-              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo.png"
+              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo_black.png"
               width="120"
-              height="120"
+              height="50"
               alt="HIT Logo"
               style={logo}
             />
             <Img
               src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/bsp_logo.png"
               width="100"
-              height="100"
+              height="50"
               alt="Blue Screen Club Logo"
               style={logo}
             />
@@ -58,6 +57,8 @@ export const RegistrationApprovedEmail = ({
 
           <Section style={content}>
             <Text style={eventTitle}>Innothon&apos;25</Text>
+            <Text style={subtitle}>Registration Approved</Text>
+
             <Text style={paragraph}>Dear {teamMember.name},</Text>
 
             <Text style={paragraph}>
@@ -172,34 +173,55 @@ const main = {
 const container = {
   backgroundColor: "#ffffff",
   margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
+  padding: "0",
   maxWidth: "600px",
   borderRadius: "8px",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
 };
 
 const logoSection = {
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "space-between",
   alignItems: "center",
-  gap: "20px",
-  padding: "20px 0",
+  padding: "32px 0",
+  borderBottom: "1px solid #e6e6e6",
 };
 
 const logo = {
-  margin: "0 10px",
+  width: "auto",
+  height: "50px",
+  margin: "0",
+  "@media (max-width: 600px)": {
+    height: "40px",
+  },
 };
 
 const eventTitle = {
-  fontSize: "32px",
+  fontSize: "36px",
   fontWeight: "bold",
   textAlign: "center" as const,
   color: "#1a1a1a",
+  marginBottom: "8px",
+  "@media (max-width: 600px)": {
+    fontSize: "28px",
+  },
+};
+
+const subtitle = {
+  fontSize: "18px",
+  color: "#4a5568",
+  textAlign: "center" as const,
   marginBottom: "32px",
+  "@media (max-width: 600px)": {
+    fontSize: "16px",
+  },
 };
 
 const content = {
-  padding: "0 48px",
+  padding: "32px",
+  "@media (max-width: 600px)": {
+    padding: "24px",
+  },
 };
 
 const paragraph = {
@@ -212,10 +234,13 @@ const paragraph = {
 
 const boxContainer = {
   padding: "24px",
-  backgroundColor: "#f6f9fc",
-  borderRadius: "6px",
+  backgroundColor: "#f8fafc",
+  borderRadius: "12px",
   marginBottom: "24px",
   border: "1px solid #e6e6e6",
+  "@media (max-width: 600px)": {
+    padding: "16px",
+  },
 };
 
 const boxHeader = {
