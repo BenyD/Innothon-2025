@@ -1,4 +1,4 @@
-export type Event = {
+export interface Event {
   id: string;
   title: string;
   shortDescription: string;
@@ -21,5 +21,19 @@ export type Event = {
   }[];
   registrationFee: string;
   teamSize: string;
-  status: 'upcoming' | 'ongoing' | 'completed';
-}; 
+  status: string;
+  judgingCriteria?: {
+    criterion: string;
+    weightage: string;
+    description: string;
+  }[];
+  setupRequirements?: {
+    category: string;
+    requirements: string[];
+  }[];
+  eventStructure?: {
+    phase: string;
+    description: string;
+    duration?: string;
+  }[];
+} 

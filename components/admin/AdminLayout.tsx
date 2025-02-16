@@ -124,72 +124,73 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Admin Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/95 backdrop-blur-sm">
         <div className="max-w-full px-4">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Left side with menu and branding */}
+            <div className="flex items-center space-x-3">
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-400 hover:text-white"
+                className="lg:hidden -ml-2 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-5 h-5" />
                 )}
               </button>
 
-              {/* Logo Group */}
-              <div className="flex items-center gap-6">
-                <Image
-                  src="/hits_logo.png"
-                  alt="HITS Logo"
-                  width={120}
-                  height={120}
-                  className="w-[100px] h-auto object-contain"
-                  priority
-                />
+              {/* Branding - Optimized for mobile */}
+              <div className="flex items-center">
+                {/* BSP Logo and Title */}
                 <Image
                   src="/bsp_logo.png"
                   alt="BSP Logo"
                   width={100}
                   height={100}
-                  className="w-[60px] h-auto object-contain"
+                  className="w-[45px] h-auto object-contain"
                   priority
                 />
-                <div className="h-8 w-px bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-pink-500/20" />
-                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                  Innothon Admin
+                <div className="h-8 w-px mx-4 bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-pink-500/20" />
+                <h1 className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                  Admin Panel
                 </h1>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Back to Home button */}
+
+            {/* Right side actions */}
+            <div className="flex items-center space-x-1 sm:space-x-3">
+              {/* Back to Site - Icon only on mobile */}
               <Link
                 href="/"
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
+                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                title="Back to Site"
               >
-                <Home className="w-4 h-4" />
-                <span className="hidden sm:inline">Back to Site</span>
+                <Home className="w-5 h-5" />
+                <span className="hidden sm:inline ml-2">Back to Site</span>
               </Link>
 
-              {/* User menu */}
+              {/* User Menu */}
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
+                  className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors flex items-center"
                 >
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">{user?.email}</span>
+                  <User className="w-5 h-5" />
+                  <span className="hidden sm:inline ml-2 max-w-[120px] truncate">
+                    {user?.email}
+                  </span>
                 </button>
 
+                {/* User Dropdown */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 py-2 bg-black border border-white/10 rounded-lg shadow-xl">
+                  <div className="absolute right-0 mt-1 w-48 py-1 bg-black/95 backdrop-blur-sm border border-white/10 rounded-lg shadow-xl">
                     <button
                       onClick={handleSignOut}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:text-white hover:bg-white/5 flex items-center space-x-2"
                     >
                       <LogOut className="w-4 h-4" />
-                      Sign Out
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 )}
