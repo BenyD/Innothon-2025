@@ -9,8 +9,7 @@ import { SectionTitle } from "@/components/ui/section-title";
 import { useToast } from "@/components/ui/use-toast";
 import {
   IoMail,
-  IoCall,
-  IoPaperPlane,
+    IoCall,
   IoLogoLinkedin,
   IoLogoInstagram,
   IoCalendar,
@@ -28,6 +27,82 @@ const isValidIndianPhone = (phone: string) => {
   const phoneRegex = /^[6-9]\d{9}$/;
   return phoneRegex.test(phone.replace(/\D/g, ""));
 };
+
+// Update the core team section without role field
+const coreTeam = [
+  {
+    title: "President",
+    name: "Beny Dishon K",
+    email: "president.bspc@gmail.com",
+    phone: "+91 98848 19912",
+    color: "blue",
+  },
+  {
+    title: "Vice President",
+    name: "M. Ashwini",
+    email: "vp.bspc@gmail.com",
+    phone: "+91 98765 43210",
+    color: "purple",
+  },
+  {
+    title: "General Secretary",
+    name: "Shibani A B",
+    email: "secretary.bspc@gmail.com",
+    phone: "+91 93446 76938",
+    color: "pink",
+  },
+  {
+    title: "Joint Secretary",
+    name: "Arsha M Nair",
+    email: "jsec.bspc@gmail.com",
+    phone: "+91 87654 32109",
+    color: "blue",
+  },
+];
+
+// Update event coordinators without department
+const eventCoordinators = [
+  {
+    role: "HackQuest Lead",
+    name: "Gokulakrishnan",
+    phone: "+91 76543 21098",
+    color: "blue",
+  },
+  {
+    role: "AI Genesis Lead",
+    name: "Shubham Choudhary",
+    phone: "+91 65432 10987",
+    color: "purple",
+  },
+  {
+    role: "CodeArena Lead",
+    name: "Chandaluri Monish",
+    phone: "+91 89012 34567",
+    color: "pink",
+  },
+];
+
+// Update event management team without department
+const eventManagementTeam = [
+  {
+    role: "Event Coordinator",
+    name: "V Vishal",
+    phone: "+91 98765 43211",
+    color: "blue",
+  },
+  {
+    role: "Assistant Event Coordinator",
+    name: "Anna Elizabeth Pravin",
+    phone: "+91 87654 32112",
+    color: "purple",
+  },
+  {
+    role: "PR Coordinator",
+    name: "Janani ER",
+    phone: "+91 76543 21113",
+    color: "pink",
+  },
+];
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -151,47 +226,223 @@ const ContactForm = () => {
       <div className="max-w-6xl mx-auto space-y-12">
         <SectionTitle
           title="Get in Touch"
-          subtitle="Have questions about Innothon 2025? We're here to help! Reach out to us through the form below or use our direct contact details."
+          subtitle="Have questions about Innothon 2025? We're here to help! Reach out to us through any of these channels."
         />
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Left Column - Three cards with equal height */}
-          <div className="space-y-8">
-            {/* Contact Information Card */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Contact Cards - Left Column */}
+          <div className="lg:col-span-2 grid gap-6">
+            {/* Core Team Card */}
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
               <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
               <div className="relative">
                 <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
-                  Contact Information
+                  Core Committee
                 </h3>
-                <div className="space-y-4">
-                  <a
-                    href="mailto:bspc.hits@gmail.com"
-                    className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
-                  >
-                    <div className="p-3 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-                      <IoMail className="h-5 w-5" />
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {coreTeam.map((member, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-400">{member.title}</h4>
+                          <p className="text-white font-medium mt-1">{member.name}</p>
+                        </div>
+                        <div className={`p-2 rounded-lg bg-${member.color}-500/10`}>
+                          <IoCall className={`h-4 w-4 text-${member.color}-400`} />
+                        </div>
+                      </div>
+                      <div className="space-y-2 mt-auto">
+                        <a
+                          href={`mailto:${member.email}`}
+                          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                        >
+                          <IoMail className="h-4 w-4" />
+                          {member.email}
+                        </a>
+                        <a
+                          href={`tel:${member.phone}`}
+                          className={`flex items-center gap-2 text-${member.color}-400 hover:text-${member.color}-300 transition-colors text-sm`}
+                        >
+                          <IoCall className="h-4 w-4" />
+                          {member.phone}
+                        </a>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">Email</p>
-                      <p className="text-sm text-gray-400">
-                        bspc.hits@gmail.com
-                      </p>
-                    </div>
-                  </a>
-                  <a
-                    href="tel:+919884819912"
-                    className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
-                  >
-                    <div className="p-3 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
-                      <IoCall className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Phone</p>
-                      <p className="text-sm text-gray-400">+91 98848 19912</p>
-                    </div>
-                  </a>
+                  ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Event Coordinators Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                  Event Coordinators
+                </h3>
+                <div className="grid sm:grid-cols-3 gap-6">
+                  {eventCoordinators.map((coordinator, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                      <div className="mb-3">
+                        <h4 className="text-sm font-medium text-gray-400">{coordinator.role}</h4>
+                        <p className="text-white font-medium mt-1">{coordinator.name}</p>
+                      </div>
+                      <a
+                        href={`tel:${coordinator.phone}`}
+                        className={`flex items-center gap-2 text-${coordinator.color}-400 hover:text-${coordinator.color}-300 transition-colors text-sm mt-auto`}
+                      >
+                        <IoCall className="h-4 w-4" />
+                        {coordinator.phone}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Event Management Team Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                  Event Management Team
+                </h3>
+                <div className="grid sm:grid-cols-3 gap-6">
+                  {eventManagementTeam.map((member, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                      <div className="mb-3">
+                        <h4 className="text-sm font-medium text-gray-400">{member.role}</h4>
+                        <p className="text-white font-medium mt-1">{member.name}</p>
+                      </div>
+                      <a
+                        href={`tel:${member.phone}`}
+                        className={`flex items-center gap-2 text-${member.color}-400 hover:text-${member.color}-300 transition-colors text-sm mt-auto`}
+                      >
+                        <IoCall className="h-4 w-4" />
+                        {member.phone}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form and Additional Info - Right Column */}
+          <div className="space-y-6">
+            {/* Contact Form Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                  Send us a Message
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      onBlur={(e) => {
+                        if (e.target.value && !isValidEmail(e.target.value)) {
+                          toast({
+                            title: "Invalid Email",
+                            description: "Please enter a valid email address",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Your email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Phone
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      onBlur={(e) => {
+                        if (
+                          e.target.value &&
+                          !isValidIndianPhone(e.target.value)
+                        ) {
+                          toast({
+                            title: "Invalid Phone Number",
+                            description:
+                              "Please enter a valid 10-digit Indian mobile number",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Enter your 10-digit mobile number"
+                      maxLength={10}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
+                      placeholder="Your message"
+                    />
+                  </div>
+                </form>
               </div>
             </div>
 
@@ -212,20 +463,20 @@ const ContactForm = () => {
               </div>
             </div>
 
-            {/* Social Media Card */}
+            {/* Social Links Card */}
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
               <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
               <div className="relative">
-                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
                   Connect With Us
                 </h3>
-                <div className="space-y-4">
+                <div className="flex gap-4">
                   {[
                     {
                       icon: IoLogoLinkedin,
                       label: "LinkedIn",
                       href: "https://www.linkedin.com/in/bspc-hits/",
-                      color: "purple",
+                      color: "blue",
                     },
                     {
                       icon: IoLogoInstagram,
@@ -239,143 +490,15 @@ const ContactForm = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-${social.color}-500/10 hover:bg-${social.color}-500/20 text-${social.color}-400 transition-colors`}
                     >
-                      <div
-                        className={`p-3 rounded-lg bg-${social.color}-500/10 group-hover:bg-${social.color}-500/20 transition-colors`}
-                      >
-                        <social.icon className="h-5 w-5" />
-                      </div>
-                      <p className="font-medium">{social.label}</p>
+                      <social.icon className="h-5 w-5" />
+                      <span className="font-medium">{social.label}</span>
                     </a>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Contact Form - Right side with matching height */}
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8 h-full">
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
-            <form
-              onSubmit={handleSubmit}
-              className="relative space-y-6 h-full flex flex-col"
-            >
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    onBlur={(e) => {
-                      if (e.target.value && !isValidEmail(e.target.value)) {
-                        toast({
-                          title: "Invalid Email",
-                          description: "Please enter a valid email address",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                    placeholder="Your email"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Phone
-                  </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    onBlur={(e) => {
-                      if (
-                        e.target.value &&
-                        !isValidIndianPhone(e.target.value)
-                      ) {
-                        toast({
-                          title: "Invalid Phone Number",
-                          description:
-                            "Please enter a valid 10-digit Indian mobile number",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                    placeholder="Enter your 10-digit mobile number"
-                    maxLength={10}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
-                    placeholder="Your message"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium flex items-center justify-center gap-2 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Sending...</span>
-                  </>
-                ) : (
-                  <>
-                    Send Message
-                    <IoPaperPlane className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </button>
-            </form>
           </div>
         </div>
 
@@ -419,9 +542,9 @@ const ContactForm = () => {
                   <div className="text-center md:text-right">
                     <p className="text-2xl font-bold text-white flex items-center justify-center md:justify-end gap-2">
                       <IoCalendar className="h-6 w-6" />
-                      March 21, 2025
+                      March 21-22, 2025
                     </p>
-                    <p className="text-gray-400">Mark your calendar!</p>
+                    <p className="text-gray-400">Two days of innovation!</p>
                   </div>
                   <Link href="/register">
                     <Button className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg">

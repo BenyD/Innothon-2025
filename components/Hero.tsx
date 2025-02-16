@@ -10,7 +10,7 @@ import { scrollToSection } from "@/utils/scroll";
 import Link from "next/link";
 
 const Hero = () => {
-  const eventDate = useMemo(() => new Date("2025-03-21T08:30:00"), []);
+  const eventDate = useMemo(() => new Date("2025-03-21T09:00:00"), []);
   const [timeLeft, setTimeLeft] = useState({
     days: "00",
     hours: "00",
@@ -89,34 +89,39 @@ const Hero = () => {
                   </span>
                   <p className="text-sm text-gray-300 whitespace-nowrap">
                     <span className="text-white font-medium">
-                      21st March 2025
+                      March 21-22, 2025
                     </span>
                   </p>
                 </motion.div>
 
+                {/* Countdown Badge */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+                  className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
                 >
                   <Clock className="w-3 h-3 text-purple-400" />
-                  <div className="flex items-center gap-1 text-sm whitespace-nowrap">
-                    <span className="text-white font-medium">
-                      {timeLeft.days}d
-                    </span>
-                    <span className="text-gray-400">:</span>
-                    <span className="text-white font-medium">
-                      {timeLeft.hours}h
-                    </span>
-                    <span className="text-gray-400">:</span>
-                    <span className="text-white font-medium">
-                      {timeLeft.minutes}m
-                    </span>
-                    <span className="text-gray-400">:</span>
-                    <span className="text-white font-medium">
-                      {timeLeft.seconds}s
-                    </span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center">
+                      <span className="text-white font-medium">{timeLeft.days}</span>
+                      <span className="text-gray-400 ml-1">d</span>
+                    </div>
+                    <span className="text-gray-600">:</span>
+                    <div className="flex items-center">
+                      <span className="text-white font-medium">{timeLeft.hours}</span>
+                      <span className="text-gray-400 ml-1">h</span>
+                    </div>
+                    <span className="text-gray-600">:</span>
+                    <div className="flex items-center">
+                      <span className="text-white font-medium">{timeLeft.minutes}</span>
+                      <span className="text-gray-400 ml-1">m</span>
+                    </div>
+                    <span className="text-gray-600">:</span>
+                    <div className="flex items-center">
+                      <span className="text-white font-medium">{timeLeft.seconds}</span>
+                      <span className="text-gray-400 ml-1">s</span>
+                    </div>
                   </div>
                 </motion.div>
               </div>
