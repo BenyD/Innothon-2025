@@ -45,7 +45,10 @@ export default function AdminDashboard() {
       const [registrationsData, messagesData] = await Promise.all([
         supabase
           .from("registrations")
-          .select(`*, team_members (*)`)
+          .select(`
+            *,
+            team_members!team_members_registration_id_fkey (*)
+          `)
           .order('created_at', { ascending: false }),
         supabase
           .from("contact_messages")

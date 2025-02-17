@@ -70,12 +70,10 @@ export default function RegistrationDetails() {
       console.log("Fetching registration data for ID:", params.id);
       const { data, error } = await supabase
         .from("registrations")
-        .select(
-          `
+        .select(`
           *,
-          team_members (*)
-        `
-        )
+          team_members!team_members_registration_id_fkey (*)
+        `)
         .eq("id", params.id)
         .single();
 

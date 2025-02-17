@@ -38,7 +38,7 @@ export default function Registrations() {
         .select(
           `
           *,
-          team_members (*)
+          team_members!team_members_registration_id_fkey (*)
         `
         )
         .order("created_at", { ascending: false });

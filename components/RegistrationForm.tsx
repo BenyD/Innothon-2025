@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { v4 as uuidv4 } from 'uuid';
+import { uploadPaymentProof } from "@/lib/upload-helper";
+import { cleanupFailedRegistration } from "@/lib/cleanup-helper";
 
 const INITIAL_MEMBER: TeamMember = {
   id: "",
@@ -177,12 +179,48 @@ const RegistrationForm = () => {
     }
   };
 
+  const handleEmailBlur = (index: number, value: string) => {
+    if (value && !isValidEmail(value)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePhoneBlur = (index: number, value: string) => {
+    if (value && !isValidIndianPhone(value)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 10-digit Indian phone number",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEmailChange = (index: number, value: string) => {
+    const newTeamMembers = [...teamMembers];
+    newTeamMembers[index].email = value;
+    setTeamMembers(newTeamMembers);
+  };
+
+  const handlePhoneChange = (index: number, value: string) => {
+    const newTeamMembers = [...teamMembers];
+    // Remove non-digits and limit to 10 digits
+    const formattedValue = value.replace(/\D/g, "").slice(0, 10);
+    newTeamMembers[index].phone = formattedValue;
+    setTeamMembers(newTeamMembers);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // If already submitting, prevent double submission
     if (isSubmitting) return;
 
+    // Handle first step validation and navigation
     if (currentStep === 1) {
-      // Validate first step
       const isValid = teamMembers.every(
         (member) =>
           member.name &&
@@ -190,6 +228,7 @@ const RegistrationForm = () => {
           isValidEmail(member.email) &&
           member.phone &&
           isValidIndianPhone(member.phone) &&
+          member.gender &&
           member.college &&
           member.department &&
           member.year
@@ -198,8 +237,7 @@ const RegistrationForm = () => {
       if (!isValid) {
         toast({
           title: "Validation Error",
-          description:
-            "Please check all fields. Ensure valid email and 10-digit Indian phone number.",
+          description: "Please ensure all fields are filled with valid email and 10-digit Indian phone number.",
           variant: "destructive",
         });
         return;
@@ -225,31 +263,39 @@ const RegistrationForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Generate proper UUIDs
+      // Generate UUIDs before any operations
       const teamId = uuidv4();
       const registrationId = uuidv4();
 
-      // Upload payment proof first if exists
+      // Prepare team members with IDs
+      const updatedTeamMembers = teamMembers.map((member) => ({
+        ...member,
+        id: uuidv4(),
+        registration_id: registrationId,
+        team_id: teamId,
+      }));
+
+      // Upload payment proof if exists
       let paymentProofUrl = null;
       if (paymentDetails.paymentScreenshot) {
-        const fileExt = paymentDetails.paymentScreenshot.name.split('.').pop();
-        const fileName = `${registrationId}_payment.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('payment-proofs')
-          .upload(fileName, paymentDetails.paymentScreenshot);
-
-        if (uploadError) throw uploadError;
-        
-        // Get the public URL for the uploaded file
-        const { data: { publicUrl } } = supabase.storage
-          .from('payment-proofs')
-          .getPublicUrl(fileName);
-        
-        paymentProofUrl = publicUrl;
+        try {
+          paymentProofUrl = await uploadPaymentProof(
+            paymentDetails.paymentScreenshot,
+            registrationId
+          );
+        } catch (uploadError) {
+          console.error('Upload error:', uploadError);
+          toast({
+            title: "Upload Failed",
+            description: "Failed to upload payment proof. Please try again.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false); // Reset submitting state
+          return;
+        }
       }
 
-      // Create registration record with payment proof URL
+      // Create registration first
       const { error: registrationError } = await supabase
         .from("registrations")
         .insert({
@@ -263,23 +309,25 @@ const RegistrationForm = () => {
           transaction_id: paymentDetails.transactionId,
           payment_method: paymentDetails.paymentMethod,
           payment_proof: paymentProofUrl,
-        });
+        })
+        .select()
+        .single(); // Add single() to ensure only one record is inserted
 
-      if (registrationError) throw registrationError;
+      if (registrationError) {
+        throw registrationError;
+      }
 
-      // Create team members records
-      const updatedTeamMembers = teamMembers.map((member) => ({
-        ...member,
-        id: uuidv4(),
-        registration_id: registrationId,
-        team_id: teamId,
-      }));
-
+      // Insert team members
       const { error: teamError } = await supabase
         .from("team_members")
-        .insert(updatedTeamMembers);
+        .insert(updatedTeamMembers)
+        .select(); // Add select() to ensure the operation completes before proceeding
 
-      if (teamError) throw teamError;
+      if (teamError) {
+        // If team member insertion fails, clean up the registration
+        await cleanupFailedRegistration(registrationId);
+        throw teamError;
+      }
 
       setShowSuccessModal(true);
     } catch (error) {
@@ -459,13 +507,8 @@ const RegistrationForm = () => {
                                     id={`email-${index}`}
                                     type="email"
                                     value={member.email}
-                                    onChange={(e) =>
-                                      updateTeamMember(
-                                        index,
-                                        "email",
-                                        e.target.value
-                                      )
-                                    }
+                                    onBlur={(e) => handleEmailBlur(index, e.target.value)}
+                                    onChange={(e) => handleEmailChange(index, e.target.value)}
                                     className="bg-white/5 border-white/10 pl-10"
                                   />
                                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -477,14 +520,10 @@ const RegistrationForm = () => {
                                 <div className="relative">
                                   <Input
                                     id={`phone-${index}`}
+                                    type="tel"
                                     value={member.phone}
-                                    onChange={(e) =>
-                                      updateTeamMember(
-                                        index,
-                                        "phone",
-                                        e.target.value
-                                      )
-                                    }
+                                    onBlur={(e) => handlePhoneBlur(index, e.target.value)}
+                                    onChange={(e) => handlePhoneChange(index, e.target.value)}
                                     className="bg-white/5 border-white/10 pl-10"
                                   />
                                   <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

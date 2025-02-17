@@ -7,9 +7,7 @@ import { motion } from "framer-motion";
 import { 
   Users, 
   Search, 
-  Calendar,
   User2,
-  Building2,
   IndianRupee,
   ArrowUpRight,
   Filter,
@@ -64,12 +62,10 @@ export default function EventOverview() {
       setLoading(true);
       const { data, error } = await supabase
         .from("registrations")
-        .select(
-          `
+        .select(`
           *,
-          team_members (*)
-        `
-        )
+          team_members!team_members_registration_id_fkey (*)
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
