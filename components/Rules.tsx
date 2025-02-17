@@ -24,6 +24,8 @@ const Rules = () => {
         "Participants must bring college ID and government photo ID proof",
         "No malpractice or unfair means will be tolerated",
         "Judges' decisions will be final and binding",
+        "No unauthorized collaboration or external help allowed",
+        "Disqualification for any rule violations"
       ],
     },
     {
@@ -31,10 +33,12 @@ const Rules = () => {
       title: "Schedule & Timing",
       rules: [
         "Opening Ceremony: 9:00 AM - 10:30 AM",
-        "Morning Events: 10:45 AM - 2:15 PM",
-        "Afternoon Events: 1:00 PM - 2:15 PM",
-        "Valedictory: 3:00 PM - 4:00 PM",
+        "Morning Events: 10:45 AM - 1:00 PM",
+        "Afternoon Events: 2:00 PM - 4:00 PM",
+        "Valedictory: 22nd March 2025",
+        "Report 30 minutes before event start",
         "Strict adherence to event timings",
+        "Late submissions will not be accepted"
       ],
     },
     {
@@ -46,6 +50,7 @@ const Rules = () => {
         "Team changes not permitted after registration",
         "One participant can join multiple events",
         "Register early to secure your spot",
+        "All team members must be present during the event"
       ],
     },
     {
@@ -57,17 +62,20 @@ const Rules = () => {
         "Stable internet connection needed",
         "Lab computers available if needed",
         "Technical support will be provided",
+        "No unauthorized software or tools allowed",
+        "Internet access will be provided"
       ],
     },
     {
       icon: IdCard,
       title: "Registration & Facilities",
       rules: [
-        "Registration fee: ₹500 per team/participant",
+        "Registration fees vary by event (₹200-₹500)",
         "Lunch and refreshments will be provided",
         "Carry all required documents",
         "On-spot registrations not allowed",
-        "Report 30 minutes before event start",
+        "College ID mandatory for participation",
+        "Winners must attend prize distribution"
       ],
     },
     {
@@ -79,6 +87,7 @@ const Rules = () => {
         "Maintain professional behavior",
         "Follow venue-specific guidelines",
         "Respect fellow participants",
+        "Fair play and sportsmanship mandatory"
       ],
     },
   ];

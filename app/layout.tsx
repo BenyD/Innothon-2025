@@ -13,16 +13,6 @@ export const metadata: Metadata = {
   title: "Innothon 2025 - Hindustan Institute of Technology and Science",
   description:
     "Join us for Innothon 2025, a 24-hour hackathon at Hindustan Institute of Technology and Science.",
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" }
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
-    ],
-  },
   manifest: "/site.webmanifest",
 };
 
