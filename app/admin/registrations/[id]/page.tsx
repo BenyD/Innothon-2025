@@ -17,12 +17,15 @@ import {
   Phone,
   Loader2,
   GraduationCap,
+  ExternalLink,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { events } from "@/data/events";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import Image from "next/image";
 
 const container = {
   hidden: { opacity: 0 },
@@ -46,6 +49,7 @@ export default function RegistrationDetails() {
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [signedUrl, setSignedUrl] = useState<string>('');
 
   const formatYear = (year: string) => {
     const yearMap: { [key: string]: string } = {
@@ -93,6 +97,22 @@ export default function RegistrationDetails() {
   useEffect(() => {
     fetchRegistration();
   }, [fetchRegistration]);
+
+  useEffect(() => {
+    const getSignedUrl = async () => {
+      if (registration?.payment_proof) {
+        const { data } = await supabase.storage
+          .from('payment-proofs')
+          .createSignedUrl(registration.payment_proof.split('/').pop()!, 60 * 60); // 1 hour expiry
+        
+        if (data?.signedUrl) {
+          setSignedUrl(data.signedUrl);
+        }
+      }
+    };
+    
+    getSignedUrl();
+  }, [registration?.payment_proof]);
 
   const handleStatusUpdate = async (status: "approved" | "rejected") => {
     if (!registration?.team_members) return;
@@ -230,7 +250,7 @@ export default function RegistrationDetails() {
             <Button
               variant="ghost"
               onClick={() => router.back()}
-              className="mb-4 text-gray-400 hover:text-white"
+              className="mb-4 text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Registrations
@@ -383,6 +403,48 @@ export default function RegistrationDetails() {
                   <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                     <span className="text-gray-400">Transaction ID</span>
                     <span className="text-white font-medium">{registration.transaction_id}</span>
+                  </div>
+                )}
+                {registration.payment_proof && (
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
+                    <span className="text-gray-400">Payment Proof</span>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          className="text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
+                        >
+                          View Proof
+                          <ExternalLink className="w-4 h-4 ml-2" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl bg-gray-900/95 border-white/10">
+                        <DialogTitle className="text-lg font-medium text-white">
+                          Payment Proof
+                        </DialogTitle>
+                        <div className="relative w-full max-h-[80vh] mt-2">
+                          <Image
+                            src={signedUrl || ''}
+                            alt="Payment Proof"
+                            width={800}
+                            height={1000}
+                            className="w-full h-full object-contain rounded-lg"
+                            unoptimized
+                          />
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                          <a
+                            href={signedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-2"
+                          >
+                            Open in New Tab
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
               </div>

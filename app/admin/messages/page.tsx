@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import { Calendar, User2, Mail, Search, Filter } from "lucide-react";
+import { Calendar, User2, Mail, Search, Filter, MessageSquare, ExternalLink, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const container = {
   hidden: { opacity: 0 },
@@ -37,6 +39,8 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "read" | "unread">("all");
+  const [updating, setUpdating] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchMessages();
@@ -54,10 +58,47 @@ export default function Messages() {
       setMessages(data || []);
     } catch (error) {
       console.error("Error fetching messages:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load messages",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   }
+
+  const handleMarkAsRead = async (messageId: string) => {
+    try {
+      setUpdating(messageId);
+      const { error } = await supabase
+        .from("contact_messages")
+        .update({ read: true })
+        .eq("id", messageId);
+
+      if (error) throw error;
+
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === messageId ? { ...msg, read: true } : msg
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: "Message marked as read",
+      });
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark message as read",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdating(null);
+    }
+  };
 
   const filteredMessages = messages
     .filter(message => {
@@ -74,6 +115,12 @@ export default function Messages() {
       return matchesSearch && matchesFilter;
     });
 
+  const stats = {
+    total: messages.length,
+    unread: messages.filter(m => !m.read).length,
+    read: messages.filter(m => m.read).length,
+  };
+
   return (
     <AdminLayout>
       <motion.div 
@@ -89,6 +136,41 @@ export default function Messages() {
           <p className="text-gray-400 mt-1">
             View and manage contact form submissions
           </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <motion.div
+            variants={item}
+            className="bg-white/5 rounded-xl p-4 border border-white/10"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">Total Messages</p>
+              <MessageSquare className="w-5 h-5 text-blue-400" />
+            </div>
+            <p className="text-2xl font-bold text-white mt-2">{stats.total}</p>
+          </motion.div>
+          
+          <motion.div
+            variants={item}
+            className="bg-white/5 rounded-xl p-4 border border-white/10"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">Unread Messages</p>
+              <Mail className="w-5 h-5 text-purple-400" />
+            </div>
+            <p className="text-2xl font-bold text-white mt-2">{stats.unread}</p>
+          </motion.div>
+          
+          <motion.div
+            variants={item}
+            className="bg-white/5 rounded-xl p-4 border border-white/10"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">Read Messages</p>
+              <Check className="w-5 h-5 text-green-400" />
+            </div>
+            <p className="text-2xl font-bold text-white mt-2">{stats.read}</p>
+          </motion.div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
@@ -123,31 +205,36 @@ export default function Messages() {
           </Select>
         </div>
 
-        <div className="grid gap-4">
+        <div className="space-y-4">
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+              <motion.div
+                key={i}
+                variants={item}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6"
+              >
                 <div className="space-y-4">
                   <Skeleton className="h-6 w-32" />
                   <Skeleton className="h-4 w-48" />
                   <Skeleton className="h-16 w-full" />
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : filteredMessages.length > 0 ? (
             filteredMessages.map((message) => (
               <motion.div
                 key={message.id}
                 variants={item}
-                className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6"
+                className="group relative overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 
+                  hover:border-purple-500/50 transition-all duration-300"
               >
                 <div className="flex flex-col sm:flex-row justify-between gap-4">
-                  <div className="space-y-4">
+                  <div className="space-y-4 flex-1">
                     <div className="flex items-center gap-3">
                       <User2 className="w-5 h-5 text-blue-400" />
                       <span className="text-white font-medium">{message.name}</span>
                       {!message.read && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
                           New
                         </span>
                       )}
@@ -162,23 +249,48 @@ export default function Messages() {
                         {new Date(message.created_at).toLocaleDateString()}
                       </div>
                     </div>
-                    <p className="text-gray-300">{message.message}</p>
+                    <p className="text-gray-300 line-clamp-2">{message.message}</p>
                   </div>
-                  <div className="flex sm:flex-col gap-2">
+                  <div className="flex sm:flex-col gap-2 sm:w-[140px]">
                     <Link
                       href={`/admin/messages/${message.id}`}
-                      className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors text-center"
+                      className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors text-center 
+                        flex items-center justify-center gap-2 group-hover:border-purple-500/20 border border-white/10"
                     >
                       View Details
+                      <ExternalLink className="w-4 h-4" />
                     </Link>
+                    {!message.read && (
+                      <Button
+                        variant="outline"
+                        onClick={() => handleMarkAsRead(message.id)}
+                        disabled={updating === message.id}
+                        className="flex-1 border-white/10 hover:border-green-500/20 text-white hover:text-white 
+                          bg-white/5 hover:bg-green-500/10"
+                      >
+                        {updating === message.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Check className="w-4 h-4" />
+                        )}
+                        <span className="ml-2">Mark Read</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </motion.div>
             ))
           ) : (
-            <div className="text-center py-12 text-gray-400">
-              No messages found
-            </div>
+            <motion.div
+              variants={item}
+              className="text-center py-12 bg-white/5 rounded-xl border border-white/10"
+            >
+              <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-400">No messages found</h3>
+              <p className="text-gray-500 mt-1">
+                {searchQuery ? "Try adjusting your search or filters" : "Messages will appear here"}
+              </p>
+            </motion.div>
           )}
         </div>
       </motion.div>

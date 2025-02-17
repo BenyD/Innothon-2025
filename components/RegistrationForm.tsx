@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { v4 as uuidv4 } from 'uuid';
 import { uploadPaymentProof } from "@/lib/upload-helper";
 import { cleanupFailedRegistration } from "@/lib/cleanup-helper";
+import { generateTeamId } from "@/lib/generate-team-id";
 
 const INITIAL_MEMBER: TeamMember = {
   id: "",
@@ -70,6 +71,20 @@ const isValidEmail = (email: string) => {
 const isValidIndianPhone = (phone: string) => {
   const phoneRegex = /^[6-9]\d{9}$/;
   return phoneRegex.test(phone.replace(/\D/g, ""));
+};
+
+const validateFileSize = (file: File): { valid: boolean; error?: string } => {
+  const MAX_SIZE_MB = 5;
+  const fileSizeMB = file.size / (1024 * 1024);
+  
+  if (fileSizeMB > MAX_SIZE_MB) {
+    return {
+      valid: false,
+      error: `File size (${fileSizeMB.toFixed(1)}MB) exceeds the ${MAX_SIZE_MB}MB limit`
+    };
+  }
+  
+  return { valid: true };
 };
 
 const RegistrationForm = () => {
@@ -263,8 +278,10 @@ const RegistrationForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Generate UUIDs before any operations
-      const teamId = uuidv4();
+      // Generate team ID first
+      const teamId = await generateTeamId();
+      
+      // Generate registration ID (can keep UUID for internal use)
       const registrationId = uuidv4();
 
       // Prepare team members with IDs
@@ -861,12 +878,26 @@ const RegistrationForm = () => {
                               type="file"
                               className="hidden"
                               accept="image/*"
-                              onChange={(e) =>
-                                setPaymentDetails({
-                                  ...paymentDetails,
-                                  paymentScreenshot: e.target.files?.[0] || null,
-                                })
-                              }
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const validation = validateFileSize(file);
+                                  if (!validation.valid) {
+                                    toast({
+                                      title: "File Too Large",
+                                      description: validation.error,
+                                      variant: "destructive",
+                                    });
+                                    // Reset the input
+                                    e.target.value = '';
+                                    return;
+                                  }
+                                  setPaymentDetails({
+                                    ...paymentDetails,
+                                    paymentScreenshot: file,
+                                  });
+                                }
+                              }}
                             />
                           </label>
                         </div>

@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove the redirects section as it's not needed for favicon
+  images: {
+    domains: [
+      'jycgacsicczslkfiazkw.supabase.co',
+      'vxybvvrsiujnqatmncjt.supabase.co'  // Add any other Supabase storage domains you use
+    ],
+  },
 }
 
 module.exports = nextConfig 
