@@ -89,26 +89,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   const navItems = [
-    {
-      title: "Dashboard",
-      icon: LayoutDashboard,
-      href: "/admin",
-    },
-    {
-      title: "Messages",
-      icon: MessageSquare,
-      href: "/admin/messages",
-    },
-    {
-      title: "Registrations",
-      icon: Users,
-      href: "/admin/registrations",
-    },
-    {
-      title: "Event Overview",
-      href: "/admin/event-overview",
-      icon: Calendar,
-    },
+    { href: "/admin", title: "Overview", icon: LayoutDashboard },
+    { href: "/admin/registrations", title: "Registrations", icon: Users },
+    { href: "/admin/event-overview", title: "Events", icon: Calendar },
+    { href: "/admin/messages", title: "Messages", icon: MessageSquare },
   ];
 
   if (loading) {
@@ -159,15 +143,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             {/* Right side actions */}
-            <div className="flex items-center space-x-1 sm:space-x-3">
-              {/* Back to Site - Icon only on mobile */}
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+              {/* Back to Site - Show text on larger screens */}
               <Link
                 href="/"
-                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors flex items-center"
                 title="Back to Site"
               >
                 <Home className="w-5 h-5" />
-                <span className="hidden sm:inline ml-2">Back to Site</span>
+                <span className="hidden md:inline ml-2">Back to Site</span>
               </Link>
 
               {/* User Menu */}
@@ -177,7 +161,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors flex items-center"
                 >
                   <User className="w-5 h-5" />
-                  <span className="hidden sm:inline ml-2 max-w-[120px] truncate">
+                  <span className="hidden md:inline ml-2 max-w-[150px] lg:max-w-[200px] xl:max-w-[250px] truncate">
                     {user?.email}
                   </span>
                 </button>

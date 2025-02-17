@@ -4,29 +4,31 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Check, X, Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import type { Registration } from "@/types/registration";
-import { events } from "@/data/events";
+import { Calendar, Users, User2, IndianRupee, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
-import { Button } from "@/components/ui/button";
+import type { Registration } from "@/types/registration";
+
+// Add animation variants
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemAnimation = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
 
 export default function Registrations() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredRegistrations, setFilteredRegistrations] = useState<Registration[]>([]);
   const router = useRouter();
-  const [updating, setUpdating] = useState<string | null>(null);
-
-  const formatYear = (year: string) => {
-    const yearMap: { [key: string]: string } = {
-      "1": "1st",
-      "2": "2nd",
-      "3": "3rd",
-      "4": "4th",
-    };
-    return yearMap[year] || year;
-  };
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -92,250 +94,141 @@ export default function Registrations() {
     };
   }, []);
 
-  const handleStatusUpdate = async (
-    e: React.MouseEvent,
-    id: string,
-    status: "approved" | "rejected"
-  ) => {
-    e.stopPropagation(); // Prevent navigation when clicking buttons
-    try {
-      setUpdating(id);
+  useEffect(() => {
+    const filtered = registrations.filter((reg) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        reg.team_members[0]?.name?.toLowerCase().includes(searchLower) ||
+        reg.team_members[0]?.email?.toLowerCase().includes(searchLower) ||
+        reg.team_members[0]?.phone?.includes(searchQuery) ||
+        reg.team_members[0]?.college?.toLowerCase().includes(searchLower)
+      );
+    });
+    setFilteredRegistrations(filtered);
+  }, [searchQuery, registrations]);
 
-      // First, verify we can read the registration
-      const { data: existingReg, error: readError } = await supabase
-        .from("registrations")
-        .select("*, team_members(*)")
-        .eq("id", id)
-        .single();
-
-      if (readError) throw readError;
-
-      // Update the status
-      const { error: updateError } = await supabase
-        .from("registrations")
-        .update({
-          status: status,
-          payment_status: status === "approved" ? "completed" : "pending",
-        })
-        .eq("id", id);
-
-      if (updateError) throw updateError;
-
-      // Send appropriate emails
-      if (status === "approved") {
-        await sendApprovalEmails(
-          existingReg.team_members,
-          existingReg.id,
-          existingReg.selected_events,
-          existingReg.total_amount,
-          existingReg.team_size
-        );
-      } else {
-        await sendRejectionEmails(
-          existingReg.team_members,
-          existingReg.id,
-          existingReg.selected_events,
-          existingReg.total_amount,
-          existingReg.team_size
-        );
-      }
-
-      toast({
-        title: "Success",
-        description: `Registration ${status} successfully`,
-        variant: "success",
-      });
-
-      // Refresh the registrations
-      await fetchRegistrations();
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update registration status",
-        variant: "destructive",
-      });
-    } finally {
-      setUpdating(null);
-    }
-  };
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Event Registrations
-          </h2>
-          <p className="text-gray-400 mt-1">
-            View and manage event registrations
-          </p>
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-2xl font-bold text-white">Team Registrations</h1>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search teams..."
+              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white 
+                placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+            />
+          </div>
         </div>
 
-        <div className="grid gap-4">
-          {registrations.map((registration) => (
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <motion.div
+            variants={itemAnimation}
+            className="bg-white/5 border border-white/10 rounded-lg p-4"
+          >
+            <h3 className="text-gray-400 text-sm">Total Teams</h3>
+            <p className="text-2xl font-bold text-white mt-1">{registrations.length}</p>
+          </motion.div>
+          <motion.div
+            variants={itemAnimation}
+            className="bg-white/5 border border-white/10 rounded-lg p-4"
+          >
+            <h3 className="text-gray-400 text-sm">Total Revenue</h3>
+            <p className="text-2xl font-bold text-white mt-1">
+              ₹{registrations.reduce((acc, reg) => acc + reg.total_amount, 0)}
+            </p>
+          </motion.div>
+          <motion.div
+            variants={itemAnimation}
+            className="bg-white/5 border border-white/10 rounded-lg p-4 sm:col-span-2 lg:col-span-1"
+          >
+            <h3 className="text-gray-400 text-sm">Pending Approvals</h3>
+            <p className="text-2xl font-bold text-white mt-1">
+              {registrations.filter(reg => reg.status === "pending").length}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Registration Cards */}
+        <motion.div variants={container} initial="hidden" animate="show" className="grid gap-4">
+          {filteredRegistrations.map((registration) => (
             <motion.div
               key={registration.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="group relative bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/5 cursor-pointer transition-colors"
-              onClick={() =>
-                router.push(`/admin/registrations/${registration.id}`)
-              }
+              variants={itemAnimation}
+              onClick={() => router.push(`/admin/registrations/${registration.id}`)}
+              className="group relative p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10 
+                hover:bg-white/10 transition-colors cursor-pointer"
             >
-              {/* Team Leader Info */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-3">
-                  {/* Header with Name and Status */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <User className="w-4 h-4 shrink-0 text-purple-400" />
-                      <span className="text-sm text-white font-medium">
-                        {registration.team_members[0]?.name}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          registration.status === "approved"
-                            ? "bg-green-500/10 text-green-400"
-                            : registration.status === "rejected"
-                              ? "bg-red-500/10 text-red-400"
-                              : "bg-yellow-500/10 text-yellow-400"
-                        }`}
-                      >
-                        {registration.status.charAt(0).toUpperCase() +
-                          registration.status.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Contact Info */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3 h-3 shrink-0 text-gray-400" />
-                      <span className="text-xs text-gray-400 truncate">
-                        {registration.team_members[0]?.email}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3 h-3 shrink-0 text-gray-400" />
-                      <span className="text-xs text-gray-400">
-                        {registration.team_members[0]?.phone}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* College Info */}
-                  <div className="text-xs text-gray-400">
-                    <p className="truncate">
-                      {registration.team_members[0]?.college}
-                    </p>
-                    <p>
-                      {registration.team_members[0]?.department} -{" "}
-                      {formatYear(registration.team_members[0]?.year)} Year
-                    </p>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="h-px bg-white/10" />
-
-                {/* Events and Payment */}
-                <div className="space-y-3">
-                  {/* Registered Events */}
-                  <div>
-                    <h4 className="text-xs font-medium text-gray-400 mb-2">
-                      Registered Events
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {registration.selected_events.map((eventId) => (
-                        <div
-                          key={eventId}
-                          className="bg-white/5 px-2 py-1 rounded-lg text-xs text-gray-300"
-                        >
-                          {events.find((e) => e.id === eventId)?.title}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Total Amount */}
-                  <div>
-                    <h4 className="text-xs font-medium text-gray-400 mb-1">
-                      Total Amount
-                    </h4>
-                    <p className="text-base font-semibold text-white">
-                      ₹{registration.total_amount}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Add action buttons */}
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    size="sm"
-                    onClick={(e) =>
-                      handleStatusUpdate(e, registration.id, "approved")
-                    }
-                    disabled={
-                      updating === registration.id ||
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-medium text-white">
+                      {registration.team_members[0]?.name}
+                      {registration.team_size > 1 && 
+                        <span className="text-gray-400 text-sm ml-1">
+                          +{registration.team_size - 1} members
+                        </span>
+                      }
+                    </h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       registration.status === "approved"
-                    }
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    {updating === registration.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Check className="w-4 h-4 mr-2" />
-                    )}
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={(e) =>
-                      handleStatusUpdate(e, registration.id, "rejected")
-                    }
-                    disabled={
-                      updating === registration.id ||
-                      registration.status === "rejected"
-                    }
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    {updating === registration.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <X className="w-4 h-4 mr-2" />
-                    )}
-                    Reject
-                  </Button>
+                        ? "bg-green-500/10 text-green-400"
+                        : registration.status === "rejected"
+                        ? "bg-red-500/10 text-red-400"
+                        : "bg-yellow-500/10 text-yellow-400"
+                    }`}>
+                      {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400">{registration.team_id}</p>
                 </div>
               </div>
 
-              {/* Arrow indicator for mobile */}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 lg:hidden">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-white/10">
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>{registration.selected_events.length} Events</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <User2 className="w-4 h-4" />
+                  <span className="capitalize">
+                    {registration.team_members[0]?.gender || "Not specified"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Users className="w-4 h-4" />
+                  <span>{registration.team_size} Members</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-medium text-white">
+                  <IndianRupee className="w-4 h-4" />
+                  <span>₹{registration.total_amount}</span>
+                </div>
               </div>
-
-              {/* Make the entire card clickable except for the buttons */}
-              <div
-                className="absolute inset-0 cursor-pointer"
-                onClick={(e) => e.stopPropagation()}
-                style={{ pointerEvents: "auto" }}
-              />
             </motion.div>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Empty State */}
+        {filteredRegistrations.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12"
+          >
+            <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-400">No registrations found</h3>
+            <p className="text-gray-500 mt-1">
+              {searchQuery ? "Try adjusting your search" : "Registrations will appear here"}
+            </p>
+          </motion.div>
+        )}
       </div>
     </AdminLayout>
   );

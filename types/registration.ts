@@ -6,10 +6,12 @@ export interface TeamMember {
   college: string;
   department: string;
   year: string;
+  gender: string;
 }
 
 export type Registration = {
   id: string;
+  team_id: string;
   team_size: number;
   selected_events: string[];
   total_amount: number;

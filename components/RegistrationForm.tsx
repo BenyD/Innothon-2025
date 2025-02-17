@@ -15,6 +15,7 @@ import { Smartphone, Building2, Check, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const INITIAL_MEMBER: TeamMember = {
   id: "",
@@ -24,6 +25,7 @@ const INITIAL_MEMBER: TeamMember = {
   college: "",
   department: "",
   year: "",
+  gender: "",
 };
 
 const YEAR_OPTIONS = [
@@ -31,6 +33,11 @@ const YEAR_OPTIONS = [
   { value: "2", label: "Second Year" },
   { value: "3", label: "Third Year" },
   { value: "4", label: "Fourth Year" },
+];
+
+const GENDER_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
 ];
 
 const isValidEmail = (email: string) => {
@@ -165,54 +172,45 @@ const RegistrationForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Upload screenshot first
-      const screenshotFile = paymentDetails.paymentScreenshot;
-      const fileExt = screenshotFile?.name.split(".").pop();
-      const fileName = `payment-proofs/${Date.now()}.${fileExt}`;
+      // Generate a unique team ID (you can use any UUID generation method)
+      const team_id = `TEAM-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("innothon")
-        .upload(fileName, screenshotFile!);
+      // Create the registration object
+      const registration = {
+        team_id,
+        team_size: teamSize,
+        selected_events: selectedEvents,
+        total_amount: calculateTotal(),
+        status: "pending",
+        payment_status: "pending",
+        created_at: new Date().toISOString(),
+        payment_method: paymentDetails.paymentMethod,
+        transaction_id: paymentDetails.transactionId,
+      };
 
-      if (uploadError) throw uploadError;
-
-      // Create the registration record with payment details
-      const { data: registration, error: registrationError } = await supabase
+      // Insert registration
+      const { data: regData, error: regError } = await supabase
         .from("registrations")
-        .insert([
-          {
-            team_size: teamSize,
-            selected_events: selectedEvents,
-            total_amount: calculateTotal(),
-            status: "pending",
-            payment_status: "pending",
-            payment_proof: fileName,
-            transaction_id: paymentDetails.transactionId,
-            payment_method: paymentDetails.paymentMethod,
-          },
-        ])
+        .insert([registration])
         .select()
         .single();
 
-      if (registrationError) throw registrationError;
+      if (regError) throw regError;
 
-      // Insert team members
-      const teamMembersData = teamMembers.map((member, index) => ({
-        registration_id: registration.id,
-        name: member.name,
-        email: member.email,
-        phone: member.phone,
-        college: member.college,
-        department: member.department,
-        year: member.year,
-        is_team_leader: index === 0,
+      // Update team members with the registration ID and team ID
+      const updatedTeamMembers = teamMembers.map((member) => ({
+        ...member,
+        id: Math.random().toString(36).substr(2, 9),
+        registration_id: regData.id,
+        team_id: team_id
       }));
 
-      const { error: teamMembersError } = await supabase
+      // Insert team members
+      const { error: teamError } = await supabase
         .from("team_members")
-        .insert(teamMembersData);
+        .insert(updatedTeamMembers);
 
-      if (teamMembersError) throw teamMembersError;
+      if (teamError) throw teamError;
 
       // Show success modal instead of toast
       setShowSuccessModal(true);
@@ -480,6 +478,28 @@ const RegistrationForm = () => {
                                     </option>
                                   ))}
                                 </select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`gender-${index}`}>Gender</Label>
+                                <Select
+                                  value={member.gender}
+                                  onValueChange={(value) => updateTeamMember(index, "gender", value)}
+                                >
+                                  <SelectTrigger
+                                    id={`gender-${index}`}
+                                    className="w-full bg-white/5 border-white/10 text-white"
+                                  >
+                                    <SelectValue placeholder="Select Gender" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {GENDER_OPTIONS.map((option) => (
+                                      <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
                             </div>
                           </motion.div>

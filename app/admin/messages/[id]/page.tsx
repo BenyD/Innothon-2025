@@ -1,38 +1,31 @@
 "use client";
 
-import { useEffect, useState, use, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { Mail, Calendar, User, Check, PhoneCall, ArrowLeft } from "lucide-react";
+import { Mail, Calendar, User2, Check, Phone, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Contact } from "@/types/contact";
 
-interface Message {
-  id: number;
-  created_at: string;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  read: boolean;
-}
-
-export default function MessagePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const [message, setMessage] = useState<Message | null>(null);
+export default function MessagePage() {
+  const params = useParams();
+  const [message, setMessage] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
   const [isResolving, setIsResolving] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
   const fetchMessage = useCallback(async () => {
+    if (!params.id) return;
+    
     try {
       const { data, error } = await supabase
         .from("contact_messages")
         .select("*")
-        .eq("id", resolvedParams.id)
+        .eq("id", params.id)
         .single();
 
       if (error) throw error;
@@ -47,11 +40,11 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
     } finally {
       setLoading(false);
     }
-  }, [resolvedParams.id, toast]);
+  }, [params.id, toast]);
 
   useEffect(() => {
     fetchMessage();
-  }, [fetchMessage, resolvedParams.id]);
+  }, [fetchMessage]);
 
   const handleResolve = async () => {
     if (!message) return;
@@ -66,18 +59,16 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
       if (error) throw error;
 
       setMessage(prev => prev ? { ...prev, read: true } : null);
-      
       toast({
         title: "Message marked as resolved",
         description: "The message has been successfully marked as resolved.",
-        variant: "success",
       });
     } catch (error) {
       console.error("Error resolving message:", error);
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to mark message as resolved. Please try again.",
+        description: "Failed to mark message as resolved",
+        variant: "destructive",
       });
     } finally {
       setIsResolving(false);
@@ -86,11 +77,11 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <Button
-          variant="outline"
-          className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10"
-          onClick={() => router.push("/admin/messages")}
+          variant="ghost"
+          onClick={() => router.back()}
+          className="text-gray-400 hover:text-white"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Messages
@@ -99,8 +90,7 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
         {loading ? (
           <div className="space-y-4">
             <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-48" />
             <Skeleton className="h-32 w-full" />
           </div>
         ) : message ? (
@@ -109,49 +99,27 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                 Message from {message.name}
               </h1>
-              <p className="text-gray-400 mt-1">
-                View and manage contact message
-              </p>
+              <p className="text-gray-400 mt-1">View and manage contact message</p>
             </div>
 
-            <div className="bg-black/50 border border-white/10 rounded-xl p-6 space-y-6">
-              <div className="grid gap-4">
-                <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-purple-400" />
-                  <span className="text-white font-medium">{message.name}</span>
-                  {message.read && (
-                    <span className="bg-green-500/10 text-green-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                      <Check className="w-3 h-3" />
-                      Resolved
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                  <a
-                    href={`mailto:${message.email}`}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {message.email}
-                  </a>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <PhoneCall className="w-5 h-5 text-green-400" />
-                  <a
-                    href={`tel:${message.phone}`}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {message.phone}
-                  </a>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-pink-400" />
-                  <span className="text-gray-300">
-                    {new Date(message.created_at).toLocaleString()}
-                  </span>
+            <div className="grid gap-6 bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-gray-400 mb-2">Contact Details</h2>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white">
+                      <User2 className="w-4 h-4 text-blue-400" />
+                      {message.name}
+                    </div>
+                    <div className="flex items-center gap-2 text-white">
+                      <Mail className="w-4 h-4 text-blue-400" />
+                      {message.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-white">
+                      <Calendar className="w-4 h-4 text-blue-400" />
+                      {new Date(message.created_at).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -162,7 +130,7 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   className="flex-1 border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10"
@@ -171,19 +139,11 @@ export default function MessagePage({ params }: { params: Promise<{ id: string }
                   <Mail className="w-4 h-4 mr-2" />
                   Reply by Email
                 </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10"
-                  onClick={() => window.open(`tel:${message.phone}`)}
-                >
-                  <PhoneCall className="w-4 h-4 mr-2" />
-                  Call
-                </Button>
                 {!message.read && (
                   <Button
                     onClick={handleResolve}
                     disabled={isResolving}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
                   >
                     <Check className="w-4 h-4 mr-2" />
                     {isResolving ? "Resolving..." : "Mark as Resolved"}
