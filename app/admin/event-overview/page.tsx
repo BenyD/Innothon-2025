@@ -11,7 +11,8 @@ import {
   IndianRupee,
   ArrowUpRight,
   Filter,
-  Copy
+  Copy,
+  CheckCircle2
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -154,31 +155,52 @@ export default function EventOverview() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <motion.div 
               variants={item}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
+              className="p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10 backdrop-blur-sm"
             >
-              <h3 className="text-gray-400 text-sm">Total Registrations</h3>
-              <p className="text-2xl font-bold text-white mt-2">{totalRegistrations}</p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <Users className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-gray-400 text-sm">Total Registrations</h3>
+                  <p className="text-2xl font-bold text-white mt-1">{totalRegistrations}</p>
+                </div>
+              </div>
             </motion.div>
             <motion.div 
               variants={item}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
+              className="p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-white/10 backdrop-blur-sm"
             >
-              <h3 className="text-gray-400 text-sm">Total Revenue</h3>
-              <p className="text-2xl font-bold text-white mt-2">₹{totalAmount}</p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-green-500/20">
+                  <IndianRupee className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-gray-400 text-sm">Total Revenue</h3>
+                  <p className="text-2xl font-bold text-white mt-1">₹{totalAmount}</p>
+                </div>
+              </div>
             </motion.div>
             <motion.div 
               variants={item}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
+              className="p-6 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-white/10 backdrop-blur-sm"
             >
-              <h3 className="text-gray-400 text-sm">Approved Registrations</h3>
-              <p className="text-2xl font-bold text-white mt-2">{approvedCount}</p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <CheckCircle2 className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-gray-400 text-sm">Approved Registrations</h3>
+                  <p className="text-2xl font-bold text-white mt-1">{approvedCount}</p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
 
         {/* Filters Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
+          <div className="relative col-span-full lg:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search teams or colleges..."
@@ -237,30 +259,32 @@ export default function EventOverview() {
         </div>
 
         {/* Events List */}
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 mt-8">
           {Object.entries(groupedRegistrations).map(([eventId, eventRegistrations]) => (
             <motion.div
               key={eventId}
               variants={item}
               className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden"
             >
-              <div className="p-6 bg-white/5 border-b border-white/10 flex justify-between items-center">
-                <div>
-                  <h2 className="text-lg font-semibold text-white">
-                    {events.find((e) => e.id === eventId)?.title || "Unknown Event"}
-                  </h2>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {eventRegistrations.length} team{eventRegistrations.length !== 1 ? "s" : ""} registered
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <IndianRupee className="w-4 h-4" />
-                    <span>₹{eventRegistrations.length * 500}</span>
+              <div className="p-6 bg-gradient-to-r from-white/5 to-transparent border-b border-white/10">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">
+                      {events.find((e) => e.id === eventId)?.title || "Unknown Event"}
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {eventRegistrations.length} team{eventRegistrations.length !== 1 ? "s" : ""} registered
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <User2 className="w-4 h-4" />
-                    <span>{eventRegistrations.filter(reg => reg.status === "approved").length} Approved</span>
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2 text-green-400">
+                      <IndianRupee className="w-4 h-4" />
+                      <span>₹{eventRegistrations.length * 500}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-purple-400">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>{eventRegistrations.filter(reg => reg.status === "approved").length} Approved</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -275,10 +299,10 @@ export default function EventOverview() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-400">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-400">Amount</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-400">Team ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400">Actions</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-400">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10">
+                  <tbody className="divide-y divide-white/5">
                     {eventRegistrations.map((registration) => (
                       <tr 
                         key={`${registration.id}-${eventId}`}
@@ -289,7 +313,11 @@ export default function EventOverview() {
                             <Users className="w-4 h-4 text-purple-400" />
                             <span className="text-white">
                               {registration.team_members[0]?.name}
-                              {registration.team_size > 1 && ` +${registration.team_size - 1}`}
+                              {registration.team_size > 1 && (
+                                <span className="text-gray-400 text-sm ml-1">
+                                  +{registration.team_size - 1}
+                                </span>
+                              )}
                             </span>
                           </div>
                         </td>
@@ -315,22 +343,10 @@ export default function EventOverview() {
                         <td className="px-6 py-4 text-gray-300">
                           ₹{registration.total_amount}
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="cursor-pointer" onClick={() => {
-                              navigator.clipboard.writeText(registration.team_id);
-                              toast({
-                                title: "Copied!",
-                                description: "Team ID copied to clipboard",
-                                duration: 2000,
-                              });
-                            }}>
-                              <span className="text-xs">{registration.team_id}</span>
-                              <Copy className="w-3 h-3 ml-1" />
-                            </Badge>
-                          </div>
+                        <td className="px-6 py-4 text-gray-400">
+                          {registration.team_id}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-right">
                           <button
                             onClick={() => router.push(`/admin/registrations/${registration.id}`)}
                             className="text-purple-400 hover:text-purple-300 transition-colors"
