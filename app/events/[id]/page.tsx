@@ -21,6 +21,9 @@ import {
   Award,
   Wrench,
   Layers,
+  Target,
+  Gamepad2,
+  Swords,
 } from "lucide-react";
 
 export default function EventPage() {
@@ -302,6 +305,73 @@ export default function EventPage() {
             </div>
           </div>
         </div>
+
+        {/* Add this after the Main Grid Layout section */}
+        {event.id === "pixel-showdown" && event.gameDetails && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
+              <Gamepad2 className="w-6 h-6 text-purple-400" />
+              Game Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {event.gameDetails.map((game) => (
+                <div
+                  key={game.game}
+                  className="bg-white/5 border border-white/10 rounded-xl overflow-hidden"
+                >
+                  <div className="p-6 border-b border-white/10 bg-white/5">
+                    <h3 className="text-xl font-semibold text-white mb-2">{game.game}</h3>
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <Users className="w-4 h-4" />
+                      <span>{game.teamSize}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-400 mb-1">Registration Fee</div>
+                      <div className="text-white">{game.registrationFee}</div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-sm font-medium text-gray-400 mb-1">Format</div>
+                      <div className="text-white">{game.format}</div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-sm font-medium text-gray-400 mb-1">Scoring System</div>
+                      <div className="space-y-2">
+                        {game.scoring.placement && (
+                          <div className="flex items-start gap-2 text-white">
+                            <Target className="w-4 h-4 text-blue-400 mt-1 shrink-0" />
+                            <span>Placement: {game.scoring.placement}</span>
+                          </div>
+                        )}
+                        {game.scoring.kills && (
+                          <div className="flex items-start gap-2 text-white">
+                            <Swords className="w-4 h-4 text-red-400 mt-1 shrink-0" />
+                            <span>Kills: {game.scoring.kills}</span>
+                          </div>
+                        )}
+                        {game.scoring.league && (
+                          <div className="flex items-start gap-2 text-white">
+                            <Trophy className="w-4 h-4 text-yellow-400 mt-1 shrink-0" />
+                            <span>League: {game.scoring.league}</span>
+                          </div>
+                        )}
+                        {game.scoring.tiebreakers && (
+                          <div className="text-sm text-gray-400 mt-2">
+                            <span className="font-medium">Tiebreakers:</span> {game.scoring.tiebreakers}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

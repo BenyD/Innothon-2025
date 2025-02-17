@@ -563,6 +563,7 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
         teamSize: "1 member",
         format: "League (26 players) + Knockout (Top 16)",
         scoring: {
+          placement: "N/A",
           league: "Win: 3pts, Draw: 1pt, Loss: 0pt",
           tiebreakers: "Goal Difference, Goals Scored, H2H"
         }

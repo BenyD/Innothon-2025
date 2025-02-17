@@ -36,4 +36,16 @@ export interface Event {
     description: string;
     duration?: string;
   }[];
+  gameDetails?: {
+    game: string;
+    registrationFee: string;
+    teamSize: string;
+    format: string;
+    scoring: {
+      placement: string;
+      kills?: string;
+      league?: string;
+      tiebreakers?: string;
+    };
+  }[];
 } 
