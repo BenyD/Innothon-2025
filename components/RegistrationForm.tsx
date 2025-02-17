@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { v4 as uuidv4 } from 'uuid';
 
 const INITIAL_MEMBER: TeamMember = {
   id: "",
@@ -224,54 +225,68 @@ const RegistrationForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Generate a unique team ID (you can use any UUID generation method)
-      const team_id = `TEAM-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      // Generate proper UUIDs
+      const teamId = uuidv4();
+      const registrationId = uuidv4();
 
-      // Create the registration object
-      const registration = {
-        team_id,
-        team_size: teamSize,
-        selected_events: selectedEvents,
-        total_amount: calculateTotal(),
-        status: "pending",
-        payment_status: "pending",
-        created_at: new Date().toISOString(),
-        payment_method: paymentDetails.paymentMethod,
-        transaction_id: paymentDetails.transactionId,
-      };
+      // Upload payment proof first if exists
+      let paymentProofUrl = null;
+      if (paymentDetails.paymentScreenshot) {
+        const fileExt = paymentDetails.paymentScreenshot.name.split('.').pop();
+        const fileName = `${registrationId}_payment.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('payment-proofs')
+          .upload(fileName, paymentDetails.paymentScreenshot);
 
-      // Insert registration
-      const { data: regData, error: regError } = await supabase
+        if (uploadError) throw uploadError;
+        
+        // Get the public URL for the uploaded file
+        const { data: { publicUrl } } = supabase.storage
+          .from('payment-proofs')
+          .getPublicUrl(fileName);
+        
+        paymentProofUrl = publicUrl;
+      }
+
+      // Create registration record with payment proof URL
+      const { error: registrationError } = await supabase
         .from("registrations")
-        .insert([registration])
-        .select()
-        .single();
+        .insert({
+          id: registrationId,
+          team_id: teamId,
+          team_size: teamSize,
+          selected_events: selectedEvents,
+          total_amount: calculateTotal(),
+          status: "pending",
+          payment_status: "pending",
+          transaction_id: paymentDetails.transactionId,
+          payment_method: paymentDetails.paymentMethod,
+          payment_proof: paymentProofUrl,
+        });
 
-      if (regError) throw regError;
+      if (registrationError) throw registrationError;
 
-      // Update team members with the registration ID and team ID
+      // Create team members records
       const updatedTeamMembers = teamMembers.map((member) => ({
         ...member,
-        id: Math.random().toString(36).substr(2, 9),
-        registration_id: regData.id,
-        team_id: team_id
+        id: uuidv4(),
+        registration_id: registrationId,
+        team_id: teamId,
       }));
 
-      // Insert team members
       const { error: teamError } = await supabase
         .from("team_members")
         .insert(updatedTeamMembers);
 
       if (teamError) throw teamError;
 
-      // Show success modal instead of toast
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Registration error:", error);
       toast({
         title: "Registration Failed",
-        description:
-          "There was an error processing your registration. Please try again.",
+        description: "There was an error processing your registration. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -698,6 +713,7 @@ const RegistrationForm = () => {
                               width={200}
                               height={200}
                               className="rounded-lg"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                             <div className="mt-4 text-center">
                               <p className="text-gray-400 text-sm">UPI ID</p>
