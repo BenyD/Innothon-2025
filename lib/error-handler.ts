@@ -1,9 +1,22 @@
 import { toast } from '@/components/ui/use-toast';
 
-export function handleError(error: any, context: string) {
+// Add specific type for error handling
+interface ErrorContext {
+  message?: string;
+  code?: string;
+  details?: unknown;
+}
+
+export function handleError(error: Error | ErrorContext | unknown, context: string) {
   console.error(`Error in ${context}:`, error);
   
-  const message = error.message || 'An unexpected error occurred';
+  let message = 'An unexpected error occurred';
+  
+  if (error instanceof Error) {
+    message = error.message;
+  } else if (typeof error === 'object' && error !== null && 'message' in error) {
+    message = String(error.message);
+  }
   
   toast({
     title: 'Error',

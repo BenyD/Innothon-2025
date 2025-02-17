@@ -5,7 +5,7 @@ import { createRealtimeSubscription } from '@/lib/realtime';
 
 export function useAdminData<T>(
   table: string,
-  query: any,
+  query: string | undefined,
   options?: { realtime?: boolean }
 ) {
   const [data, setData] = useState<T[]>([]);
@@ -15,12 +15,12 @@ export function useAdminData<T>(
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data: responseData, error } = await supabase
           .from(table)
-          .select(query);
+          .select<string, T>(query);
 
         if (error) throw error;
-        setData(data || []);
+        setData(responseData as T[] || []);
       } catch (error) {
         handleError(error, `fetching ${table}`);
       } finally {

@@ -1,7 +1,5 @@
 import { supabase } from './supabase'
 
-type AllowedMimeType = 'image/jpeg' | 'image/png' | 'image/jpg' | 'application/pdf';
-
 export async function uploadPaymentProof(file: File, registrationId: string) {
   try {
     // Validate file type
@@ -15,25 +13,23 @@ export async function uploadPaymentProof(file: File, registrationId: string) {
     }
 
     const fileExt = file.name.split('.').pop()
-    const fileName = `${registrationId}_payment.${fileExt}`
+    const fileName = `${registrationId}-${Date.now()}.${fileExt}`
     
-    const { error: uploadError, data } = await supabase.storage
+    const { error } = await supabase.storage
       .from('payment-proofs')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: true,
-        contentType: file.type as AllowedMimeType
-      })
+      .upload(fileName, file)
 
-    if (uploadError) throw uploadError
+    if (error) throw error
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('payment-proofs')
-      .getPublicUrl(fileName)
-
-    return publicUrl
+    return {
+      success: true,
+      filePath: `payment-proofs/${fileName}`
+    }
   } catch (error) {
-    console.error('Error uploading file:', error)
-    throw error
+    console.error('Error uploading payment proof:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to upload file'
+    }
   }
 } 

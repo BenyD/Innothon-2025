@@ -34,4 +34,10 @@ export type Tables = {
     Insert: Omit<Tables['team_members']['Row'], 'id' | 'created_at'>
     Update: Partial<Tables['team_members']['Row']>
   }
-} 
+}
+
+export type Database = {
+  public: {
+    Tables: Tables;
+  };
+}; 

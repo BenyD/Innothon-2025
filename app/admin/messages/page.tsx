@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
@@ -42,11 +42,7 @@ export default function Messages() {
   const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  async function fetchMessages() {
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -66,7 +62,11 @@ export default function Messages() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   const handleMarkAsRead = async (messageId: string) => {
     try {

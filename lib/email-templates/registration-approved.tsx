@@ -55,10 +55,10 @@ export const RegistrationApprovedEmail = ({
             <Text style={greeting}>Dear {teamMember.name},</Text>
             
             <Text style={paragraph}>
-              Your registration for Innothon'25 has been confirmed! 
-              {isTeamLeader && teamSize > 1 && (
-                " As the team leader, please share this information with your team members."
-              )}
+              We&apos;re excited to confirm your registration for Innothon&apos;25.
+              {isTeamLeader && teamSize > 1
+                ? ` As the team leader, please ensure all team members are informed about the event details.`
+                : ``}
             </Text>
 
             {/* Registration Card */}

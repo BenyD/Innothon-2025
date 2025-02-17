@@ -7,12 +7,10 @@ import { motion } from "framer-motion";
 import { 
   Users, 
   Search, 
-  User2,
   IndianRupee,
   ArrowUpRight,
   Filter,
-  Copy,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,8 +24,6 @@ import { events } from "@/data/events";
 import type { Registration } from "@/types/registration";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "@/components/ui/use-toast";
 
 type EventRegistration = Registration & {
   event_id: string;
