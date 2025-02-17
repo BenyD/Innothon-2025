@@ -105,15 +105,28 @@ const RegistrationForm = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const calculateTotal = () => {
-    return selectedEvents.length * 500;
+    if (selectedEvents.includes('digital-divas')) {
+      return teamSize * 200; // 200 per participant for Digital Divas
+    }
+    return selectedEvents.length * 500; // Regular price for other events
   };
 
   const handleTeamSizeChange = (size: number) => {
+    // If Digital Divas is selected, limit team size to 2
+    if (selectedEvents.includes('digital-divas') && size > 2) {
+      toast({
+        title: "Team Size Error",
+        description: "Digital Divas allows maximum 2 participants",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setTeamSize(size);
     if (size > teamMembers.length) {
       setTeamMembers([
         ...teamMembers,
-        ...Array(Math.min(size, 3) - teamMembers.length)
+        ...Array(Math.min(size, selectedEvents.includes('digital-divas') ? 2 : 3) - teamMembers.length)
           .fill(null)
           .map(() => ({ ...INITIAL_MEMBER })),
       ]);
@@ -162,35 +175,33 @@ const RegistrationForm = () => {
   };
 
   const handleEventSelection = (eventId: string, checked: boolean) => {
-    // Add console logs to debug
-    console.log('Attempting to select:', eventId);
-    console.log('Currently selected:', selectedEvents);
-    console.log('Checking against groups:', MUTUALLY_EXCLUSIVE_EVENTS);
-
     if (checked) {
-      // Check if selecting this event would violate mutual exclusivity
-      const conflictingGroup = MUTUALLY_EXCLUSIVE_EVENTS.find(group => 
-        group.includes(eventId) && group.some(e => selectedEvents.includes(e))
-      );
-
-      console.log('Found conflicting group:', conflictingGroup);
-
-      if (conflictingGroup) {
-        const conflictingEventId = conflictingGroup.find(id => id !== eventId);
-        const conflictingEvent = events.find(e => e.id === conflictingEventId);
-        
-        console.log('Conflicting event:', conflictingEvent);
-
-        toast({
-          title: "Cannot Select Event",
-          description: `This event cannot be selected together with ${conflictingEvent?.title}`,
-          variant: "destructive",
-        });
-        return;
+      // If Digital Divas is being selected
+      if (eventId === 'digital-divas') {
+        // Reset any other selected events and set team size max to 2
+        setSelectedEvents(['digital-divas']);
+        if (teamSize > 2) setTeamSize(2);
+        // Ensure only female participants
+        setTeamMembers(prevMembers => 
+          prevMembers.map(member => ({
+            ...member,
+            gender: 'female'
+          })).slice(0, 2)
+        );
+      } else {
+        // If another event is being selected, prevent if Digital Divas is already selected
+        if (selectedEvents.includes('digital-divas')) {
+          toast({
+            title: "Event Selection Error",
+            description: "Digital Divas cannot be combined with other events",
+            variant: "destructive",
+          });
+          return;
+        }
+        setSelectedEvents([...selectedEvents, eventId]);
       }
-      setSelectedEvents([...selectedEvents, eventId]);
     } else {
-      setSelectedEvents(selectedEvents.filter(id => id !== eventId));
+      setSelectedEvents(selectedEvents.filter((id) => id !== eventId));
     }
   };
 
@@ -228,13 +239,25 @@ const RegistrationForm = () => {
     setTeamMembers(newTeamMembers);
   };
 
+  const validateTeamMembers = () => {
+    if (selectedEvents.includes('digital-divas')) {
+      const allFemale = teamMembers.every(member => member.gender === 'female');
+      if (!allFemale) {
+        toast({
+          title: "Validation Error",
+          description: "Digital Divas is exclusively for female participants",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // If already submitting, prevent double submission
     if (isSubmitting) return;
 
-    // Handle first step validation and navigation
     if (currentStep === 1) {
       const isValid = teamMembers.every(
         (member) =>
@@ -258,6 +281,10 @@ const RegistrationForm = () => {
         return;
       }
 
+      if (!validateTeamMembers()) {
+        return;
+      }
+
       if (selectedEvents.length === 0) {
         toast({
           title: "Error",
@@ -267,7 +294,6 @@ const RegistrationForm = () => {
         return;
       }
 
-      // Move to payment step
       setCurrentStep(2);
       return;
     }
@@ -451,7 +477,7 @@ const RegistrationForm = () => {
                         subtitle="Select the number of team members"
                       />
                       <div className="grid grid-cols-3 gap-3 mt-4">
-                        {[1, 2, 3].map((size) => (
+                        {(selectedEvents.includes('digital-divas') ? [1, 2] : [1, 2, 3]).map((size) => (
                           <button
                             key={size}
                             type="button"
