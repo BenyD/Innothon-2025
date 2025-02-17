@@ -40,6 +40,25 @@ const GENDER_OPTIONS = [
   { value: "female", label: "Female" },
 ];
 
+const MUTUALLY_EXCLUSIVE_EVENTS = [
+  ['ai-genesis', 'digital-divas'],
+  ['code-arena', 'hackquest']
+];
+
+const isEventDisabled = (eventId: string, selectedEvents: string[]): boolean => {
+  for (const exclusiveGroup of MUTUALLY_EXCLUSIVE_EVENTS) {
+    if (exclusiveGroup.includes(eventId)) {
+      // Find the other events in this exclusive group
+      const otherEvents = exclusiveGroup.filter(e => e !== eventId);
+      // If any of the other events are selected, this event should be disabled
+      if (otherEvents.some(e => selectedEvents.includes(e))) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 const isValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -122,6 +141,39 @@ const RegistrationForm = () => {
       return false;
     }
     return true;
+  };
+
+  const handleEventSelection = (eventId: string, checked: boolean) => {
+    // Add console logs to debug
+    console.log('Attempting to select:', eventId);
+    console.log('Currently selected:', selectedEvents);
+    console.log('Checking against groups:', MUTUALLY_EXCLUSIVE_EVENTS);
+
+    if (checked) {
+      // Check if selecting this event would violate mutual exclusivity
+      const conflictingGroup = MUTUALLY_EXCLUSIVE_EVENTS.find(group => 
+        group.includes(eventId) && group.some(e => selectedEvents.includes(e))
+      );
+
+      console.log('Found conflicting group:', conflictingGroup);
+
+      if (conflictingGroup) {
+        const conflictingEventId = conflictingGroup.find(id => id !== eventId);
+        const conflictingEvent = events.find(e => e.id === conflictingEventId);
+        
+        console.log('Conflicting event:', conflictingEvent);
+
+        toast({
+          title: "Cannot Select Event",
+          description: `This event cannot be selected together with ${conflictingEvent?.title}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      setSelectedEvents([...selectedEvents, eventId]);
+    } else {
+      setSelectedEvents(selectedEvents.filter(id => id !== eventId));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -271,41 +323,44 @@ const RegistrationForm = () => {
                         subtitle="Choose the events you want to participate in"
                       />
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                        {events.map((event) => (
-                          <label
-                            key={event.id}
-                            className={`relative flex flex-col gap-2 p-4 rounded-xl border cursor-pointer transition-all ${
-                              selectedEvents.includes(event.id)
-                                ? "bg-white/10 border-purple-500"
-                                : "bg-black/50 border-white/10 hover:bg-white/5"
-                            }`}
-                          >
-                            <Checkbox
-                              checked={selectedEvents.includes(event.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  setSelectedEvents([
-                                    ...selectedEvents,
-                                    event.id,
-                                  ]);
-                                } else {
-                                  setSelectedEvents(
-                                    selectedEvents.filter(
-                                      (id) => id !== event.id
-                                    )
-                                  );
-                                }
-                              }}
-                              className="absolute right-3 top-3"
-                            />
-                            <h3 className="font-medium text-white pr-8">
-                              {event.title}
-                            </h3>
-                            <p className="text-sm text-gray-400">
-                              {event.shortDescription}
-                            </p>
-                          </label>
-                        ))}
+                        {events.map((event) => {
+                          const isDisabled = isEventDisabled(event.id, selectedEvents);
+                          return (
+                            <label
+                              key={event.id}
+                              className={`relative flex flex-col gap-2 p-4 rounded-xl border transition-all ${
+                                selectedEvents.includes(event.id)
+                                  ? "bg-white/10 border-purple-500"
+                                  : isDisabled
+                                  ? "bg-black/50 border-white/10 opacity-50 cursor-not-allowed"
+                                  : "bg-black/50 border-white/10 hover:bg-white/5"
+                              }`}
+                            >
+                              <div className="absolute right-3 top-3">
+                                <Checkbox
+                                  checked={selectedEvents.includes(event.id)}
+                                  onCheckedChange={(checked) => 
+                                    handleEventSelection(event.id, checked as boolean)
+                                  }
+                                  disabled={isDisabled}
+                                  className={isDisabled ? "cursor-not-allowed" : ""}
+                                />
+                              </div>
+                              <h3 className="font-medium text-white pr-8">{event.title}</h3>
+                              <p className="text-sm text-gray-400">{event.shortDescription}</p>
+                              {isDisabled && !selectedEvents.includes(event.id) && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
+                                  <p className="text-sm text-gray-400 px-4 text-center">
+                                    Cannot be selected with {events.find(e => 
+                                      MUTUALLY_EXCLUSIVE_EVENTS.find(group => 
+                                        group.includes(event.id))?.find(id => id !== event.id) === e.id
+                                    )?.title}
+                                  </p>
+                                </div>
+                              )}
+                            </label>
+                          );
+                        })}
                       </div>
                     </div>
 
