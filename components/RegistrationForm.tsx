@@ -11,7 +11,7 @@ import type { TeamMember } from "@/types/registration";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Smartphone, Building2, Check, User } from "lucide-react";
+import { Smartphone, Building2, Check, User, GraduationCap, User2, Mail, Wallet, CreditCard, IndianRupee, Receipt, QrCode, Building, Upload, Copy, Users, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -365,35 +365,41 @@ const RegistrationForm = () => {
                                 <Label htmlFor={`name-${index}`}>
                                   Full Name
                                 </Label>
-                                <Input
-                                  id={`name-${index}`}
-                                  value={member.name}
-                                  onChange={(e) =>
-                                    updateTeamMember(
-                                      index,
-                                      "name",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="bg-white/5 border-white/10"
-                                />
+                                <div className="relative">
+                                  <Input
+                                    id={`name-${index}`}
+                                    value={member.name}
+                                    onChange={(e) =>
+                                      updateTeamMember(
+                                        index,
+                                        "name",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="bg-white/5 border-white/10 pl-10"
+                                  />
+                                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                </div>
                               </div>
 
                               <div className="space-y-2">
                                 <Label htmlFor={`email-${index}`}>Email</Label>
-                                <Input
-                                  id={`email-${index}`}
-                                  type="email"
-                                  value={member.email}
-                                  onChange={(e) =>
-                                    updateTeamMember(
-                                      index,
-                                      "email",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="bg-white/5 border-white/10"
-                                />
+                                <div className="relative">
+                                  <Input
+                                    id={`email-${index}`}
+                                    type="email"
+                                    value={member.email}
+                                    onChange={(e) =>
+                                      updateTeamMember(
+                                        index,
+                                        "email",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="bg-white/5 border-white/10 pl-10"
+                                  />
+                                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                </div>
                               </div>
 
                               <div className="space-y-2">
@@ -440,44 +446,46 @@ const RegistrationForm = () => {
                                 <Label htmlFor={`department-${index}`}>
                                   Department
                                 </Label>
-                                <Input
-                                  id={`department-${index}`}
-                                  value={member.department}
-                                  onChange={(e) =>
-                                    updateTeamMember(
-                                      index,
-                                      "department",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="bg-white/5 border-white/10"
-                                />
+                                <div className="relative">
+                                  <Input
+                                    id={`department-${index}`}
+                                    value={member.department}
+                                    onChange={(e) =>
+                                      updateTeamMember(
+                                        index,
+                                        "department",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="bg-white/5 border-white/10 pl-10"
+                                  />
+                                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                </div>
                               </div>
 
                               <div className="space-y-2">
                                 <Label htmlFor={`year-${index}`}>Year</Label>
-                                <select
-                                  id={`year-${index}`}
+                                <Select
                                   value={member.year}
-                                  onChange={(e) =>
-                                    updateTeamMember(
-                                      index,
-                                      "year",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  onValueChange={(value) => updateTeamMember(index, "year", value)}
                                 >
-                                  <option value="">Select Year</option>
-                                  {YEAR_OPTIONS.map((option) => (
-                                    <option
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </option>
-                                  ))}
-                                </select>
+                                  <SelectTrigger
+                                    id={`year-${index}`}
+                                    className="w-full bg-white/5 border-white/10 text-white"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <GraduationCap className="w-4 h-4 text-gray-400" />
+                                      <SelectValue placeholder="Select Year" />
+                                    </div>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {YEAR_OPTIONS.map((option) => (
+                                      <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
 
                               <div className="space-y-2">
@@ -490,7 +498,10 @@ const RegistrationForm = () => {
                                     id={`gender-${index}`}
                                     className="w-full bg-white/5 border-white/10 text-white"
                                   >
-                                    <SelectValue placeholder="Select Gender" />
+                                    <div className="flex items-center gap-2">
+                                      <User2 className="w-4 h-4 text-gray-400" />
+                                      <SelectValue placeholder="Select Gender" />
+                                    </div>
                                   </SelectTrigger>
                                   <SelectContent>
                                     {GENDER_OPTIONS.map((option) => (
@@ -522,238 +533,248 @@ const RegistrationForm = () => {
               ) : (
                 <>
                   <div className="space-y-8">
-                    {/* Payment Instructions */}
-                    <div className="space-y-6 mt-8">
-                      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                        <h3 className="text-2xl font-semibold text-white mb-4">
-                          Payment Details
-                        </h3>
-
-                        {/* Total Amount Display */}
-                        <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6">
-                          <div className="text-center">
-                            <p className="text-gray-400 text-sm">
-                              Total Amount
-                            </p>
-                            <p className="text-3xl font-bold text-white">
-                              ₹{calculateTotal()}
-                            </p>
+                    {/* Payment Summary */}
+                    <div>
+                      <SectionTitle
+                        title="Payment Summary"
+                        subtitle="Review your registration details"
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 p-6 rounded-xl bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-pink-500/10 border border-white/10"
+                      >
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                            <div className="flex items-center gap-2">
+                              <Receipt className="w-4 h-4 text-purple-400" />
+                              <span className="text-gray-300">Events Selected</span>
+                            </div>
+                            <span className="text-white font-medium">{selectedEvents.length}</span>
                           </div>
-                        </div>
-
-                        {/* Payment Method Selection */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <label
-                            className={`relative flex flex-col p-4 border rounded-lg cursor-pointer
-                              ${
-                                paymentDetails.paymentMethod === "upi"
-                                  ? "border-purple-500 bg-purple-500/10"
-                                  : "border-white/10 bg-white/5 hover:bg-white/10"
-                              }`}
-                          >
-                            <input
-                              type="radio"
-                              name="paymentMethod"
-                              value="upi"
-                              checked={paymentDetails.paymentMethod === "upi"}
-                              onChange={(e) =>
-                                setPaymentDetails({
-                                  ...paymentDetails,
-                                  paymentMethod: e.target.value as
-                                    | "upi"
-                                    | "bank",
-                                })
-                              }
-                              className="absolute right-3 top-3"
-                            />
-                            <h4 className="font-medium text-white">
-                              UPI Payment
-                            </h4>
-                            <p className="text-sm text-gray-400">
-                              Scan QR code or pay to UPI ID
-                            </p>
-                          </label>
-
-                          <label
-                            className={`relative flex flex-col p-4 border rounded-lg cursor-pointer
-                              ${
-                                paymentDetails.paymentMethod === "bank"
-                                  ? "border-purple-500 bg-purple-500/10"
-                                  : "border-white/10 bg-white/5 hover:bg-white/10"
-                              }`}
-                          >
-                            <input
-                              type="radio"
-                              name="paymentMethod"
-                              value="bank"
-                              checked={paymentDetails.paymentMethod === "bank"}
-                              onChange={(e) =>
-                                setPaymentDetails({
-                                  ...paymentDetails,
-                                  paymentMethod: e.target.value as
-                                    | "upi"
-                                    | "bank",
-                                })
-                              }
-                              className="absolute right-3 top-3"
-                            />
-                            <h4 className="font-medium text-white">
-                              Bank Transfer
-                            </h4>
-                            <p className="text-sm text-gray-400">
-                              NEFT, IMPS, or Direct Transfer
-                            </p>
-                          </label>
-                        </div>
-
-                        {/* Payment Details Based on Selection */}
-                        {paymentDetails.paymentMethod === "upi" ? (
-                          <div className="space-y-4">
-                            <div className="flex justify-center">
-                              <div className="bg-white p-4 rounded-lg">
-                                <Image
-                                  src="/qr-code.png"
-                                  alt="Payment QR Code"
-                                  width={200}
-                                  height={200}
-                                  className="rounded-lg"
-                                />
+                          <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4 text-blue-400" />
+                              <span className="text-gray-300">Team Size</span>
+                            </div>
+                            <span className="text-white font-medium">{teamSize}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                            <div className="flex items-center gap-2">
+                              <IndianRupee className="w-4 h-4 text-green-400" />
+                              <span className="text-gray-300">Amount per Event</span>
+                            </div>
+                            <span className="text-white font-medium">₹500</span>
+                          </div>
+                          <div className="border-t border-white/10 pt-4 mt-4">
+                            <div className="flex justify-between items-center p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
+                              <div className="flex items-center gap-2">
+                                <Wallet className="w-5 h-5 text-purple-400" />
+                                <span className="text-white font-medium">Total Amount</span>
                               </div>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-gray-400 text-sm mb-2">
-                                UPI ID
-                              </p>
-                              <p className="text-white font-medium">
-                                8668090679@iob
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                              <div className="grid gap-3">
-                                <div>
-                                  <p className="text-sm text-gray-400">
-                                    Account Name
-                                  </p>
-                                  <p className="text-white">
-                                    HINDUSTAN INSTITUTE OF TECHNOLOGY AND
-                                    SCIENCE
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-gray-400">
-                                    Account Number
-                                  </p>
-                                  <p className="text-white">255402000000001</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-gray-400">
-                                    IFSC Code
-                                  </p>
-                                  <p className="text-white">IOBA000254</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-gray-400">
-                                    Bank & Branch
-                                  </p>
-                                  <p className="text-white">
-                                    Indian Overseas Bank, Padur
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Transaction ID and Screenshot Upload */}
-                        <div className="space-y-4 mt-6">
-                          <div>
-                            <Label
-                              htmlFor="transactionId"
-                              className="flex items-center gap-1"
-                            >
-                              Transaction ID
-                              <span className="text-red-500">*</span>
-                            </Label>
-                            <Input
-                              id="transactionId"
-                              value={paymentDetails.transactionId}
-                              onChange={(e) =>
-                                setPaymentDetails({
-                                  ...paymentDetails,
-                                  transactionId: e.target.value,
-                                })
-                              }
-                              placeholder="Enter your transaction ID"
-                              className="mt-1"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <Label className="flex items-center gap-1">
-                              Payment Screenshot
-                              <span className="text-red-500">*</span>
-                            </Label>
-                            <div className="mt-1">
-                              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-white/10 bg-white/5 hover:bg-white/10">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                  {paymentDetails.paymentScreenshot ? (
-                                    <p className="text-sm text-gray-400">
-                                      {paymentDetails.paymentScreenshot.name}
-                                    </p>
-                                  ) : (
-                                    <>
-                                      <svg
-                                        className="w-8 h-8 mb-4 text-gray-400"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 20 16"
-                                      >
-                                        <path
-                                          stroke="currentColor"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                                        />
-                                      </svg>
-                                      <p className="mb-2 text-sm text-gray-400">
-                                        <span className="font-semibold">
-                                          Click to upload
-                                        </span>{" "}
-                                        or drag and drop
-                                      </p>
-                                      <p className="text-xs text-gray-400">
-                                        PNG, JPG or JPEG (MAX. 2MB)
-                                      </p>
-                                    </>
-                                  )}
-                                </div>
-                                <input
-                                  type="file"
-                                  className="hidden"
-                                  accept="image/*"
-                                  onChange={(e) =>
-                                    setPaymentDetails({
-                                      ...paymentDetails,
-                                      paymentScreenshot:
-                                        e.target.files?.[0] || null,
-                                    })
-                                  }
-                                />
-                              </label>
+                              <span className="text-lg font-semibold text-white">₹{calculateTotal()}</span>
                             </div>
                           </div>
                         </div>
+                      </motion.div>
+                    </div>
+
+                    {/* Payment Method Selection */}
+                    <div>
+                      <SectionTitle
+                        title="Payment Method"
+                        subtitle="Choose your preferred payment method"
+                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentDetails(prev => ({ ...prev, paymentMethod: "upi" }))}
+                          className={`p-4 rounded-xl border transition-all ${
+                            paymentDetails.paymentMethod === "upi"
+                              ? "bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-purple-500/20 border-purple-500"
+                              : "bg-white/5 border-white/10 hover:bg-white/10"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                              <QrCode className="w-5 h-5 text-purple-400" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-medium text-white">UPI Payment</h3>
+                              <p className="text-sm text-gray-400">Pay using any UPI app</p>
+                            </div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentDetails(prev => ({ ...prev, paymentMethod: "bank" }))}
+                          className={`p-4 rounded-xl border transition-all ${
+                            paymentDetails.paymentMethod === "bank"
+                              ? "bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-blue-500/20 border-blue-500"
+                              : "bg-white/5 border-white/10 hover:bg-white/10"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                              <Building className="w-5 h-5 text-blue-400" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-medium text-white">Bank Transfer</h3>
+                              <p className="text-sm text-gray-400">Pay via NEFT/IMPS</p>
+                            </div>
+                          </div>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Submit Button */}
-                    <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black to-transparent pt-6 pb-4 -mx-4 px-4 sm:static sm:bg-none sm:p-0 sm:mx-0">
+                    {/* Payment Details */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-xl border border-white/10 overflow-hidden"
+                    >
+                      {paymentDetails.paymentMethod === "upi" ? (
+                        <div className="p-6 space-y-6">
+                          <div className="flex flex-col items-center">
+                            <Image
+                              src="/upi-qr.png"
+                              alt="UPI QR Code"
+                              width={200}
+                              height={200}
+                              className="rounded-lg"
+                            />
+                            <div className="mt-4 text-center">
+                              <p className="text-gray-400 text-sm">UPI ID</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-white font-medium">8668090679@iob</p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText("8668090679@iob");
+                                    toast({
+                                      title: "Copied to clipboard",
+                                      description: "UPI ID has been copied to your clipboard",
+                                    });
+                                  }}
+                                  className="p-1 rounded-md hover:bg-white/10"
+                                >
+                                  <Copy className="w-4 h-4 text-gray-400" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-white/10">
+                          <div className="p-6 bg-gradient-to-br from-blue-500/10 to-purple-500/10">
+                            <h3 className="text-lg font-medium text-white mb-4">Bank Account Details</h3>
+                            <div className="grid gap-4">
+                              {[
+                                { label: "Account Name", value: "HINDUSTAN INSTITUTE OF TECHNOLOGY AND SCIENCE" },
+                                { label: "Account Number", value: "255402000000001" },
+                                { label: "IFSC Code", value: "IOBA000254" },
+                                { label: "Bank & Branch", value: "Indian Overseas Bank, Padur" },
+                              ].map((detail) => (
+                                <div key={detail.label} className="flex justify-between items-center">
+                                  <span className="text-gray-400">{detail.label}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-white font-medium">{detail.value}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(detail.value);
+                                        toast({
+                                          title: "Copied to clipboard",
+                                          description: `${detail.label} has been copied to your clipboard`,
+                                        });
+                                      }}
+                                      className="p-1 rounded-md hover:bg-white/10"
+                                    >
+                                      <Copy className="w-4 h-4 text-gray-400" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+
+                    {/* Transaction Details */}
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="transactionId" className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-purple-400" />
+                          Transaction ID
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="transactionId"
+                          value={paymentDetails.transactionId}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              transactionId: e.target.value,
+                            })
+                          }
+                          placeholder="Enter your transaction ID"
+                          className="mt-1.5 bg-white/5 border-white/10"
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          <Upload className="w-4 h-4 text-purple-400" />
+                          Payment Screenshot
+                          <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="mt-1.5">
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              {paymentDetails.paymentScreenshot ? (
+                                <p className="text-sm text-gray-400">
+                                  {paymentDetails.paymentScreenshot.name}
+                                </p>
+                              ) : (
+                                <>
+                                  <Upload className="w-8 h-8 mb-4 text-gray-400" />
+                                  <p className="mb-2 text-sm text-gray-400">
+                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                  </p>
+                                  <p className="text-xs text-gray-400">PNG, JPG or JPEG (MAX. 2MB)</p>
+                                </>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={(e) =>
+                                setPaymentDetails({
+                                  ...paymentDetails,
+                                  paymentScreenshot: e.target.files?.[0] || null,
+                                })
+                              }
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Back and Submit Buttons */}
+                  <div className="flex flex-col gap-8 mt-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Button
+                        type="button"
+                        onClick={() => setCurrentStep(1)}
+                        className="w-full bg-white/5 hover:bg-white/10 text-white py-6 text-lg border border-white/10"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                        Back to Details
+                      </Button>
                       <Button
                         type="submit"
                         disabled={isSubmitting}
