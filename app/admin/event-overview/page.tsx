@@ -129,6 +129,25 @@ export default function EventOverview() {
   const totalAmount = filteredRegistrations.reduce((sum, reg) => sum + reg.total_amount, 0);
   const approvedCount = filteredRegistrations.filter(reg => reg.status === "approved").length;
 
+  const getGameSpecificStats = (registrations: Registration[]) => {
+    const pixelShowdownRegs = registrations.filter(reg => 
+      reg.selected_events.includes('pixel-showdown') && reg.game_details
+    );
+
+    return {
+      bgmi: pixelShowdownRegs.filter(r => r.game_details?.game === 'bgmi').length,
+      pes: pixelShowdownRegs.filter(r => r.game_details?.game === 'pes').length,
+      freefire_squad: pixelShowdownRegs.filter(r => 
+        r.game_details?.game === 'freefire' && r.game_details?.format === 'squad'
+      ).length,
+      freefire_duo: pixelShowdownRegs.filter(r => 
+        r.game_details?.game === 'freefire' && r.game_details?.format === 'duo'
+      ).length,
+    };
+  };
+
+  const gameStats = getGameSpecificStats(filteredRegistrations);
+
   if (loading) {
     return (
       <AdminLayout>
@@ -368,6 +387,45 @@ export default function EventOverview() {
             </div>
           )}
         </motion.div>
+
+        {selectedEvent === 'pixel-showdown' && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-white mb-4">Game Statistics</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">BGMI Teams</h4>
+                <div className="flex items-end justify-between mt-2">
+                  <p className="text-2xl font-bold text-white">{gameStats.bgmi}</p>
+                  <span className="text-xs text-gray-500">₹{gameStats.bgmi * 200}</span>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">PES Players</h4>
+                <div className="flex items-end justify-between mt-2">
+                  <p className="text-2xl font-bold text-white">{gameStats.pes}</p>
+                  <span className="text-xs text-gray-500">₹{gameStats.pes * 100}</span>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">Free Fire Squad</h4>
+                <div className="flex items-end justify-between mt-2">
+                  <p className="text-2xl font-bold text-white">{gameStats.freefire_squad}</p>
+                  <span className="text-xs text-gray-500">₹{gameStats.freefire_squad * 200}</span>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">Free Fire Duo</h4>
+                <div className="flex items-end justify-between mt-2">
+                  <p className="text-2xl font-bold text-white">{gameStats.freefire_duo}</p>
+                  <span className="text-xs text-gray-500">₹{gameStats.freefire_duo * 100}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

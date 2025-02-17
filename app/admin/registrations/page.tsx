@@ -24,6 +24,26 @@ const itemAnimation = {
   show: { opacity: 1, y: 0 }
 };
 
+// Add this helper function at the top of the file
+const getGameDetails = (registration: Registration) => {
+  if (!registration.selected_events.includes('pixel-showdown') || !registration.game_details) {
+    return null;
+  }
+
+  const { game, format } = registration.game_details;
+  
+  switch (game) {
+    case 'bgmi':
+      return 'BGMI Squad';
+    case 'pes':
+      return 'PES Individual';
+    case 'freefire':
+      return `Free Fire ${format === 'squad' ? 'Squad' : 'Duo'}`;
+    default:
+      return null;
+  }
+};
+
 export default function Registrations() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -162,19 +182,19 @@ export default function Registrations() {
           variants={container} 
           initial="hidden" 
           animate="show" 
-          className="grid grid-cols-1 gap-4 lg:gap-6"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
           {filteredRegistrations.map((registration) => (
             <motion.div
               key={registration.id}
               variants={itemAnimation}
               onClick={() => router.push(`/admin/registrations/${registration.id}`)}
-              className="group relative overflow-hidden p-4 sm:p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] 
+              className="group relative overflow-hidden p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] 
                 border border-white/10 hover:border-purple-500/50 transition-all duration-300
                 hover:shadow-[0_0_25px_-5px_rgba(168,85,247,0.1)] cursor-pointer"
             >
               {/* Status Indicator */}
-              <div className="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20">
+              <div className="absolute top-0 right-0 w-20 h-20">
                 <div className={`absolute transform rotate-45 translate-y-[-50%] translate-x-[-10%] w-[200%] py-1.5
                   ${registration.status === "approved"
                     ? "bg-green-500/20"
@@ -210,15 +230,12 @@ export default function Registrations() {
                       </span>
                     </div>
                   </div>
-                  <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap
-                    ${registration.payment_status === "completed"
-                      ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                      : registration.payment_status === "failed"
-                      ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                      : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
-                    }`}>
-                    {registration.payment_status.charAt(0).toUpperCase() + registration.payment_status.slice(1)}
-                  </span>
+                  {/* Add game details badge for Pixel Showdown */}
+                  {registration.selected_events.includes('pixel-showdown') && registration.game_details && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                      {getGameDetails(registration)}
+                    </span>
+                  )}
                 </div>
 
                 {/* Quick Info Grid */}

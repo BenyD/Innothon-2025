@@ -13,6 +13,10 @@ export type Tables = {
       payment_proof: string | null
       created_at: string
       updated_at: string
+      game_details: {
+        game: 'bgmi' | 'freefire' | 'pes' | null
+        format?: 'duo' | 'squad'
+      } | null
     }
     Insert: Omit<Tables['registrations']['Row'], 'id' | 'created_at' | 'updated_at'>
     Update: Partial<Tables['registrations']['Row']>

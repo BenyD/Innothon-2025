@@ -22,4 +22,8 @@ export type Registration = {
   transaction_id?: string;
   payment_method?: string;
   payment_proof?: string;
+  game_details?: {
+    game: 'bgmi' | 'freefire' | 'pes' | null;
+    format?: 'duo' | 'squad';
+  } | null;
 }; 

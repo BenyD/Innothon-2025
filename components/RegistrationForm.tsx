@@ -103,17 +103,61 @@ const RegistrationForm = () => {
     paymentMethod: "upi" as "upi" | "bank",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [pixelShowdownGame, setPixelShowdownGame] = useState<{
+    game: "bgmi" | "freefire" | "pes" | null;
+    format?: "duo" | "squad";
+  }>();
 
   const calculateTotal = () => {
     if (selectedEvents.includes('digital-divas')) {
       return teamSize * 200; // 200 per participant for Digital Divas
     }
+    if (selectedEvents.includes('pixel-showdown')) {
+      if (!pixelShowdownGame?.game) return 0;
+      
+      switch (pixelShowdownGame.game) {
+        case 'bgmi':
+          return 200; // 200 per team
+        case 'pes':
+          return 100; // 100 per individual
+        case 'freefire':
+          return pixelShowdownGame.format === 'squad' ? 200 : 100; // 200 for squad, 100 for duo
+        default:
+          return 0;
+      }
+    }
     return selectedEvents.length * 500; // Regular price for other events
   };
 
   const handleTeamSizeChange = (size: number) => {
-    // If Digital Divas is selected, limit team size to 2
-    if (selectedEvents.includes('digital-divas') && size > 2) {
+    if (selectedEvents.includes('pixel-showdown')) {
+      if (pixelShowdownGame?.game === 'pes' && size > 1) {
+        toast({
+          title: "Team Size Error",
+          description: "PES is an individual event",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'duo' && size > 2) {
+        toast({
+          title: "Team Size Error",
+          description: "Free Fire Duo allows maximum 2 participants",
+          variant: "destructive",
+        });
+        return;
+      }
+      if ((pixelShowdownGame?.game === 'bgmi' || 
+          (pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'squad')) && 
+          size > 4) {
+        toast({
+          title: "Team Size Error",
+          description: "Squad events allow maximum 4 participants",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (selectedEvents.includes('digital-divas') && size > 2) {
       toast({
         title: "Team Size Error",
         description: "Digital Divas allows maximum 2 participants",
@@ -126,7 +170,7 @@ const RegistrationForm = () => {
     if (size > teamMembers.length) {
       setTeamMembers([
         ...teamMembers,
-        ...Array(Math.min(size, selectedEvents.includes('digital-divas') ? 2 : 3) - teamMembers.length)
+        ...Array(size - teamMembers.length)
           .fill(null)
           .map(() => ({ ...INITIAL_MEMBER })),
       ]);
@@ -176,31 +220,42 @@ const RegistrationForm = () => {
 
   const handleEventSelection = (eventId: string, checked: boolean) => {
     if (checked) {
-      // If Digital Divas is being selected
-      if (eventId === 'digital-divas') {
-        // Reset any other selected events and set team size max to 2
-        setSelectedEvents(['digital-divas']);
-        if (teamSize > 2) setTeamSize(2);
-        // Ensure only female participants
-        setTeamMembers(prevMembers => 
-          prevMembers.map(member => ({
-            ...member,
-            gender: 'female'
-          })).slice(0, 2)
-        );
+      if (eventId === 'pixel-showdown') {
+        // Reset any other selected events
+        setSelectedEvents(['pixel-showdown']);
+        // Reset team size and members
+        setTeamSize(1);
+        setTeamMembers([{ ...INITIAL_MEMBER }]);
+        // Reset game selection
+        setPixelShowdownGame({ game: null });
+      } else if (selectedEvents.includes('pixel-showdown')) {
+        toast({
+          title: "Event Selection Error",
+          description: "Pixel Showdown cannot be combined with other events",
+          variant: "destructive",
+        });
+        return;
       } else {
-        // If another event is being selected, prevent if Digital Divas is already selected
-        if (selectedEvents.includes('digital-divas')) {
-          toast({
-            title: "Event Selection Error",
-            description: "Digital Divas cannot be combined with other events",
-            variant: "destructive",
-          });
-          return;
+        // Handle other events as before...
+        if (eventId === 'digital-divas') {
+          // Reset any other selected events and set team size max to 2
+          setSelectedEvents(['digital-divas']);
+          if (teamSize > 2) setTeamSize(2);
+          // Ensure only female participants
+          setTeamMembers(prevMembers => 
+            prevMembers.map(member => ({
+              ...member,
+              gender: 'female'
+            })).slice(0, 2)
+          );
+        } else {
+          setSelectedEvents([...selectedEvents, eventId]);
         }
-        setSelectedEvents([...selectedEvents, eventId]);
       }
     } else {
+      if (eventId === 'pixel-showdown') {
+        setPixelShowdownGame({ game: null });
+      }
       setSelectedEvents(selectedEvents.filter((id) => id !== eventId));
     }
   };
@@ -294,6 +349,15 @@ const RegistrationForm = () => {
         return;
       }
 
+      if (selectedEvents.includes('pixel-showdown') && !pixelShowdownGame?.game) {
+        toast({
+          title: "Game Selection Required",
+          description: "Please select a game for Pixel Showdown",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setCurrentStep(2);
       return;
     }
@@ -352,6 +416,10 @@ const RegistrationForm = () => {
           transaction_id: paymentDetails.transactionId,
           payment_method: paymentDetails.paymentMethod,
           payment_proof: paymentProofUrl,
+          game_details: selectedEvents.includes('pixel-showdown') ? {
+            game: pixelShowdownGame?.game,
+            format: pixelShowdownGame?.format
+          } : null
         })
         .select()
         .single(); // Add single() to ensure only one record is inserted
@@ -470,6 +538,101 @@ const RegistrationForm = () => {
                       </div>
                     </div>
 
+                    {/* Game Selection */}
+                    {selectedEvents.includes('pixel-showdown') && (
+                      <div>
+                        <SectionTitle
+                          title="Select Game"
+                          subtitle="Choose your preferred game and format"
+                        />
+                        <div className="grid sm:grid-cols-3 gap-3 mt-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPixelShowdownGame({ game: 'bgmi' });
+                              setTeamSize(4);
+                              setTeamMembers([
+                                ...Array(4).fill(null).map(() => ({ ...INITIAL_MEMBER }))
+                              ]);
+                            }}
+                            className={`p-4 rounded-xl border text-center transition-all ${
+                              pixelShowdownGame?.game === 'bgmi'
+                                ? "bg-white/10 border-purple-500 text-white"
+                                : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
+                            }`}
+                          >
+                            <span className="text-lg">BGMI</span>
+                            <br />
+                            <span className="text-sm">Squad Only</span>
+                            <br />
+                            <span className="text-xs text-gray-400">₹200 per team</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPixelShowdownGame({ game: 'pes' });
+                              setTeamSize(1);
+                              setTeamMembers([{ ...INITIAL_MEMBER }]);
+                            }}
+                            className={`p-4 rounded-xl border text-center transition-all ${
+                              pixelShowdownGame?.game === 'pes'
+                                ? "bg-white/10 border-purple-500 text-white"
+                                : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
+                            }`}
+                          >
+                            <span className="text-lg">PES</span>
+                            <br />
+                            <span className="text-sm">Individual</span>
+                            <br />
+                            <span className="text-xs text-gray-400">₹100 per person</span>
+                          </button>
+
+                          <div className="space-y-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPixelShowdownGame({ game: 'freefire', format: 'squad' });
+                                setTeamSize(4);
+                                setTeamMembers([
+                                  ...Array(4).fill(null).map(() => ({ ...INITIAL_MEMBER }))
+                                ]);
+                              }}
+                              className={`w-full p-4 rounded-xl border text-center transition-all ${
+                                pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'squad'
+                                  ? "bg-white/10 border-purple-500 text-white"
+                                  : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
+                              }`}
+                            >
+                              <span className="text-lg">Free Fire Squad</span>
+                              <br />
+                              <span className="text-xs text-gray-400">₹200 per team</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPixelShowdownGame({ game: 'freefire', format: 'duo' });
+                                setTeamSize(2);
+                                setTeamMembers([
+                                  ...Array(2).fill(null).map(() => ({ ...INITIAL_MEMBER }))
+                                ]);
+                              }}
+                              className={`w-full p-4 rounded-xl border text-center transition-all ${
+                                pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'duo'
+                                  ? "bg-white/10 border-purple-500 text-white"
+                                  : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
+                              }`}
+                            >
+                              <span className="text-lg">Free Fire Duo</span>
+                              <br />
+                              <span className="text-xs text-gray-400">₹100 per team</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Team Size Selection */}
                     <div>
                       <SectionTitle
@@ -477,24 +640,81 @@ const RegistrationForm = () => {
                         subtitle="Select the number of team members"
                       />
                       <div className="grid grid-cols-3 gap-3 mt-4">
-                        {(selectedEvents.includes('digital-divas') ? [1, 2] : [1, 2, 3]).map((size) => (
-                          <button
-                            key={size}
-                            type="button"
-                            onClick={() => handleTeamSizeChange(size)}
-                            className={`p-4 rounded-xl border text-center transition-all ${
-                              teamSize === size
-                                ? "bg-white/10 border-purple-500 text-white"
-                                : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
-                            }`}
-                          >
-                            <span className="text-lg">{size}</span>
-                            <br />
-                            <span className="text-sm">
-                              {size === 1 ? "Member" : "Members"}
-                            </span>
-                          </button>
-                        ))}
+                        {selectedEvents.includes('pixel-showdown') ? (
+                          // Pixel Showdown team size options based on game selection
+                          pixelShowdownGame?.game === 'pes' ? (
+                            // PES - Only individual participation
+                            <button
+                              type="button"
+                              onClick={() => handleTeamSizeChange(1)}
+                              className="p-4 rounded-xl border text-center transition-all bg-white/10 border-purple-500 text-white"
+                            >
+                              <span className="text-lg">1</span>
+                              <br />
+                              <span className="text-sm">Individual</span>
+                            </button>
+                          ) : pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'duo' ? (
+                            // Free Fire Duo - Max 2 players
+                            [1, 2].map((size) => (
+                              <button
+                                key={size}
+                                type="button"
+                                onClick={() => handleTeamSizeChange(size)}
+                                className={`p-4 rounded-xl border text-center transition-all ${
+                                  teamSize === size
+                                    ? "bg-white/10 border-purple-500 text-white"
+                                    : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
+                                }`}
+                              >
+                                <span className="text-lg">{size}</span>
+                                <br />
+                                <span className="text-sm">{size === 1 ? "Member" : "Members"}</span>
+                              </button>
+                            ))
+                          ) : (pixelShowdownGame?.game === 'bgmi' || 
+                              (pixelShowdownGame?.game === 'freefire' && pixelShowdownGame.format === 'squad')) ? (
+                            // BGMI or Free Fire Squad - 1-4 players
+                            [1, 2, 3, 4].map((size) => (
+                              <button
+                                key={size}
+                                type="button"
+                                onClick={() => handleTeamSizeChange(size)}
+                                className={`p-4 rounded-xl border text-center transition-all ${
+                                  teamSize === size
+                                    ? "bg-white/10 border-purple-500 text-white"
+                                    : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
+                                }`}
+                              >
+                                <span className="text-lg">{size}</span>
+                                <br />
+                                <span className="text-sm">{size === 1 ? "Member" : "Members"}</span>
+                              </button>
+                            ))
+                          ) : (
+                            // No game selected yet
+                            <div className="col-span-3 text-center p-4 text-gray-400">
+                              Please select a game first
+                            </div>
+                          )
+                        ) : (
+                          // Regular events team size options
+                          (selectedEvents.includes('digital-divas') ? [1, 2] : [1, 2, 3]).map((size) => (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => handleTeamSizeChange(size)}
+                              className={`p-4 rounded-xl border text-center transition-all ${
+                                teamSize === size
+                                  ? "bg-white/10 border-purple-500 text-white"
+                                  : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
+                              }`}
+                            >
+                              <span className="text-lg">{size}</span>
+                              <br />
+                              <span className="text-sm">{size === 1 ? "Member" : "Members"}</span>
+                            </button>
+                          ))
+                        )}
                       </div>
                     </div>
 
