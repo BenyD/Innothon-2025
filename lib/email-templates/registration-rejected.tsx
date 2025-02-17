@@ -26,11 +26,10 @@ export const RegistrationRejectedEmail = ({
   teamMember,
   registrationId,
   selectedEvents,
-  totalAmount,
   isTeamLeader,
   teamSize,
 }: RegistrationRejectedEmailProps) => {
-  const previewText = `Your registration for Innothon'25 needs attention`;
+  const previewText = `Important update regarding your Innothon'25 registration`;
 
   return (
     <Html>
@@ -38,94 +37,74 @@ export const RegistrationRejectedEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with Logos */}
-          <Section style={logoSection}>
-            <div style={logoContainer}>
-              <Img
-                src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo_black.png"
-                width="100"
-                height="100"
-                alt="HIT Logo"
-                style={logo}
-              />
-              <Img
-                src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/bsp_logo.png"
-                width="80"
-                height="80"
-                alt="Blue Screen Club Logo"
-                style={logo}
-              />
-            </div>
+          {/* Header */}
+          <Section style={header}>
+            <Img
+              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/email-header.png"
+              width="600"
+              height="200"
+              alt="Innothon'25 Header"
+              style={headerImage}
+            />
           </Section>
 
           <Section style={content}>
-            <Text style={eventTitle}>Innothon&apos;25</Text>
-            <Text style={paragraph}>Dear {teamMember.name},</Text>
-
+            <Text style={title}>Registration Update</Text>
+            
+            <Text style={greeting}>Dear {teamMember.name},</Text>
+            
             <Text style={paragraph}>
-              We noticed some issues with your registration (ID:{" "}
-              {registrationId}) for Innothon&apos;25. This could be due to
-              payment verification issues or incomplete information.
-              {isTeamLeader && teamSize > 1
-                ? ` As the team leader, please inform your team members about this update.`
-                : ``}
+              Thank you for your interest in Innothon&apos;25. After careful review, we regret to inform you that your registration could not be confirmed at this time.
+              {isTeamLeader && teamSize > 1 && (
+                " As the team leader, please inform your team members about this update."
+              )}
             </Text>
 
-            <Section style={boxContainer}>
-              <Text style={boxHeader}>Registration Details</Text>
-              <Text style={detailText}>Registration ID: {registrationId}</Text>
-              <Text style={detailText}>
-                Events: {selectedEvents.join(", ")}
-              </Text>
-              <Text style={detailText}>Amount: ₹{totalAmount}</Text>
+            {/* Registration Details */}
+            <Section style={card}>
+              <Text style={cardTitle}>Registration Details</Text>
+              <div style={cardGrid}>
+                <div style={cardItem}>
+                  <Text style={cardLabel}>Registration ID</Text>
+                  <Text style={cardValue}>{registrationId}</Text>
+                </div>
+                <div style={cardItem}>
+                  <Text style={cardLabel}>Selected Events</Text>
+                  <Text style={cardValue}>{selectedEvents.length}</Text>
+                </div>
+              </div>
             </Section>
 
-            <Text style={paragraph}>What you can do:</Text>
-            <ul style={list}>
-              <li>Submit a new registration with correct payment details</li>
-              <li>
-                If you believe this is an error, please contact us with your
-                registration ID and payment proof
-              </li>
-            </ul>
+            {/* Next Steps */}
+            <Section style={card}>
+              <Text style={cardTitle}>What&apos;s Next?</Text>
+              <ul style={notesList}>
+                <li style={notesItem}>Your registration amount will be refunded within 5-7 working days</li>
+                <li style={notesItem}>You can apply again for future events</li>
+                <li style={notesItem}>Follow our social media for updates on upcoming opportunities</li>
+              </ul>
+            </Section>
 
-            <Text style={paragraph}>Contact us:</Text>
-            <Text style={contactText}>
-              Email:{" "}
-              <Link href="mailto:bspc.hit@gmail.com" style={linkStyle}>
-                bspc.hit@gmail.com
-              </Link>
-              <br />
-              Beny Dishon K (President): +91 98848 19912
-              <br />
-              Santhosh Kumar S (Secretary): +91 93446 76938
-            </Text>
+            {/* Contact Section */}
+            <Section style={contactSection}>
+              <Text style={contactTitle}>Questions?</Text>
+              <Text style={contactText}>
+                If you have any questions or need clarification, please contact us:<br /><br />
+                Email: bspc.hit@gmail.com<br />
+                Phone: +91 98848 19912 (Beny Dishon K)<br />
+                Website: <Link style={link} href="https://innothon.beny.one">innothon.beny.one</Link>
+              </Text>
+            </Section>
 
             <Hr style={divider} />
 
-            <Text style={paragraph}>
-              Best regards,
-              <br />
-              Team Innothon
-            </Text>
-
             <Section style={footer}>
               <Text style={footerText}>
-                Organized by
-                <br />
-                Blue Screen Programming Club
-                <br />
-                Department of Computer Science and Engineering
-                <br />
-                Hindustan Institute of Technology and Science
-                <br />
-                Phase 1, Rajiv Gandhi Salai (OMR)
-                <br />
-                Padur, Chennai - 603103
+                Blue Screen Programming Club<br />
+                Department of Computer Science and Engineering<br />
+                Hindustan Institute of Technology and Science<br />
+                Chennai, India
               </Text>
-              <Link href="https://innothon.beny.one/" style={footerLink}>
-                Visit our website
-              </Link>
             </Section>
           </Section>
         </Container>
@@ -134,124 +113,145 @@ export const RegistrationRejectedEmail = ({
   );
 };
 
-// Styles (reusing the same styles from the approval email)
+// Styles (same as approved email template)
 const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: "#f5f5f5",
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
 const container = {
-  backgroundColor: "#ffffff",
   margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
-  maxWidth: "600px",
-  borderRadius: "8px",
-};
-
-const logoSection = {
   padding: "20px 0",
+  width: "100%",
+  maxWidth: "600px",
 };
 
-const logoContainer = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "40px",
-};
-
-const logo = {
+const header = {
+  padding: "0",
   margin: "0",
+};
+
+const headerImage = {
   width: "100%",
   height: "auto",
-};
-
-const eventTitle = {
-  fontSize: "32px",
-  fontWeight: "bold",
-  textAlign: "center" as const,
-  color: "#1a1a1a",
-  marginBottom: "32px",
+  borderRadius: "8px 8px 0 0",
 };
 
 const content = {
-  padding: "0 48px",
+  backgroundColor: "#ffffff",
+  padding: "40px",
+  borderRadius: "8px",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+};
+
+const title = {
+  fontSize: "28px",
+  lineHeight: "1.3",
+  fontWeight: "700",
+  textAlign: "center" as const,
+  color: "#1a1a1a",
+  margin: "0 0 30px",
+};
+
+const greeting = {
+  fontSize: "18px",
+  lineHeight: "1.4",
+  color: "#1a1a1a",
+  margin: "0 0 15px",
 };
 
 const paragraph = {
-  color: "#525f7f",
   fontSize: "16px",
-  lineHeight: "24px",
-  textAlign: "left" as const,
-  margin: "16px 0",
+  lineHeight: "1.4",
+  color: "#4a4a4a",
+  margin: "0 0 30px",
 };
 
-const boxContainer = {
-  padding: "24px",
-  backgroundColor: "#f6f9fc",
-  borderRadius: "6px",
-  marginBottom: "24px",
-  border: "1px solid #e6e6e6",
+const card = {
+  backgroundColor: "#f8f9fa",
+  padding: "25px",
+  borderRadius: "8px",
+  marginBottom: "30px",
 };
 
-const boxHeader = {
+const cardTitle = {
   fontSize: "18px",
-  fontWeight: "bold",
+  fontWeight: "600",
   color: "#1a1a1a",
-  marginBottom: "12px",
+  margin: "0 0 20px",
 };
 
-const detailText = {
+const cardGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: "15px",
+};
+
+const cardItem = {
+  padding: "10px 0",
+};
+
+const cardLabel = {
   fontSize: "14px",
-  color: "#525f7f",
-  margin: "4px 0",
-  lineHeight: "20px",
+  color: "#666666",
+  margin: "0 0 5px",
 };
 
-const list = {
-  color: "#525f7f",
+const cardValue = {
   fontSize: "16px",
-  lineHeight: "24px",
-  marginLeft: "24px",
+  fontWeight: "500",
+  color: "#1a1a1a",
+  margin: "0",
+};
+
+const notesList = {
+  margin: "0",
+  padding: "0 0 0 20px",
+};
+
+const notesItem = {
+  fontSize: "14px",
+  color: "#4a4a4a",
+  margin: "0 0 8px",
+};
+
+const contactSection = {
+  textAlign: "center" as const,
+  padding: "30px 0",
+};
+
+const contactTitle = {
+  fontSize: "18px",
+  fontWeight: "600",
+  color: "#1a1a1a",
+  margin: "0 0 15px",
 };
 
 const contactText = {
-  color: "#525f7f",
   fontSize: "14px",
-  lineHeight: "20px",
-  margin: "8px 0",
+  lineHeight: "1.6",
+  color: "#4a4a4a",
 };
 
-const linkStyle = {
-  color: "#556cd6",
+const link = {
+  color: "#0066cc",
   textDecoration: "none",
 };
 
 const divider = {
-  borderTop: "1px solid #e6e6e6",
-  margin: "32px 0",
+  margin: "30px 0",
+  border: "none",
+  borderTop: "1px solid #e0e0e0",
 };
 
 const footer = {
   textAlign: "center" as const,
-  marginTop: "32px",
-  borderTop: "1px solid #e6e6e6",
-  paddingTop: "32px",
 };
 
 const footerText = {
-  color: "#8898aa",
-  fontSize: "12px",
-  lineHeight: "20px",
-};
-
-const footerLink = {
-  color: "#556cd6",
-  textDecoration: "none",
-  fontSize: "14px",
-  marginTop: "16px",
-  display: "block",
+  fontSize: "13px",
+  lineHeight: "1.6",
+  color: "#666666",
 };
 
 export default RegistrationRejectedEmail;

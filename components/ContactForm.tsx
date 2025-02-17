@@ -60,47 +60,59 @@ const coreTeam = [
   },
 ];
 
-// Update event coordinators without department
+// Update event coordinators with data from events.ts
 const eventCoordinators = [
   {
-    role: "HackQuest Lead",
-    name: "Gokulakrishnan",
-    phone: "+91 76543 21098",
+    role: "Cybersecurity Lead",
+    name: "Chandaluri Monish N S S Gupta",
+    phone: "+91 824 807 7123",
     color: "blue",
   },
   {
-    role: "AI Genesis Lead",
+    role: "AI Lead",
     name: "Shubham Choudhary",
-    phone: "+91 65432 10987",
+    phone: "+91 6289 578 020",
     color: "purple",
   },
   {
-    role: "CodeArena Lead",
-    name: "Chandaluri Monish",
-    phone: "+91 89012 34567",
+    role: "Coding & Development Lead",
+    name: "Gokulakrishnan",
+    phone: "+91 7418 232 796",
+    color: "pink",
+  },
+  {
+    role: "Design & UI/UX Lead",
+    name: "Samyuktha S",
+    phone: "+91 72000 97390",
+    color: "blue",
+  },
+  {
+    role: "Data Science & Analytics Lead",
+    name: "Pavan Sai H V",
+    phone: "+91 96770 73103",
+    color: "purple",
+  },
+  {
+    role: "Gaming Head",
+    name: "NV Yogeshwaran",
+    phone: "+91 72001 37507",
     color: "pink",
   },
 ];
 
-// Update event management team without department
+// Update event management team with common coordinators
 const eventManagementTeam = [
   {
     role: "Event Coordinator",
     name: "V Vishal",
-    phone: "+91 98765 43211",
+    phone: "+91 93841 59875",
     color: "blue",
   },
   {
     role: "Assistant Event Coordinator",
     name: "Anna Elizabeth Pravin",
-    phone: "+91 87654 32112",
+    phone: "+91 63824 96273",
     color: "purple",
-  },
-  {
-    role: "PR Coordinator",
-    name: "Janani ER",
-    phone: "+91 76543 21113",
-    color: "pink",
   },
 ];
 

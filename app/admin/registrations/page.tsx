@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import { Calendar, Users, User2, IndianRupee, Search } from "lucide-react";
+import { Calendar, Users, Search, Building2, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
 
@@ -141,8 +141,9 @@ export default function Registrations() {
             className="bg-white/5 border border-white/10 rounded-lg p-4"
           >
             <h3 className="text-gray-400 text-sm">Total Revenue</h3>
-            <p className="text-2xl font-bold text-white mt-1">
-              ₹{registrations.reduce((acc, reg) => acc + reg.total_amount, 0)}
+            <p className="text-2xl font-bold text-white mt-1 flex items-center">
+              <span className="text-lg mr-1">₹</span>
+              {registrations.reduce((acc, reg) => acc + reg.total_amount, 0)}
             </p>
           </motion.div>
           <motion.div
@@ -157,58 +158,100 @@ export default function Registrations() {
         </div>
 
         {/* Registration Cards */}
-        <motion.div variants={container} initial="hidden" animate="show" className="grid gap-4">
+        <motion.div 
+          variants={container} 
+          initial="hidden" 
+          animate="show" 
+          className="grid grid-cols-1 gap-4 lg:gap-6"
+        >
           {filteredRegistrations.map((registration) => (
             <motion.div
               key={registration.id}
               variants={itemAnimation}
               onClick={() => router.push(`/admin/registrations/${registration.id}`)}
-              className="group relative p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10 
-                hover:bg-white/10 transition-colors cursor-pointer"
+              className="group relative overflow-hidden p-4 sm:p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.02] 
+                border border-white/10 hover:border-purple-500/50 transition-all duration-300
+                hover:shadow-[0_0_25px_-5px_rgba(168,85,247,0.1)] cursor-pointer"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-medium text-white">
+              {/* Status Indicator */}
+              <div className="absolute top-0 right-0 w-16 sm:w-20 h-16 sm:h-20">
+                <div className={`absolute transform rotate-45 translate-y-[-50%] translate-x-[-10%] w-[200%] py-1.5
+                  ${registration.status === "approved"
+                    ? "bg-green-500/20"
+                    : registration.status === "rejected"
+                    ? "bg-red-500/20"
+                    : "bg-yellow-500/20"
+                  }`}
+                />
+              </div>
+
+              {/* Main Content */}
+              <div className="space-y-4 sm:space-y-6">
+                {/* Header with Team Info */}
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0">
+                  <div className="space-y-1">
+                    <h3 className="text-lg sm:text-xl font-medium text-white group-hover:text-purple-400 transition-colors">
                       {registration.team_members[0]?.name}
                       {registration.team_size > 1 && 
-                        <span className="text-gray-400 text-sm ml-1">
+                        <span className="text-gray-400 text-sm ml-2">
                           +{registration.team_size - 1} members
                         </span>
                       }
                     </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      registration.status === "approved"
-                        ? "bg-green-500/10 text-green-400"
-                        : registration.status === "rejected"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-yellow-500/10 text-yellow-400"
-                    }`}>
-                      {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
-                    </span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Building2 className="w-4 h-4 text-purple-400" />
+                        {registration.team_members[0]?.college}
+                      </span>
+                      <span className="hidden sm:inline-block text-gray-600">•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4 text-blue-400" />
+                        {new Date(registration.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-400">{registration.team_id}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-white/10">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Calendar className="w-4 h-4" />
-                  <span>{registration.selected_events.length} Events</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <User2 className="w-4 h-4" />
-                  <span className="capitalize">
-                    {registration.team_members[0]?.gender || "Not specified"}
+                  <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap
+                    ${registration.payment_status === "completed"
+                      ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                      : registration.payment_status === "failed"
+                      ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                      : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
+                    }`}>
+                    {registration.payment_status.charAt(0).toUpperCase() + registration.payment_status.slice(1)}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Users className="w-4 h-4" />
-                  <span>{registration.team_size} Members</span>
+
+                {/* Quick Info Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-500">Team ID</span>
+                    <p className="text-sm font-medium text-purple-400 break-all">{registration.team_id}</p>
+                  </div>
+                  {registration.transaction_id && (
+                    <div className="space-y-1">
+                      <span className="text-xs text-gray-500">Transaction ID</span>
+                      <p className="text-sm font-medium text-blue-400 break-all">{registration.transaction_id}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 text-sm font-medium text-white">
-                  <IndianRupee className="w-4 h-4" />
-                  <span>₹{registration.total_amount}</span>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <div className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg bg-white/5">
+                    <Calendar className="w-4 h-4 text-purple-400 mb-1" />
+                    <span className="text-sm text-gray-400">{registration.selected_events.length}</span>
+                    <span className="text-xs text-gray-500">Events</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg bg-white/5">
+                    <Users className="w-4 h-4 text-green-400 mb-1" />
+                    <span className="text-sm text-gray-400">{registration.team_size}</span>
+                    <span className="text-xs text-gray-500">Members</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg bg-white/5">
+                    <span className="text-sm font-medium text-yellow-400 mb-1">₹</span>
+                    <span className="text-sm text-gray-400">{registration.total_amount}</span>
+                    <span className="text-xs text-gray-500">Amount</span>
+                  </div>
                 </div>
               </div>
             </motion.div>

@@ -10,200 +10,195 @@ interface AdmitCardProps {
   qrCodeDataUrl: string;
 }
 
-const getOrdinalSuffix = (year: number): string => {
-  if (year === 1) return "st";
-  if (year === 2) return "nd";
-  if (year === 3) return "rd";
-  return "th";
-};
-
+// Register Geist font
 Font.register({
-  family: "Inter",
-  src: `https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/fonts/Inter-Regular.ttf`,
-});
-
-Font.register({
-  family: "Inter-Bold",
-  src: `https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/fonts/Inter-Bold.ttf`,
+  family: "Geist",
+  fonts: [
+    { 
+      src: "https://jycgacsicczslkfiazkw.supabase.co/storage/v1/object/public/beny//Geist-Regular.otf",
+      fontWeight: 400 
+    },
+    { 
+      src: "https://jycgacsicczslkfiazkw.supabase.co/storage/v1/object/public/beny//Geist-SemiBold.otf",
+      fontWeight: 600 
+    },
+  ],
 });
 
 const styles = StyleSheet.create({
   page: {
-    padding: "40 60",
-    backgroundColor: "#ffffff",
+    padding: 30,
+    backgroundColor: '#ffffff',
+    fontFamily: 'Geist',
+  },
+  borderContainer: {
+    border: '2 solid #000',
+    padding: 15,
+    height: '100%',
+    position: 'relative',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 40,
-    marginBottom: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderBottom: '1 solid #000',
+    paddingBottom: 15,
   },
   logo: {
-    width: 80,
-    height: 80,
-    objectFit: "contain",
+    width: 60,
+    height: 60,
   },
   titleContainer: {
-    alignItems: "center",
-    marginBottom: 30,
+    marginLeft: 15,
+    flex: 1,
   },
   title: {
-    fontSize: 32,
-    fontFamily: "Inter-Bold",
-    color: "#1a1a1a",
-    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: 600,
+    color: '#1a1a1a',
   },
   subtitle: {
-    fontSize: 18,
-    fontFamily: "Inter",
-    color: "#4a5568",
-  },
-  mainContent: {
-    flexDirection: "row",
-    gap: 40,
-    border: "2 solid #e2e8f0",
-    borderRadius: 12,
-    padding: 30,
-  },
-  leftSection: {
-    flex: 2,
-  },
-  rightSection: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingTop: 10,
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 4,
   },
   section: {
-    marginBottom: 25,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 14,
-    fontFamily: "Inter-Bold",
-    color: "#2d3748",
-    marginBottom: 12,
-    textTransform: "uppercase",
+    fontWeight: 600,
+    color: '#1a1a1a',
+    backgroundColor: '#f0f0f0',
+    padding: '6 10',
+    marginBottom: 10,
   },
-  text: {
-    fontSize: 13,
-    fontFamily: "Inter",
-    color: "#4a5568",
+  row: {
+    flexDirection: 'row',
     marginBottom: 8,
-    lineHeight: 1.4,
+    padding: '4 10',
   },
-  qrCode: {
-    width: 140,
-    height: 140,
-    marginBottom: 12,
+  label: {
+    width: '35%',
+    fontSize: 12,
+    color: '#444444',
+    fontWeight: 400,
   },
-  qrText: {
-    fontSize: 10,
-    color: "#718096",
-    textAlign: "center",
-    fontFamily: "Inter",
+  value: {
+    flex: 1,
+    fontSize: 12,
+    color: '#000000',
+    fontWeight: 600,
   },
   eventsList: {
-    marginTop: 8,
+    padding: '0 10',
   },
   event: {
     fontSize: 12,
-    fontFamily: "Inter",
-    color: "#4a5568",
     marginBottom: 6,
-    lineHeight: 1.4,
+    color: '#000000',
+  },
+  qrSection: {
+    position: 'absolute',
+    right: 15,
+    top: 100,
+    alignItems: 'center',
+  },
+  qrCode: {
+    width: 100,
+    height: 100,
+  },
+  qrText: {
+    fontSize: 9,
+    color: '#666666',
+    marginTop: 5,
   },
   footer: {
-    position: "absolute",
-    bottom: 40,
-    left: 60,
-    right: 60,
-    textAlign: "center",
-    fontSize: 10,
-    color: "#718096",
-    fontFamily: "Inter",
-    lineHeight: 1.6,
+    position: 'absolute',
+    bottom: 15,
+    left: 15,
+    right: 15,
   },
-  divider: {
-    borderBottom: "1 solid #e2e8f0",
-    marginVertical: 4,
+  footerText: {
+    fontSize: 10,
+    color: '#666666',
+    textAlign: 'center',
+  },
+  watermark: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) rotate(-45deg)',
+    fontSize: 60,
+    color: '#f0f0f0',
+    opacity: 0.5,
   },
 });
 
-export const AdmitCard: React.FC<AdmitCardProps> = ({
-  teamMember,
-  registrationId,
-  selectedEvents,
-  qrCodeDataUrl,
-}) => (
-  <Page size="A4" style={styles.page}>
-    <View style={styles.header}>
-      <Image
-        src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/hits_logo_black.png"
-        style={styles.logo}
-      />
-      <Image
-        src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/bsp_logo.png"
-        style={styles.logo}
-      />
-    </View>
+export const AdmitCard = ({ teamMember, registrationId, selectedEvents, qrCodeDataUrl }: AdmitCardProps) => (
+  <Page size="A5" style={styles.page}>
+    <View style={styles.borderContainer}>
+      {/* Watermark */}
+      <Text style={styles.watermark}>INNOTHON&apos;25</Text>
 
-    <View style={styles.titleContainer}>
-      <Text style={styles.title}>Innothon&apos;25</Text>
-      <Text style={styles.subtitle}>Official Admit Card</Text>
-    </View>
-
-    <View style={styles.mainContent}>
-      <View style={styles.leftSection}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Registration Details</Text>
-          <Text style={styles.text}>Registration ID: {registrationId}</Text>
-          <Text style={styles.text}>Event Date: March 21, 2025</Text>
-          <Text style={styles.text}>Reporting Time: 8:30 AM</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Participant Information</Text>
-          <Text style={styles.text}>Name: {teamMember.name}</Text>
-          <Text style={styles.text}>College: {teamMember.college}</Text>
-          <Text style={styles.text}>Department: {teamMember.department}</Text>
-          <Text style={styles.text}>
-            Year: {teamMember.year}
-            {getOrdinalSuffix(parseInt(teamMember.year))} Year
-          </Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Registered Events</Text>
-          <View style={styles.eventsList}>
-            {selectedEvents.map((event, index) => (
-              <Text key={index} style={styles.event}>
-                • {event}
-              </Text>
-            ))}
-          </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <Image
+          src="https://jycgacsicczslkfiazkw.supabase.co/storage/v1/object/public/beny//hits-logo-black.png"
+          style={styles.logo}
+        />
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>INNOTHON&apos;25</Text>
+          <Text style={styles.subtitle}>ADMIT CARD</Text>
         </View>
       </View>
 
-      <View style={styles.rightSection}>
+      {/* Participant Details */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Participant Details</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{teamMember.name}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>College</Text>
+          <Text style={styles.value}>{teamMember.college}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Registration ID</Text>
+          <Text style={styles.value}>{registrationId}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.value}>{teamMember.email}</Text>
+        </View>
+      </View>
+
+      {/* Events */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Registered Events</Text>
+        <View style={styles.eventsList}>
+          {selectedEvents.map((event, index) => (
+            <Text key={index} style={styles.event}>
+              {index + 1}. {event}
+            </Text>
+          ))}
+        </View>
+      </View>
+
+      {/* QR Code */}
+      <View style={styles.qrSection}>
         <Image src={qrCodeDataUrl} style={styles.qrCode} />
-        <Text style={styles.qrText}>Scan to verify registration</Text>
+        <Text style={styles.qrText}>Scan to verify</Text>
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          March 21, 2025 • Hindustan Institute of Technology and Science{"\n"}
+          This admit card must be presented at the venue for entry
+        </Text>
       </View>
     </View>
-
-    <Text style={styles.footer}>
-      This admit card must be presented along with a valid college ID and
-      government photo ID for entry.
-      {"\n\n"}
-      Organized by Blue Screen Programming Club
-      {"\n"}
-      Department of Computer Science and Engineering
-      {"\n"}
-      Hindustan Institute of Technology and Science, Padur, Chennai - 603103
-    </Text>
   </Page>
 );

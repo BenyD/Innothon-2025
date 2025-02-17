@@ -15,48 +15,28 @@ export async function POST(request: Request) {
       teamSize,
     } = await request.json();
 
-    console.log(
-      "Attempting to send rejection emails to:",
-      teamMembers.map((m: TeamMember) => m.email)
-    );
+    const emailPromises = teamMembers.map(async (member: TeamMember, index: number) => {
+      await resend.emails.send({
+        from: "Innothon'25 <noreply@beny.one>",
+        to: member.email,
+        subject: "Registration Update - Innothon'25",
+        react: RegistrationRejectedEmail({
+          teamMember: member,
+          registrationId,
+          selectedEvents,
+          totalAmount,
+          isTeamLeader: index === 0,
+          teamSize,
+        }),
+      });
+    });
 
-    const emailPromises = teamMembers.map(
-      async (member: TeamMember, index: number) => {
-        try {
-          const result = await resend.emails.send({
-            from: "Innothon <noreply@beny.one>",
-            to: member.email,
-            subject: "Registration Update Required - Innothon'25",
-            react: RegistrationRejectedEmail({
-              teamMember: member,
-              registrationId,
-              selectedEvents,
-              totalAmount,
-              isTeamLeader: index === 0,
-              teamSize,
-            }) as React.ReactElement,
-          });
-          console.log(`Rejection email sent to ${member.email}:`, result);
-          return result;
-        } catch (err) {
-          console.error(`Failed to send rejection email to ${member.email}:`, err);
-          throw err;
-        }
-      }
-    );
-
-    const results = await Promise.all(emailPromises);
-    console.log("All rejection email results:", results);
-
-    return NextResponse.json({ success: true, results });
-  } catch (error: unknown) {
+    await Promise.all(emailPromises);
+    return NextResponse.json({ success: true });
+  } catch (error) {
     console.error("Error sending rejection emails:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      },
+      { success: false, error: "Failed to send emails" },
       { status: 500 }
     );
   }
