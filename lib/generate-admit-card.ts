@@ -8,7 +8,6 @@ import { Document } from "@react-pdf/renderer";
 export async function generateAdmitCard(
   teamMember: TeamMember,
   registrationId: string,
-  selectedEvents: string[],
   teamId: string
 ) {
   try {
@@ -20,7 +19,14 @@ export async function generateAdmitCard(
       email: teamMember.email,
     });
 
-    const qrCodeDataUrl = await QRCode.toDataURL(qrData);
+    const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+      margin: 1,
+      width: 500, // Increased size for better quality
+      color: {
+        dark: '#000000',
+        light: '#ffffff',
+      },
+    });
 
     const pdfBuffer = await renderToBuffer(
       React.createElement(
@@ -29,7 +35,6 @@ export async function generateAdmitCard(
         React.createElement(AdmitCard, {
           teamMember,
           registrationId,
-          selectedEvents,
           qrCodeDataUrl,
           teamId,
         })

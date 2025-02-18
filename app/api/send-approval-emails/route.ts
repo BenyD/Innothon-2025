@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { RegistrationApprovedEmail } from "@/lib/email-templates/registration-approved";
 import { generateAdmitCard } from "@/lib/generate-admit-card";
-import type { TeamMember } from "@/types/registration";
+// import type { TeamMember } from "@/types/registration";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
     const {
       teamMembers,
       registrationId,
@@ -17,17 +21,28 @@ export async function POST(request: Request) {
       teamId,
     } = await request.json();
 
-    const emailPromises = teamMembers.map(
-      async (member: TeamMember, index: number) => {
-        // Generate admit card PDF for this member
+    if (!teamMembers?.length) {
+      throw new Error("No team members provided");
+    }
+
+    const emailResults = [];
+
+    for (const member of teamMembers) {
+      try {
+        if (!member.email) {
+          throw new Error(`Invalid email for team member: ${member.name}`);
+        }
+
+        console.log(`Generating admit card for ${member.name}...`);
         const admitCard = await generateAdmitCard(
           member,
           registrationId,
-          selectedEvents,
           teamId
         );
+        console.log(`Admit card generated successfully for ${member.name}`);
 
-        await resend.emails.send({
+        console.log(`Sending email to ${member.email}...`);
+        const emailResult = await resend.emails.send({
           from: "Innothon'25 <noreply@hitscseinnothon.com>",
           to: member.email,
           subject: "Registration Approved - Innothon'25",
@@ -36,7 +51,7 @@ export async function POST(request: Request) {
             registrationId,
             selectedEvents,
             totalAmount,
-            isTeamLeader: index === 0,
+            isTeamLeader: teamMembers.indexOf(member) === 0,
             teamSize,
           }),
           attachments: [
@@ -46,15 +61,50 @@ export async function POST(request: Request) {
             },
           ],
         });
-      }
-    );
+        console.log(`Email sent successfully to ${member.email}`, emailResult);
 
-    await Promise.all(emailPromises);
-    return NextResponse.json({ success: true });
+        emailResults.push({ 
+          success: true, 
+          email: member.email, 
+          result: emailResult 
+        });
+      } catch (error) {
+        console.error(`Error sending email to ${member.email}:`, error);
+        emailResults.push({
+          success: false,
+          email: member.email,
+          error: error instanceof Error ? error.message : String(error),
+          details: error
+        });
+      }
+    }
+
+    const failedEmails = emailResults.filter(result => !result.success);
+    
+    if (failedEmails.length > 0) {
+      console.error("Failed emails:", failedEmails);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Failed to send emails to ${failedEmails.length} recipients`,
+          details: failedEmails,
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      details: emailResults,
+    });
   } catch (error) {
-    console.error("Error sending approval emails:", error);
+    console.error("Error in send-approval-emails:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to send emails" },
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to send emails",
+        details: error
+      },
       { status: 500 }
     );
   }

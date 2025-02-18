@@ -158,7 +158,8 @@ export default function RegistrationDetails() {
             registration.id,
             registration.selected_events,
             registration.total_amount,
-            registration.team_size
+            registration.team_size,
+            registration.team_id
           )
         : sendRejectionEmails(
             registration.team_members,
@@ -195,32 +196,49 @@ export default function RegistrationDetails() {
   };
 
   const handleResendEmails = async () => {
-    if (!registration?.team_members) return;
+    if (!registration?.team_members) {
+      toast({
+        title: "Error",
+        description: "No team members found",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setUpdating(true);
+      console.log("Starting email resend process...");
+      
       const emailResult = await sendApprovalEmails(
         registration.team_members,
         registration.id,
         registration.selected_events,
         registration.total_amount,
-        registration.team_size
+        registration.team_size,
+        registration.team_id
       );
 
+      console.log("Email result:", emailResult);
+
       if (!emailResult.success) {
-        throw new Error(String(emailResult.error));
+        throw new Error(
+          emailResult.error || 
+          `Failed to send emails: ${JSON.stringify(emailResult.details)}`
+        );
       }
 
       toast({
         title: "Success",
-        description: "Approval emails resent successfully",
+        description: "Approval emails sent successfully",
         variant: "success",
       });
     } catch (error) {
       console.error("Error resending emails:", error);
       toast({
         title: "Error",
-        description: "Failed to resend approval emails",
+        description: error instanceof Error 
+          ? error.message 
+          : "Failed to send approval emails",
         variant: "destructive",
       });
     } finally {

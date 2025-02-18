@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import { Calendar, Users, Search, Building2, Clock, Gamepad2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
-import { calculateRegistrationRevenue, calculateTotalRevenue } from "@/utils/revenue";
+// import { calculateRegistrationRevenue } from "@/utils/revenue";
+import { calculateTotalRevenue } from "@/utils/revenue";
 
 // Add animation variants
 const container = {

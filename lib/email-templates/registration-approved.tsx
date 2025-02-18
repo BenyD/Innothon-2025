@@ -121,7 +121,7 @@ export const RegistrationApprovedEmail = ({
               <Text style={contactText}>
                 Email: bspc.hit@gmail.com<br />
                 Phone: +91 98848 19912 (Beny Dishon K)<br />
-                Website: <Link style={link} href="https://innothon.beny.one">innothon.beny.one</Link>
+                Website: <Link style={link} href="https://www.hitscseinnothon.com">hitscseinnothon.com</Link>
               </Text>
             </Section>
 
@@ -144,12 +144,12 @@ export const RegistrationApprovedEmail = ({
 
 // Constants
 const scheduleItems = [
-  { time: "08:30 AM", event: "Registration & Check-in" },
-  { time: "09:30 AM", event: "Opening Ceremony" },
-  { time: "10:30 AM", event: "Events Begin" },
-  { time: "01:00 PM", event: "Lunch Break" },
-  { time: "02:00 PM", event: "Events Resume" },
-  { time: "04:30 PM", event: "Valedictory Ceremony" }
+  { time: "8:30 AM", event: "Registration & Check-in" },
+  { time: "9:30 AM", event: "Opening Ceremony" },
+  { time: "11:00 AM", event: "Events Begin (AI Genesis, Digital Divas, IdeaFusion, Pixel Showdown)" },
+  { time: "1:00 PM", event: "Lunch Break" },
+  { time: "2:00 PM", event: "Events Begin (CodeArena, HackQuest)" },
+  { time: "4:00 PM", event: "Day 1 Concludes" }
 ];
 
 const importantNotes = [

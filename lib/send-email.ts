@@ -6,13 +6,15 @@ export async function sendApprovalEmails(
   registrationId: string,
   selectedEventIds: string[],
   totalAmount: number,
-  teamSize: number
+  teamSize: number,
+  teamId: string
 ) {
   const selectedEventTitles = selectedEventIds.map(
     (id) => events.find((e) => e.id === id)?.title || id
   );
 
   try {
+    console.log("Sending approval emails...");
     const response = await fetch("/api/send-approval-emails", {
       method: "POST",
       headers: {
@@ -24,19 +26,32 @@ export async function sendApprovalEmails(
         selectedEvents: selectedEventTitles,
         totalAmount,
         teamSize,
+        teamId,
       }),
     });
 
     const data = await response.json();
+    console.log("Email API response:", data);
 
-    if (!data.success) {
-      throw new Error(data.error || "Failed to send emails");
+    if (!response.ok || !data.success) {
+      console.error("Email sending failed:", data);
+      throw new Error(
+        data.error || 
+        `Failed to send emails (Status: ${response.status})`
+      );
     }
 
-    return { success: true };
+    return { 
+      success: true, 
+      details: data.details 
+    };
   } catch (error) {
     console.error("Error sending approval emails:", error);
-    return { success: false, error };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+      details: error
+    };
   }
 }
 

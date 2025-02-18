@@ -26,10 +26,8 @@ export const RegistrationRejectedEmail = ({
   teamMember,
   registrationId,
   selectedEvents,
-  isTeamLeader,
-  teamSize,
 }: RegistrationRejectedEmailProps) => {
-  const previewText = `Important update regarding your Innothon'25 registration`;
+  const previewText = `Important update regarding your Innothon'25 payment`;
 
   return (
     <Html>
@@ -50,14 +48,13 @@ export const RegistrationRejectedEmail = ({
 
           <Section style={content}>
             <Text style={title}>Registration Update</Text>
-            
+
             <Text style={greeting}>Dear {teamMember.name},</Text>
-            
+
             <Text style={paragraph}>
-              Thank you for your interest in Innothon&apos;25. After careful review, we regret to inform you that your registration could not be confirmed at this time.
-              {isTeamLeader && teamSize > 1 && (
-                " As the team leader, please inform your team members about this update."
-              )}
+              We regret to inform you that we couldn&apos;t verify your payment
+              for Innothon&apos;25. This could be due to one of the following
+              reasons:
             </Text>
 
             {/* Registration Details */}
@@ -79,9 +76,21 @@ export const RegistrationRejectedEmail = ({
             <Section style={card}>
               <Text style={cardTitle}>What&apos;s Next?</Text>
               <ul style={notesList}>
-                <li style={notesItem}>Your registration amount will be refunded within 5-7 working days</li>
-                <li style={notesItem}>You can apply again for future events</li>
-                <li style={notesItem}>Follow our social media for updates on upcoming opportunities</li>
+                <li style={notesItem}>
+                  Please ensure your payment transaction was completed
+                  successfully
+                </li>
+                <li style={notesItem}>
+                  If amount was deducted, please share the transaction details
+                  and screenshot to bspc.hit@gmail.com
+                </li>
+                <li style={notesItem}>
+                  You can try registering again with a different payment method
+                </li>
+                <li style={notesItem}>
+                  If amount was deducted, it will be refunded within 5-7 working
+                  days
+                </li>
               </ul>
             </Section>
 
@@ -89,20 +98,44 @@ export const RegistrationRejectedEmail = ({
             <Section style={contactSection}>
               <Text style={contactTitle}>Questions?</Text>
               <Text style={contactText}>
-                If you have any questions or need clarification, please contact us:<br /><br />
-                Email: bspc.hit@gmail.com<br />
-                Phone: +91 98848 19912 (Beny Dishon K)<br />
-                Website: <Link style={link} href="https://innothon.beny.one">innothon.beny.one</Link>
+                If you have any questions or need clarification, please contact
+                us:
+                <br />
+                <br />
+                Email: bspc.hit@gmail.com
+                <br />
+                Phone: +91 98848 19912 (Beny Dishon K)
+                <br />
+                Website:{" "}
+                <Link style={link} href="https://www.hitscseinnothon.com">
+                  hitscseinnothon.com
+                </Link>
               </Text>
+            </Section>
+
+            {/* Payment Support Section */}
+            <Section style={card}>
+              <Text style={cardTitle}>Common Payment Issues</Text>
+              <ul style={notesList}>
+                <li style={notesItem}>Transaction timeout or network error</li>
+                <li style={notesItem}>Payment gateway technical issues</li>
+                <li style={notesItem}>
+                  Incorrect or incomplete transaction details
+                </li>
+                <li style={notesItem}>Bank server downtime</li>
+              </ul>
             </Section>
 
             <Hr style={divider} />
 
             <Section style={footer}>
               <Text style={footerText}>
-                Blue Screen Programming Club<br />
-                Department of Computer Science and Engineering<br />
-                Hindustan Institute of Technology and Science<br />
+                Blue Screen Programming Club
+                <br />
+                Department of Computer Science and Engineering
+                <br />
+                Hindustan Institute of Technology and Science
+                <br />
                 Chennai, India
               </Text>
             </Section>
@@ -116,7 +149,8 @@ export const RegistrationRejectedEmail = ({
 // Styles (same as approved email template)
 const main = {
   backgroundColor: "#f5f5f5",
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
 const container = {
