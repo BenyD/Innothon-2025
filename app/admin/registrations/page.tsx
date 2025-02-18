@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Calendar, Users, Search, Building2, Clock, Gamepad2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
+import { calculateRegistrationRevenue, calculateTotalRevenue } from "@/utils/revenue";
 
 // Add animation variants
 const container = {
@@ -127,6 +128,8 @@ export default function Registrations() {
     setFilteredRegistrations(filtered);
   }, [searchQuery, registrations]);
 
+  // Update the revenue display in the stats section
+  const totalRevenue = calculateTotalRevenue(registrations);
 
   return (
     <AdminLayout>
@@ -163,7 +166,7 @@ export default function Registrations() {
             <h3 className="text-gray-400 text-sm">Total Revenue</h3>
             <p className="text-2xl font-bold text-white mt-1 flex items-center">
               <span className="text-lg mr-1">₹</span>
-              {registrations.reduce((acc, reg) => acc + reg.total_amount, 0)}
+              {totalRevenue}
             </p>
           </motion.div>
           <motion.div
