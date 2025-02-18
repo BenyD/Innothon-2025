@@ -71,7 +71,7 @@ const Rules = () => {
       title: "Registration & Facilities",
       rules: [
         "Registration fees vary by event (₹200-₹500)",
-        "Lunch and refreshments will be provided",
+        "Refreshments will be provided",
         "Carry all required documents",
         "On-spot registrations not allowed",
         "College ID mandatory for participation",

@@ -28,4 +28,5 @@ export type Registration = {
     game: 'bgmi' | 'freefire' | 'pes' | null;
     format?: 'duo' | 'squad';
   } | null;
+  payment_date?: string;
 }; 

@@ -40,7 +40,7 @@ export const events: Event[] = [
       "Practice on TryHackMe before the event recommended",
       "Prioritize solving challenges with higher point values",
       "Bring college ID",
-      "Lunch and refreshments provided",
+      "Refreshments provided",
     ],
     judgingCriteria: [
       {
@@ -184,7 +184,7 @@ export const events: Event[] = [
       "Make sure visuals and copy are polished and professional",
       "Campaign should be persuasive and impactful",
       "Bring college ID",
-      "Lunch and refreshments provided",
+      "Refreshments provided",
     ],
     judgingCriteria: [
       {
@@ -283,7 +283,7 @@ export const events: Event[] = [
       "Languages: Python, C, and Java",
       "No misconduct or AI tools allowed",
       "Bring college ID",
-      "Lunch and refreshments provided",
+      "Refreshments provided",
     ],
     judgingCriteria: [
       {
@@ -379,7 +379,7 @@ export const events: Event[] = [
       "Ensure designs are original and free from copyright infringement",
       "Judges will assess posters based on design quality, message clarity, and research depth",
       "Bring college ID",
-      "Lunch and refreshments provided",
+      "Refreshments provided",
     ],
     judgingCriteria: [
       {
@@ -486,7 +486,7 @@ export const events: Event[] = [
       "Prototype (Optional) for bonus points",
       "Prepare for Q&A session",
       "Bring college ID",
-      "Lunch and refreshments provided",
+      "Refreshments provided",
     ],
     judgingCriteria: [
       {
