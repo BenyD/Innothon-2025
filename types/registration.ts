@@ -13,6 +13,7 @@ export type TeamMember = {
 export type Registration = {
   id: string;
   team_id: string;
+  team_name: string;
   team_size: number;
   selected_events: string[];
   total_amount: number;

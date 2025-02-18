@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
   Filter,
   CheckCircle2,
+  Download,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +25,8 @@ import { events } from "@/data/events";
 import type { Registration } from "@/types/registration";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { exportToExcel, formatRegistrationForExcel, formatEventRegistrationForExcel } from "@/utils/excel";
+import { Button } from "@/components/ui/button";
 
 type EventRegistration = Registration & {
   event_id: string;
@@ -148,6 +151,19 @@ export default function EventOverview() {
 
   const gameStats = getGameSpecificStats(filteredRegistrations);
 
+  const handleExportEvent = (eventId: string, eventRegistrations: EventRegistration[]) => {
+    const eventName = events.find((e) => e.id === eventId)?.title || "Unknown Event";
+    const formattedData = eventRegistrations.map(registration => 
+      formatEventRegistrationForExcel(registration, eventId)
+    );
+    exportToExcel(formattedData, `${eventName}-registrations`);
+  };
+
+  const handleExportAllRegistrations = () => {
+    const formattedData = filteredRegistrations.map(formatRegistrationForExcel);
+    exportToExcel(formattedData, `all-registrations`);
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -164,9 +180,18 @@ export default function EventOverview() {
       <div className="space-y-6 sm:space-y-8">
         {/* Header & Stats */}
         <div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Event Overview
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              Event Overview
+            </h1>
+            <Button
+              onClick={handleExportAllRegistrations}
+              className="bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export All
+            </Button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4">
             <motion.div 
               variants={item}
@@ -294,15 +319,24 @@ export default function EventOverview() {
                       {eventRegistrations.length} team{eventRegistrations.length !== 1 ? "s" : ""} registered
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-green-400">
-                      <IndianRupee className="w-4 h-4" />
-                      <span>₹{eventRegistrations.length * 500}</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <div className="flex items-center gap-2 text-green-400">
+                        <IndianRupee className="w-4 h-4" />
+                        <span>₹{eventRegistrations.length * 500}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-purple-400">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{eventRegistrations.filter(reg => reg.status === "approved").length} Approved</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-purple-400">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>{eventRegistrations.filter(reg => reg.status === "approved").length} Approved</span>
-                    </div>
+                    <Button
+                      onClick={() => handleExportEvent(eventId, eventRegistrations)}
+                      size="sm"
+                      className="bg-white/5 hover:bg-white/10 text-white"
+                    >
+                      <Download className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
