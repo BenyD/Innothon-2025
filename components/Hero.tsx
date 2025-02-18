@@ -73,14 +73,31 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-center lg:text-left space-y-4 sm:space-y-6"
+              className="text-center lg:text-left space-y-6 sm:space-y-8"
             >
+              {/* Department Name - Moved to top with enhanced styling */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex flex-col items-center lg:items-start gap-2"
+              >
+                <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+                  <p className="text-sm text-gray-400">Proudly Presented By</p>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                  Department of Computer Science
+                  <br />and Engineering
+                </h2>
+              </motion.div>
+
               {/* Event Status Badges */}
               <div className="flex flex-row flex-wrap justify-center lg:justify-start gap-3">
+                {/* Date Badge */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ delay: 0.3 }}
                   className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
                 >
                   <span className="relative flex h-3 w-3">
@@ -88,9 +105,7 @@ const Hero = () => {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
                   </span>
                   <p className="text-sm text-gray-300 whitespace-nowrap">
-                    <span className="text-white font-medium">
-                      March 21-22, 2025
-                    </span>
+                    <span className="text-white font-medium">March 21-22, 2025</span>
                   </p>
                 </motion.div>
 
@@ -98,87 +113,94 @@ const Hero = () => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ delay: 0.4 }}
                   className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
                 >
                   <Clock className="w-3 h-3 text-purple-400" />
                   <div className="flex items-center gap-2 text-sm">
                     <div className="flex items-center">
-                      <span className="text-white font-medium">{timeLeft.days}</span>
+                      <span className="text-white font-medium">
+                        {timeLeft.days}
+                      </span>
                       <span className="text-gray-400 ml-1">d</span>
                     </div>
                     <span className="text-gray-600">:</span>
                     <div className="flex items-center">
-                      <span className="text-white font-medium">{timeLeft.hours}</span>
+                      <span className="text-white font-medium">
+                        {timeLeft.hours}
+                      </span>
                       <span className="text-gray-400 ml-1">h</span>
                     </div>
                     <span className="text-gray-600">:</span>
                     <div className="flex items-center">
-                      <span className="text-white font-medium">{timeLeft.minutes}</span>
+                      <span className="text-white font-medium">
+                        {timeLeft.minutes}
+                      </span>
                       <span className="text-gray-400 ml-1">m</span>
                     </div>
                     <span className="text-gray-600">:</span>
                     <div className="flex items-center">
-                      <span className="text-white font-medium">{timeLeft.seconds}</span>
+                      <span className="text-white font-medium">
+                        {timeLeft.seconds}
+                      </span>
                       <span className="text-gray-400 ml-1">s</span>
                     </div>
                   </div>
                 </motion.div>
               </div>
 
-              <div className="space-y-4 sm:space-y-6">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+              {/* Main Event Title and Description */}
+              <div className="space-y-6">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
                     Innothon 2025
                   </span>
                 </h1>
-                <div className="space-y-2">
-                  <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                    Join the next generation of tech innovators and showcase your
-                    skills at the biggest tech event of the year.
-                  </p>
-                  <p className="text-base sm:text-lg text-gray-400 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                    Organized by Department of Computer Science and Engineering
-                  </p>
-                </div>
+                <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0">
+                  Join the next generation of tech innovators and showcase
+                  your skills at the biggest tech event of the year.
+                </p>
               </div>
 
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                {/* Register Button */}
                 <Link href="/register">
-                  <Button className="relative h-12 px-8 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:opacity-90 transition-all duration-300">
+                  <Button className="relative h-14 px-8 w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:opacity-90 transition-all duration-300">
                     <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity -z-10"></div>
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 text-lg">
                       Register Now
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </Button>
                 </Link>
 
+                {/* Explore Events Button */}
                 <div className="relative group w-full sm:w-auto">
                   <div className="absolute -inset-[3px] bg-gradient-to-r from-blue-600/25 via-purple-600/25 to-pink-600/25 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300" />
                   <button
                     onClick={() => scrollToSection("events")}
-                    className="relative w-full px-8 py-3 bg-black/20 hover:bg-black/40 border border-white/5 group-hover:border-white/10 rounded-lg text-gray-300 hover:text-white transition-all duration-300"
+                    className="relative w-full h-14 px-8 bg-black/20 hover:bg-black/40 border border-white/5 group-hover:border-white/10 rounded-lg text-gray-300 hover:text-white transition-all duration-300"
                   >
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2 text-lg">
                       <span>Explore Events</span>
-                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
                   </button>
                 </div>
               </div>
 
-              {/* Add Prize Information */}
+              {/* Prize Information with enhanced styling */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center gap-2 justify-center lg:justify-start text-sm text-gray-400"
+                transition={{ delay: 0.5 }}
+                className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-yellow-500/5 border border-yellow-500/10 backdrop-blur-sm"
               >
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                <span>
+                <Trophy className="w-5 h-5 text-yellow-400" />
+                <span className="text-gray-300">
                   Win exciting prizes worth up to{" "}
-                  <span className="text-white font-semibold">₹50,000</span>
+                  <span className="text-yellow-400 font-semibold">₹50,000</span>
                 </span>
               </motion.div>
             </motion.div>
