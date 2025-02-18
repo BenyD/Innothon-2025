@@ -1371,7 +1371,7 @@ const RegistrationForm = () => {
                                     or drag and drop
                                   </p>
                                   <p className="text-xs text-gray-400">
-                                    PNG, JPG or JPEG (MAX. 2MB)
+                                    PNG, JPG or JPEG (MAX. 5MB)
                                   </p>
                                 </>
                               )}
