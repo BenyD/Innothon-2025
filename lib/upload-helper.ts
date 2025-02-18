@@ -21,15 +21,10 @@ export async function uploadPaymentProof(file: File, registrationId: string) {
 
     if (error) throw error
 
-    return {
-      success: true,
-      filePath: `payment-proofs/${fileName}`
-    }
+    // Return just the filename instead of the full path object
+    return fileName
   } catch (error) {
     console.error('Error uploading payment proof:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to upload file'
-    }
+    throw error
   }
 } 

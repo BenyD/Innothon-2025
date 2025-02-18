@@ -54,6 +54,7 @@ export default function EventPage() {
           src={event.image}
           alt={event.title}
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />

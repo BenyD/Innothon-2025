@@ -24,7 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { events } from "@/data/events";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
 
 const container = {
@@ -98,20 +98,38 @@ export default function RegistrationDetails() {
     fetchRegistration();
   }, [fetchRegistration]);
 
-  useEffect(() => {
-    const getSignedUrl = async () => {
-      if (registration?.payment_proof) {
-        const { data } = await supabase.storage
-          .from('payment-proofs')
-          .createSignedUrl(registration.payment_proof.split('/').pop()!, 60 * 60); // 1 hour expiry
-        
-        if (data?.signedUrl) {
-          setSignedUrl(data.signedUrl);
-        }
+  const getSignedUrl = async (fileName: string) => {
+    try {
+      if (!fileName) return null;
+      
+      const { data, error } = await supabase
+        .storage
+        .from('payment-proofs')
+        .createSignedUrl(fileName, 60); // 60 seconds expiry
+
+      if (error) {
+        console.error('Error getting signed URL:', error);
+        return null;
       }
-    };
-    
-    getSignedUrl();
+
+      return data.signedUrl;
+    } catch (error) {
+      console.error('Error in getSignedUrl:', error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (registration?.payment_proof) {
+      const fetchSignedUrl = async () => {
+        const url = await getSignedUrl(registration.payment_proof);
+        if (url) {
+          setSignedUrl(url);
+        }
+      };
+      
+      fetchSignedUrl();
+    }
   }, [registration?.payment_proof]);
 
   const handleStatusUpdate = async (status: "approved" | "rejected") => {
@@ -419,30 +437,45 @@ export default function RegistrationDetails() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-3xl bg-gray-900/95 border-white/10">
-                        <DialogTitle className="text-lg font-medium text-white">
-                          Payment Proof
-                        </DialogTitle>
+                        <DialogHeader>
+                          <DialogTitle className="text-lg font-medium text-white">
+                            Payment Proof
+                          </DialogTitle>
+                          <DialogDescription className="text-sm text-gray-400">
+                            View the payment proof uploaded by the participant
+                          </DialogDescription>
+                        </DialogHeader>
+                        
                         <div className="relative w-full max-h-[80vh] mt-2">
-                          <Image
-                            src={signedUrl || ''}
-                            alt="Payment Proof"
-                            width={800}
-                            height={1000}
-                            className="w-full h-full object-contain rounded-lg"
-                            unoptimized
-                          />
+                          {signedUrl ? (
+                            <Image
+                              src={signedUrl}
+                              alt="Payment Proof"
+                              width={800}
+                              height={1000}
+                              className="w-full h-full object-contain rounded-lg"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-48">
+                              <span className="text-gray-400">Loading payment proof...</span>
+                            </div>
+                          )}
                         </div>
-                        <div className="mt-4 flex justify-end">
-                          <a
-                            href={signedUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-2"
-                          >
-                            Open in New Tab
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        </div>
+                        
+                        {signedUrl && (
+                          <div className="mt-4 flex justify-end">
+                            <a
+                              href={signedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-2"
+                            >
+                              Open in New Tab
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          </div>
+                        )}
                       </DialogContent>
                     </Dialog>
                   </div>

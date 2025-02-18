@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description:
     "Join us for Innothon 2025, a 24-hour hackathon at Hindustan Institute of Technology and Science.",
   manifest: "/site.webmanifest",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

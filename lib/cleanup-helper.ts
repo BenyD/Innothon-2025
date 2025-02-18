@@ -5,7 +5,7 @@ export async function cleanupFailedRegistration(registrationId: string) {
     // Delete the uploaded file if it exists
     await supabase.storage
       .from('payment-proofs')
-      .remove([`${registrationId}_payment.*`]);
+      .remove([`${registrationId}-*`]);
 
     // Delete the registration record
     await supabase
