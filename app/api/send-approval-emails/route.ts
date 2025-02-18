@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       selectedEvents,
       totalAmount,
       teamSize,
+      teamId,
     } = await request.json();
 
     const emailPromises = teamMembers.map(
@@ -22,7 +23,8 @@ export async function POST(request: Request) {
         const admitCard = await generateAdmitCard(
           member,
           registrationId,
-          selectedEvents
+          selectedEvents,
+          teamId
         );
 
         await resend.emails.send({

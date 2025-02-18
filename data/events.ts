@@ -342,7 +342,7 @@ export const events: Event[] = [
     title: "Digital Divas",
     shortDescription: "Women-exclusive tech poster design competition",
     fullDescription:
-      "Digital Divas is an exclusive competition for women, where participants create technology-related posters on a given topic. Participants can use any graphic design software on their personal laptops, while those using lab computers will have access only to Canva. The competition encourages creativity, research, and design skills, with a focus on tech-related themes. Participants must also submit a Word document containing sources for the content and images used to evaluate their research efforts. The best-designed poster, as judged by an expert panel, will be awarded.",
+      "Digital Divas is an exclusive competition for women, where participants create technology-related posters on women empowerment. Participants can use any graphic design software on their personal laptops, while those using lab computers will have access only to Canva. The competition encourages creativity, research, and design skills, with a focus on tech-related themes. Participants must also submit a Word document containing sources for the content and images used to evaluate their research efforts. The best-designed poster, as judged by an expert panel, will be awarded.",
     image: "/events/digital-divas.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 1:00 PM",

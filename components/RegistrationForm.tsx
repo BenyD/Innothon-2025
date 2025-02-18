@@ -557,11 +557,22 @@ const RegistrationForm = () => {
                               className={`relative flex flex-col gap-2 p-4 rounded-xl border transition-all ${
                                 selectedEvents.includes(event.id)
                                   ? "bg-white/10 border-purple-500"
-                                  : isDisabled
-                                    ? "bg-black/50 border-white/10 opacity-50 cursor-not-allowed"
-                                    : "bg-black/50 border-white/10 hover:bg-white/5"
+                                  : event.id === "digital-divas"
+                                    ? isDisabled
+                                      ? "bg-black/50 border-pink-500/50 opacity-50 cursor-not-allowed"
+                                      : "bg-pink-500/5 border-pink-500/50 hover:bg-pink-500/10"
+                                    : isDisabled
+                                      ? "bg-black/50 border-white/10 opacity-50 cursor-not-allowed"
+                                      : "bg-black/50 border-white/10 hover:bg-white/5"
                               }`}
                             >
+                              {event.id === "digital-divas" && (
+                                <div className="absolute left-3 top-3 px-2 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/30">
+                                  <span className="text-xs font-medium text-pink-300">
+                                    Women Only
+                                  </span>
+                                </div>
+                              )}
                               <div className="absolute right-3 top-3">
                                 <Checkbox
                                   checked={selectedEvents.includes(event.id)}
@@ -572,12 +583,18 @@ const RegistrationForm = () => {
                                     )
                                   }
                                   disabled={isDisabled}
-                                  className={
-                                    isDisabled ? "cursor-not-allowed" : ""
-                                  }
+                                  className={`${
+                                    event.id === "digital-divas"
+                                      ? "border-pink-500"
+                                      : ""
+                                  } ${isDisabled ? "cursor-not-allowed" : ""}`}
                                 />
                               </div>
-                              <h3 className="font-medium text-white pr-8">
+                              <h3
+                                className={`font-medium text-white pr-8 ${
+                                  event.id === "digital-divas" ? "mt-6" : ""
+                                }`}
+                              >
                                 {event.title}
                               </h3>
                               <p className="text-sm text-gray-400">

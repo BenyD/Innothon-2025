@@ -60,29 +60,87 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info - Better mobile spacing */}
+          {/* Contact Info - Mobile optimized */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2">
-                <IoMail className="w-4 h-4 text-purple-400" />
+            <div className="space-y-4 sm:space-y-6">
+              {/* Staff Contacts */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-purple-400">Staff Coordinators</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-gray-300">Dr. J. Thangakumar</span>
+                      <span className="text-gray-500 text-sm">(Convenor)</span>
+                    </div>
+                    <a
+                      href="tel:+919500091229"
+                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mt-1"
+                    >
+                      <IoCall className="w-4 h-4 text-blue-400" />
+                      <span>+91 95000 91229</span>
+                    </a>
+                  </li>
+                  <li>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-gray-300">Ms. Praisy Evangelin A</span>
+                    </div>
+                    <a
+                      href="tel:+919443961274"
+                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mt-1"
+                    >
+                      <IoCall className="w-4 h-4 text-purple-400" />
+                      <span>+91 94439 61274</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Student Contacts */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-purple-400">Student Coordinators</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-gray-300">Beny Dishon K</span>
+                      <span className="text-gray-500 text-sm">(President)</span>
+                    </div>
+                    <a
+                      href="tel:+919884819912"
+                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mt-1"
+                    >
+                      <IoCall className="w-4 h-4 text-blue-400" />
+                      <span>+91 98848 19912</span>
+                    </a>
+                  </li>
+                  <li>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-gray-300">M. Ashwini</span>
+                      <span className="text-gray-500 text-sm">(Vice President)</span>
+                    </div>
+                    <a
+                      href="tel:+917739962694"
+                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mt-1"
+                    >
+                      <IoCall className="w-4 h-4 text-purple-400" />
+                      <span>+91 77399 62694</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-purple-400">Email</h4>
                 <a
                   href="mailto:bspc.hits@gmail.com"
-                  className="text-gray-400 hover:text-white transition-colors inline-block py-1"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                 >
-                  bspc.hits@gmail.com
+                  <IoMail className="w-4 h-4 text-pink-400" />
+                  <span>bspc.hits@gmail.com</span>
                 </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <IoCall className="w-4 h-4 text-blue-400" />
-                <a
-                  href="tel:+919884819912"
-                  className="text-gray-400 hover:text-white transition-colors inline-block py-1"
-                >
-                  +91 98848 19912
-                </a>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -8,12 +8,14 @@ import { Document } from "@react-pdf/renderer";
 export async function generateAdmitCard(
   teamMember: TeamMember,
   registrationId: string,
-  selectedEvents: string[]
+  selectedEvents: string[],
+  teamId: string
 ) {
   try {
     // Generate QR code with registration details
     const qrData = JSON.stringify({
       regId: registrationId,
+      teamId: teamId,
       name: teamMember.name,
       email: teamMember.email,
     });
@@ -29,6 +31,7 @@ export async function generateAdmitCard(
           registrationId,
           selectedEvents,
           qrCodeDataUrl,
+          teamId,
         })
       )
     );
