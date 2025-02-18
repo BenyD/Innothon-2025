@@ -7,9 +7,9 @@ export async function uploadPaymentProof(file: File, registrationId: string) {
       throw new Error('Invalid file type. Please upload a JPG or PNG file.');
     }
 
-    // Validate file size (2MB limit)
-    if (file.size > 2 * 1024 * 1024) {
-      throw new Error('File size too large. Please upload a file smaller than 2MB.');
+    // Increase size limit to 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error('File size too large. Please upload a file smaller than 5MB.');
     }
 
     const fileExt = file.name.split('.').pop()
