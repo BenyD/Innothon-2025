@@ -16,7 +16,7 @@ export async function uploadPaymentProof(file: File, registrationId: string) {
     const fileName = `${registrationId}-${Date.now()}.${fileExt}`
     
     // Add more detailed error logging
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('payment-proofs')
       .upload(fileName, file, {
         cacheControl: '3600',
