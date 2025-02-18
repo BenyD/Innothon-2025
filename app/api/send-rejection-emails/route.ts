@@ -15,21 +15,23 @@ export async function POST(request: Request) {
       teamSize,
     } = await request.json();
 
-    const emailPromises = teamMembers.map(async (member: TeamMember, index: number) => {
-      await resend.emails.send({
-        from: "Innothon'25 <noreply@beny.one>",
-        to: member.email,
-        subject: "Registration Update - Innothon'25",
-        react: RegistrationRejectedEmail({
-          teamMember: member,
-          registrationId,
-          selectedEvents,
-          totalAmount,
-          isTeamLeader: index === 0,
-          teamSize,
-        }),
-      });
-    });
+    const emailPromises = teamMembers.map(
+      async (member: TeamMember, index: number) => {
+        await resend.emails.send({
+          from: "Innothon'25 <noreply@hitscseinnothon.com>",
+          to: member.email,
+          subject: "Registration Update - Innothon'25",
+          react: RegistrationRejectedEmail({
+            teamMember: member,
+            registrationId,
+            selectedEvents,
+            totalAmount,
+            isTeamLeader: index === 0,
+            teamSize,
+          }),
+        });
+      }
+    );
 
     await Promise.all(emailPromises);
     return NextResponse.json({ success: true });
@@ -40,4 +42,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

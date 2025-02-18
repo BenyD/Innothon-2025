@@ -16,34 +16,36 @@ export async function POST(request: Request) {
       teamSize,
     } = await request.json();
 
-    const emailPromises = teamMembers.map(async (member: TeamMember, index: number) => {
-      // Generate admit card PDF for this member
-      const admitCard = await generateAdmitCard(
-        member,
-        registrationId,
-        selectedEvents
-      );
-
-      await resend.emails.send({
-        from: "Innothon'25 <noreply@beny.one>",
-        to: member.email,
-        subject: "Registration Approved - Innothon'25",
-        react: RegistrationApprovedEmail({
-          teamMember: member,
+    const emailPromises = teamMembers.map(
+      async (member: TeamMember, index: number) => {
+        // Generate admit card PDF for this member
+        const admitCard = await generateAdmitCard(
+          member,
           registrationId,
-          selectedEvents,
-          totalAmount,
-          isTeamLeader: index === 0,
-          teamSize,
-        }),
-        attachments: [
-          {
-            filename: `admit-card-${registrationId}.pdf`,
-            content: admitCard,
-          },
-        ],
-      });
-    });
+          selectedEvents
+        );
+
+        await resend.emails.send({
+          from: "Innothon'25 <noreply@hitscseinnothon.com>",
+          to: member.email,
+          subject: "Registration Approved - Innothon'25",
+          react: RegistrationApprovedEmail({
+            teamMember: member,
+            registrationId,
+            selectedEvents,
+            totalAmount,
+            isTeamLeader: index === 0,
+            teamSize,
+          }),
+          attachments: [
+            {
+              filename: `admit-card-${registrationId}.pdf`,
+              content: admitCard,
+            },
+          ],
+        });
+      }
+    );
 
     await Promise.all(emailPromises);
     return NextResponse.json({ success: true });
