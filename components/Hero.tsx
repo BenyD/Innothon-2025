@@ -83,11 +83,12 @@ const Hero = () => {
                 className="inline-flex flex-col items-center lg:items-start gap-2"
               >
                 <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <p className="text-sm text-gray-400">Proudly Presented By</p>
+                  <p className="text-sm text-gray-400">Presented By</p>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   Department of Computer Science
-                  <br />and Engineering
+                  <br />
+                  and Engineering
                 </h2>
               </motion.div>
 
@@ -105,7 +106,9 @@ const Hero = () => {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
                   </span>
                   <p className="text-sm text-gray-300 whitespace-nowrap">
-                    <span className="text-white font-medium">March 21-22, 2025</span>
+                    <span className="text-white font-medium">
+                      March 21-22, 2025
+                    </span>
                   </p>
                 </motion.div>
 
@@ -157,8 +160,8 @@ const Hero = () => {
                   </span>
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                  Join the next generation of tech innovators and showcase
-                  your skills at the biggest tech event of the year.
+                  Join the next generation of tech innovators and showcase your
+                  skills at the biggest tech event of the year.
                 </p>
               </div>
 

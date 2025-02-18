@@ -12,10 +12,10 @@ const geist = GeistSans;
 export const metadata: Metadata = {
   title: "Innothon 2025 - Hindustan Institute of Technology and Science",
   description:
-    "Join us for Innothon 2025, a 24-hour hackathon at Hindustan Institute of Technology and Science.",
+    "Join us for Innothon 2025, a technical fest at Hindustan Institute of Technology and Science.",
   manifest: "/site.webmanifest",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 
