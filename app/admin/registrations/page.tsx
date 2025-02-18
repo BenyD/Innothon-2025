@@ -273,7 +273,7 @@ export default function Registrations() {
 
                 {/* Player ID Details */}
                 <div className="space-y-2 mt-2">
-                  {registration.team_members.map((member, index) => (
+                  {registration.team_members.map((member) => (
                     <div key={member.id} className="text-sm">
                       {/* ... existing member details ... */}
                       
