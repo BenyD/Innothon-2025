@@ -122,9 +122,11 @@ export default function RegistrationDetails() {
   useEffect(() => {
     if (registration?.payment_proof) {
       const fetchSignedUrl = async () => {
-        const url = await getSignedUrl(registration.payment_proof);
-        if (url) {
-          setSignedUrl(url);
+        if (typeof registration.payment_proof === 'string') {
+          const url = await getSignedUrl(registration.payment_proof);
+          if (url) {
+            setSignedUrl(url);
+          }
         }
       };
       
