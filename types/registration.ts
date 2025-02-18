@@ -1,4 +1,4 @@
-export interface TeamMember {
+export type TeamMember = {
   id: string;
   name: string;
   email: string;
@@ -7,7 +7,8 @@ export interface TeamMember {
   department: string;
   year: string;
   gender: string;
-}
+  player_id?: string | null;
+};
 
 export type Registration = {
   id: string;

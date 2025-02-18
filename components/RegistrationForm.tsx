@@ -29,6 +29,7 @@ import {
   Copy,
   Users,
   ArrowLeft,
+  Gamepad2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -54,6 +55,7 @@ const INITIAL_MEMBER: TeamMember = {
   department: "",
   year: "",
   gender: "",
+  player_id: "",
 };
 
 const YEAR_OPTIONS = [
@@ -1004,6 +1006,42 @@ const RegistrationForm = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
+
+                              {selectedEvents.includes("pixel-showdown") && (
+                                <div className="space-y-2">
+                                  <Label htmlFor={`playerId-${index}`}>
+                                    {pixelShowdownGame?.game === "bgmi"
+                                      ? "BGMI Character ID"
+                                      : pixelShowdownGame?.game === "freefire"
+                                        ? "Free Fire ID"
+                                        : "PES Username"}
+                                    <span className="text-red-500">*</span>
+                                  </Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`playerId-${index}`}
+                                      value={member.player_id || ""}
+                                      onChange={(e) =>
+                                        updateTeamMember(
+                                          index,
+                                          "player_id",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder={
+                                        pixelShowdownGame?.game === "bgmi"
+                                          ? "Enter BGMI Character ID"
+                                          : pixelShowdownGame?.game ===
+                                              "freefire"
+                                            ? "Enter Free Fire ID"
+                                            : "Enter PES Username"
+                                      }
+                                      className="bg-white/5 border-white/10 pl-10"
+                                    />
+                                    <Gamepad2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </motion.div>
                         ))}

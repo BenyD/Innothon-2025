@@ -34,6 +34,7 @@ export type Tables = {
       year: string
       gender: string
       created_at: string
+      player_id: string | null
     }
     Insert: Omit<Tables['team_members']['Row'], 'id' | 'created_at'>
     Update: Partial<Tables['team_members']['Row']>

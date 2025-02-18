@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
-import { Calendar, Users, Search, Building2, Clock } from "lucide-react";
+import { Calendar, Users, Search, Building2, Clock, Gamepad2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
 
@@ -269,6 +269,29 @@ export default function Registrations() {
                     <span className="text-sm text-gray-400">{registration.total_amount}</span>
                     <span className="text-xs text-gray-500">Amount</span>
                   </div>
+                </div>
+
+                {/* Player ID Details */}
+                <div className="space-y-2 mt-2">
+                  {registration.team_members.map((member, index) => (
+                    <div key={member.id} className="text-sm">
+                      {/* ... existing member details ... */}
+                      
+                      {registration.selected_events.includes("pixel-showdown") && member.player_id && (
+                        <div className="flex items-center gap-1 text-gray-400 mt-1">
+                          <Gamepad2 className="w-3 h-3" />
+                          <span>
+                            {registration.game_details?.game === "bgmi"
+                              ? "BGMI ID: "
+                              : registration.game_details?.game === "freefire"
+                                ? "Free Fire ID: "
+                                : "PES Username: "}
+                            <span className="text-gray-300">{member.player_id}</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>

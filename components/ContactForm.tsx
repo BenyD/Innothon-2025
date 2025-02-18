@@ -120,7 +120,7 @@ const eventManagementTeam = [
 // Add new staff section after the core team array
 const staffTeam = [
   {
-    title: "Conveyor",
+    title: "Convenor",
     name: "Dr. J. Thangakumar, Professor & Head - CSE, HITS",
     phone: "+91 95000 91229",
     color: "blue",

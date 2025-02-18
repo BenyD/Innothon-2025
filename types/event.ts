@@ -10,9 +10,11 @@ export interface Event {
   rules: string[];
   guidelines: string[];
   prizes: {
-    First: string;
-    Second: string;
-    Third: string;
+    [category: string]: {
+      First: string;
+      Second: string;
+      Third?: string;
+    };
   };
   coordinators: {
     name: string;

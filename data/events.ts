@@ -5,7 +5,8 @@ export const events: Event[] = [
     id: "hackquest",
     title: "HackQuest",
     shortDescription: "A Capture the Flag (CTF) competition using TryHackMe",
-    fullDescription: "HackQuest is a Capture the Flag (CTF) competition that tests cybersecurity skills using TryHackMe platform. Participants solve security challenges to find hidden \"flags\" and earn points.",
+    fullDescription:
+      'HackQuest is a Capture the Flag (CTF) competition that tests cybersecurity skills using TryHackMe platform. Participants solve security challenges to find hidden "flags" and earn points.',
     image: "/events/hackquest.jpg",
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
@@ -13,21 +14,23 @@ export const events: Event[] = [
     eventStructure: [
       {
         phase: "Round 1 (Beginner-Intermediate)",
-        description: "Covers basic cybersecurity topics such as cryptography, web security, networking, and reconnaissance. Top teams advance to Round 2.",
-        duration: "1 hour"
+        description:
+          "Covers basic cybersecurity topics such as cryptography, web security, networking, and reconnaissance. Top teams advance to Round 2.",
+        duration: "1 hour",
       },
       {
         phase: "Round 2 (Advanced)",
-        description: "Includes advanced challenges such as exploit development, privilege escalation, reverse engineering, and forensic analysis. The highest-scoring team wins.",
-        duration: "1 hour"
-      }
+        description:
+          "Includes advanced challenges such as exploit development, privilege escalation, reverse engineering, and forensic analysis. The highest-scoring team wins.",
+        duration: "1 hour",
+      },
     ],
     rules: [
       "Team size: 1-3 members",
       "All challenges will be hosted on the TryHackMe platform",
       "No unauthorised collaboration, brute-force attacks, or DDoS attempts on TryHackMe",
       "Flags must be submitted in the correct format (e.g., THM{flag_here})",
-      "Flags must be submitted before the round ends. Late submissions will not be accepted"
+      "Flags must be submitted before the round ends. Late submissions will not be accepted",
     ],
     guidelines: [
       "Bring your own laptop recommended, lab PCs available if needed",
@@ -37,56 +40,60 @@ export const events: Event[] = [
       "Practice on TryHackMe before the event recommended",
       "Prioritize solving challenges with higher point values",
       "Bring college ID",
-      "Lunch and refreshments provided"
+      "Lunch and refreshments provided",
     ],
     judgingCriteria: [
       {
         criterion: "Accuracy",
         weightage: "40%",
-        description: "Points will be awarded for correct flag submissions"
+        description: "Points will be awarded for correct flag submissions",
       },
       {
         criterion: "Completion",
         weightage: "40%",
-        description: "Teams should aim to solve as many challenges as possible"
+        description: "Teams should aim to solve as many challenges as possible",
       },
       {
         criterion: "Rule Adherence",
         weightage: "20%",
-        description: "Teams that violate any rules will be disqualified"
-      }
+        description: "Teams that violate any rules will be disqualified",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      Main: {
+        First: "₹3,000",
+        Second: "₹2,000",
+        Third: "₹1,000",
+      },
     },
     coordinators: [
       {
         name: "Chandaluri Monish N S S Gupta",
         role: "Cybersecurity Lead",
-        contact: "+91 824 807 7123"
+        contact: "+91 824 807 7123",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "₹500 per team",
     teamSize: "1-3 members",
-    status: "upcoming"
+    status: "upcoming",
   },
   {
     id: "ai-genesis",
     title: "AI Genesis",
-    shortDescription: "AI Ad Slogan Challenge - Create compelling ad campaigns using AI",
-    fullDescription: "AI Genesis is an AI Ad Slogan Challenge. It is a two-phase competition where participants use AI tools to create catchy ad slogans and develop full advertising campaigns. The event encourages creativity, strategic thinking, and the innovative use of AI in marketing.",
+    shortDescription:
+      "AI Ad Slogan Challenge - Create compelling ad campaigns using AI",
+    fullDescription:
+      "AI Genesis is an AI Ad Slogan Challenge. It is a two-phase competition where participants use AI tools to create catchy ad slogans and develop full advertising campaigns. The event encourages creativity, strategic thinking, and the innovative use of AI in marketing.",
     image: "/events/ai-genesis.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 1:00 PM",
@@ -94,14 +101,16 @@ export const events: Event[] = [
     eventStructure: [
       {
         phase: "Round 1: Slogan & Visual Sprint",
-        description: "Generate a creative slogan for a randomly assigned product or service using AI tools. Create an AI-generated visual (logo, banner, or ad) to match the slogan. Entries are judged on creativity, relevance, impact, and visual appeal.",
-        duration: "60 minutes"
+        description:
+          "Generate a creative slogan for a randomly assigned product or service using AI tools. Create an AI-generated visual (logo, banner, or ad) to match the slogan. Entries are judged on creativity, relevance, impact, and visual appeal.",
+        duration: "60 minutes",
       },
       {
         phase: "Round 2: Full Ad Campaign",
-        description: "Expand the slogan into a complete ad campaign with AI-generated visuals, ad copy, and social media content. Optional: Use AI for voiceovers, video ads, or interactive elements for bonus points. Judging considers creativity, execution quality, and marketing impact.",
-        duration: "60 minutes"
-      }
+        description:
+          "Expand the slogan into a complete ad campaign with AI-generated visuals, ad copy, and social media content. Optional: Use AI for voiceovers, video ads, or interactive elements for bonus points. Judging considers creativity, execution quality, and marketing impact.",
+        duration: "60 minutes",
+      },
     ],
     rules: [
       "Team size: 1-3 members",
@@ -110,18 +119,12 @@ export const events: Event[] = [
       "Time limits must be followed; late submissions not accepted",
       "All work must be original; no pre-made assets",
       "Participants can compete solo or in teams",
-      "Judges' decisions are final"
+      "Judges' decisions are final",
     ],
     setupRequirements: [
       {
         category: "AI Writing & Copy Generation",
-        requirements: [
-          "ChatGPT",
-          "Jasper AI",
-          "Copy.ai",
-          "Writesonic",
-          "Rytr"
-        ]
+        requirements: ["ChatGPT", "Jasper AI", "Copy.ai", "Writesonic", "Rytr"],
       },
       {
         category: "AI Image Generation",
@@ -130,8 +133,8 @@ export const events: Event[] = [
           "MidJourney",
           "Stable Diffusion",
           "Canva AI",
-          "Leonardo.Ai"
-        ]
+          "Leonardo.Ai",
+        ],
       },
       {
         category: "AI Video & Multimedia",
@@ -140,8 +143,8 @@ export const events: Event[] = [
           "Synthesia",
           "Pictory",
           "InVideo AI",
-          "DeepBrain AI"
-        ]
+          "DeepBrain AI",
+        ],
       },
       {
         category: "AI Voice Generation",
@@ -150,8 +153,8 @@ export const events: Event[] = [
           "Murf AI",
           "Play.ht",
           "Lovo.ai",
-          "Resemble AI"
-        ]
+          "Resemble AI",
+        ],
       },
       {
         category: "AI Social Media & Branding",
@@ -160,8 +163,8 @@ export const events: Event[] = [
           "Looka",
           "LogoAI",
           "Hootsuite AI",
-          "Lately AI"
-        ]
+          "Lately AI",
+        ],
       },
       {
         category: "AI Ad Performance Optimization",
@@ -170,9 +173,9 @@ export const events: Event[] = [
           "Persado",
           "Phrasee",
           "Albert AI",
-          "Pattern89"
-        ]
-      }
+          "Pattern89",
+        ],
+      },
     ],
     guidelines: [
       "Think outside the box for unique slogans and campaigns",
@@ -181,66 +184,73 @@ export const events: Event[] = [
       "Make sure visuals and copy are polished and professional",
       "Campaign should be persuasive and impactful",
       "Bring college ID",
-      "Lunch and refreshments provided"
+      "Lunch and refreshments provided",
     ],
     judgingCriteria: [
       {
         criterion: "Creativity",
         weightage: "30%",
-        description: "Unique and original slogans and campaigns score higher"
+        description: "Unique and original slogans and campaigns score higher",
       },
       {
         criterion: "Relevance",
         weightage: "20%",
-        description: "The slogan and campaign should fit the assigned product/service well"
+        description:
+          "The slogan and campaign should fit the assigned product/service well",
       },
       {
         criterion: "Technical Execution",
         weightage: "20%",
-        description: "High-quality visuals, ad copy, and multimedia elements are key"
+        description:
+          "High-quality visuals, ad copy, and multimedia elements are key",
       },
       {
         criterion: "Persuasive Appeal",
         weightage: "20%",
-        description: "The campaign should effectively engage and convince the audience"
+        description:
+          "The campaign should effectively engage and convince the audience",
       },
       {
         criterion: "Innovative Use of AI",
         weightage: "10%",
-        description: "Smart and seamless AI integration earns bonus points"
-      }
+        description: "Smart and seamless AI integration earns bonus points",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      Main: {
+        First: "₹3,000",
+        Second: "₹2,000",
+        Third: "₹1,000",
+      },
     },
     coordinators: [
       {
         name: "Shubham Choudhary",
         role: "AI Lead",
-        contact: "+91 6289 578 020"
+        contact: "+91 6289 578 020",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "₹500 per team",
     teamSize: "1-3 members",
-    status: "upcoming"
+    status: "upcoming",
   },
   {
     id: "code-arena",
     title: "CodeArena",
-    shortDescription: "Two-round coding competition focusing on error identification and debugging",
-    fullDescription: "CodeArena is a competitive programming contest where teams solve coding challenges under time constraints. Participants will face multiple rounds designed to test their debugging, problem-solving, and analytical skills. The contest encourages logical thinking, efficiency, and accuracy in coding under pressure.",
+    shortDescription:
+      "Two-round coding competition focusing on error identification and debugging",
+    fullDescription:
+      "CodeArena is a competitive programming contest where teams solve coding challenges under time constraints. Participants will face multiple rounds designed to test their debugging, problem-solving, and analytical skills. The contest encourages logical thinking, efficiency, and accuracy in coding under pressure.",
     image: "/events/code-arena.jpg",
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
@@ -248,14 +258,16 @@ export const events: Event[] = [
     eventStructure: [
       {
         phase: "Round 1: Error Identification Quiz",
-        description: "Participants will analyse code snippets to identify syntax, logical, and conceptual errors. Total: 50 questions (1 point each). Categories: Syntax Errors (20), Logical Errors (15), Conceptual Mistakes (10), Edge Case Errors (5).",
-        duration: "1 hour"
+        description:
+          "Participants will analyse code snippets to identify syntax, logical, and conceptual errors. Total: 50 questions (1 point each). Categories: Syntax Errors (20), Logical Errors (15), Conceptual Mistakes (10), Edge Case Errors (5).",
+        duration: "1 hour",
       },
       {
         phase: "Round 2: Debugging Challenge",
-        description: "Teams will debug code snippets of varying difficulty levels. Total: 13 questions + 1 bonus (60 + 20 points). Easy: 5 questions (2 points each), Medium: 5 questions (4 points each), Hard: 3 questions (10 points each), Bonus: 1 question (20 points).",
-        duration: "1 hour"
-      }
+        description:
+          "Teams will debug code snippets of varying difficulty levels. Total: 13 questions + 1 bonus (60 + 20 points). Easy: 5 questions (2 points each), Medium: 5 questions (4 points each), Hard: 3 questions (10 points each), Bonus: 1 question (20 points).",
+        duration: "1 hour",
+      },
     ],
     rules: [
       "Team size: 1-3 members",
@@ -263,7 +275,7 @@ export const events: Event[] = [
       "No external help, internet searches, or AI-assisted debugging tools",
       "Fixed time duration for each round",
       "Points based on accuracy and difficulty level",
-      "Disqualification for copying or sharing solutions"
+      "Disqualification for copying or sharing solutions",
     ],
     guidelines: [
       "Lab PCs provided, personal laptops not required",
@@ -271,61 +283,66 @@ export const events: Event[] = [
       "Languages: Python, C, and Java",
       "No misconduct or AI tools allowed",
       "Bring college ID",
-      "Lunch and refreshments provided"
+      "Lunch and refreshments provided",
     ],
     judgingCriteria: [
       {
         criterion: "Accuracy",
         weightage: "40%",
-        description: "Correctly identified errors and fixed code receive full points"
+        description:
+          "Correctly identified errors and fixed code receive full points",
       },
       {
         criterion: "Completion",
         weightage: "30%",
-        description: "Teams should aim to solve as many challenges as possible"
+        description: "Teams should aim to solve as many challenges as possible",
       },
       {
         criterion: "Time Management",
         weightage: "20%",
-        description: "Faster submissions may be considered in case of tie-breakers"
+        description:
+          "Faster submissions may be considered in case of tie-breakers",
       },
       {
         criterion: "Rule Adherence",
         weightage: "10%",
-        description: "Any violations will result in disqualification"
-      }
+        description: "Any violations will result in disqualification",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      Main: {
+        First: "₹3,000",
+        Second: "₹2,000",
+        Third: "₹1,000",
+      },
     },
     coordinators: [
       {
         name: "Gokulakrishnan",
         role: "Coding & Development Lead",
-        contact: "+91 7418 232 796"
+        contact: "+91 7418 232 796",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "₹500 per team",
     teamSize: "1-3 members",
-    status: "upcoming"
+    status: "upcoming",
   },
   {
     id: "digital-divas",
     title: "Digital Divas",
     shortDescription: "Women-exclusive tech poster design competition",
-    fullDescription: "Digital Divas is an exclusive competition for women, where participants create technology-related posters on a given topic. Participants can use any graphic design software on their personal laptops, while those using lab computers will have access only to Canva. The competition encourages creativity, research, and design skills, with a focus on tech-related themes. Participants must also submit a Word document containing sources for the content and images used to evaluate their research efforts. The best-designed poster, as judged by an expert panel, will be awarded.",
+    fullDescription:
+      "Digital Divas is an exclusive competition for women, where participants create technology-related posters on a given topic. Participants can use any graphic design software on their personal laptops, while those using lab computers will have access only to Canva. The competition encourages creativity, research, and design skills, with a focus on tech-related themes. Participants must also submit a Word document containing sources for the content and images used to evaluate their research efforts. The best-designed poster, as judged by an expert panel, will be awarded.",
     image: "/events/digital-divas.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 1:00 PM",
@@ -333,17 +350,20 @@ export const events: Event[] = [
     eventStructure: [
       {
         phase: "Topic Announcement",
-        description: "The topic will be revealed at the beginning of the competition."
+        description:
+          "The topic will be revealed at the beginning of the competition.",
       },
       {
         phase: "Design Phase",
-        description: "Participants have 1 hour to design their posters. Those using lab computers can only use Canva, while personal laptops may use other design tools like Photoshop, Illustrator, or Figma.",
-        duration: "1 hour"
+        description:
+          "Participants have 1 hour to design their posters. Those using lab computers can only use Canva, while personal laptops may use other design tools like Photoshop, Illustrator, or Figma.",
+        duration: "1 hour",
       },
       {
         phase: "Evaluation",
-        description: "Posters will be judged on creativity, clarity, and relevance to the topic. Additional marks will be awarded for infographics, statistics, and figures."
-      }
+        description:
+          "Posters will be judged on creativity, clarity, and relevance to the topic. Additional marks will be awarded for infographics, statistics, and figures.",
+      },
     ],
     rules: [
       "Team size: 1-2 members",
@@ -351,7 +371,7 @@ export const events: Event[] = [
       "AI-generated images and vectors, as well as no-copyright images, may be used",
       "Must submit a Word document listing sources for content and images",
       "No extra time will be provided",
-      "Plagiarism or direct copying from internet will lead to disqualification"
+      "Plagiarism or direct copying from internet will lead to disqualification",
     ],
     guidelines: [
       "Posters should be visually appealing, clear, and relevant to topic",
@@ -359,66 +379,69 @@ export const events: Event[] = [
       "Ensure designs are original and free from copyright infringement",
       "Judges will assess posters based on design quality, message clarity, and research depth",
       "Bring college ID",
-      "Lunch and refreshments provided"
+      "Lunch and refreshments provided",
     ],
     judgingCriteria: [
       {
         criterion: "Creativity",
         weightage: "30%",
-        description: "Innovative and visually appealing design"
+        description: "Innovative and visually appealing design",
       },
       {
         criterion: "Clarity",
         weightage: "25%",
-        description: "How well the message is conveyed through the poster"
+        description: "How well the message is conveyed through the poster",
       },
       {
         criterion: "Relevance",
         weightage: "20%",
-        description: "How effectively the poster aligns with the given topic"
+        description: "How effectively the poster aligns with the given topic",
       },
       {
         criterion: "Technical Depth",
         weightage: "15%",
-        description: "Use of statistics, figures, and infographics"
+        description: "Use of statistics, figures, and infographics",
       },
       {
         criterion: "Research Effort",
         weightage: "10%",
-        description: "Properly documented sources in the Word document"
-      }
+        description: "Properly documented sources in the Word document",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      Main: {
+        First: "₹3,000",
+        Second: "₹2,000",
+        Third: "₹1,000",
+      },
     },
     coordinators: [
       {
         name: "Samyuktha S",
         role: "Design & UI/UX Lead",
-        contact: "+91 72000 97390"
+        contact: "+91 72000 97390",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "₹200 per participant",
     teamSize: "1-2 members",
-    status: "upcoming"
+    status: "upcoming",
   },
   {
     id: "idea-fusion",
     title: "IdeaFusion",
     shortDescription: "Innovative solution presentation competition",
-    fullDescription: "IdeaFusion challenges participants to develop and present innovative solutions to real-world problems. Problem statements will be released 10 days before the event, allowing teams to research, strategize, and create compelling presentations. This competition encourages critical thinking, creativity, and effective communication.",
+    fullDescription:
+      "IdeaFusion challenges participants to develop and present innovative solutions to real-world problems. Problem statements will be released 10 days before the event, allowing teams to research, strategize, and create compelling presentations. This competition encourages critical thinking, creativity, and effective communication.",
     image: "/events/idea-fusion.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 4:00 PM",
@@ -426,27 +449,31 @@ export const events: Event[] = [
     eventStructure: [
       {
         phase: "Problem Statement Release",
-        description: "Participants will receive the problem statements 10 days before the event and must select one to work on."
+        description:
+          "Participants will receive the problem statements 10 days before the event and must select one to work on.",
       },
       {
         phase: "Presentation Preparation",
-        description: "Each team must create a PowerPoint presentation (PPT) – MANDATORY and can use additional visual aids."
+        description:
+          "Each team must create a PowerPoint presentation (PPT) – MANDATORY and can use additional visual aids.",
       },
       {
         phase: "Presentation Day",
-        description: "Each team presents their idea within a 5-minute time limit. A buzzer will sound at the 4-minute mark to indicate one minute remaining, and a final buzzer will ring at 5 minutes. A 2-minute Q&A session will follow each presentation."
+        description:
+          "Each team presents their idea within a 5-minute time limit. A buzzer will sound at the 4-minute mark to indicate one minute remaining, and a final buzzer will ring at 5 minutes. A 2-minute Q&A session will follow each presentation.",
       },
       {
         phase: "Winner Selection",
-        description: "Based on the judging criteria, the best presentations will be awarded."
-      }
+        description:
+          "Based on the judging criteria, the best presentations will be awarded.",
+      },
     ],
     rules: [
       "Team size: 1-3 members",
       "Ideas must be original; plagiarism will result in disqualification",
       "Presentations must be submitted one day before the event",
       "Participants must bring their own laptops for presentations",
-      "Participants must adhere to the time limit of 5 minutes"
+      "Participants must adhere to the time limit of 5 minutes",
     ],
     guidelines: [
       "Title Slide: Team name, member names, and selected problem statement",
@@ -459,65 +486,68 @@ export const events: Event[] = [
       "Prototype (Optional) for bonus points",
       "Prepare for Q&A session",
       "Bring college ID",
-      "Lunch and refreshments provided"
+      "Lunch and refreshments provided",
     ],
     judgingCriteria: [
       {
         criterion: "Innovation & Creativity",
         weightage: "30%",
-        description: "Originality and uniqueness of the idea"
+        description: "Originality and uniqueness of the idea",
       },
       {
         criterion: "Feasibility",
         weightage: "25%",
-        description: "Practicality and realistic implementation"
+        description: "Practicality and realistic implementation",
       },
       {
         criterion: "Presentation & Communication",
         weightage: "20%",
-        description: "Clarity, structure, and impact of the presentation"
+        description: "Clarity, structure, and impact of the presentation",
       },
       {
         criterion: "Problem Understanding",
         weightage: "15%",
-        description: "Depth of analysis and relevance of the solution"
+        description: "Depth of analysis and relevance of the solution",
       },
       {
         criterion: "Impact & Scalability",
         weightage: "10%",
-        description: "Potential benefits and long-term scalability"
-      }
+        description: "Potential benefits and long-term scalability",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      Main: {
+        First: "₹3,000",
+        Second: "₹2,000",
+        Third: "₹1,000",
+      },
     },
     coordinators: [
       {
         name: "Pavan Sai H V",
         role: "Data Science & Analytics Lead",
-        contact: "+91 96770 73103"
+        contact: "+91 96770 73103",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "₹500 per team",
     teamSize: "1-3 members",
-    status: "upcoming"
+    status: "upcoming",
   },
   {
     id: "pixel-showdown",
     title: "Pixel Showdown",
-    shortDescription: "Multi-game tournament featuring Free Fire, BGMI, and PES",
+    shortDescription:
+      "Multi-game tournament featuring Free Fire, BGMI, and PES",
     fullDescription: `Pixel Showdown is a gaming competition featuring three exciting tournaments:
 
 1. Free Fire: Squad (₹200) or Duo (₹100) tournament with online qualifiers and offline finals
@@ -532,19 +562,22 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
     eventStructure: [
       {
         phase: "Free Fire Tournament",
-        description: "Online Qualifiers (Battle Royale Mode, Bermuda Map): Top 3 teams qualify. Finals: Best of Three (Clash Squad Mode). Scoring - Placement: 1st (12pts), 2nd (9pts), 3rd (8pts). Each kill: 1 point.",
-        duration: "Qualifiers + Finals"
+        description:
+          "Online Qualifiers (Battle Royale Mode, Bermuda Map): Top 3 teams qualify. Finals: Best of Three (Clash Squad Mode). Scoring - Placement: 1st (12pts), 2nd (9pts), 3rd (8pts). Each kill: 1 point.",
+        duration: "Qualifiers + Finals",
       },
       {
         phase: "PES eFootball Tournament",
-        description: "League Stage: 26 players, 2 matches each. Points: Win (3), Draw (1), Loss (0). Top 16 advance to knockout. Tiebreakers: Goal Difference, Goals Scored, H2H.",
-        duration: "League (10min) + Knockout (6min)"
+        description:
+          "League Stage: 26 players, 2 matches each. Points: Win (3), Draw (1), Loss (0). Top 16 advance to knockout. Tiebreakers: Goal Difference, Goals Scored, H2H.",
+        duration: "League (10min) + Knockout (6min)",
       },
       {
         phase: "BGMI Tournament",
-        description: "12 matches over 3 days (4/day). Scoring - Placement: 1st (15pts), 2nd (12pts), 3rd (10pts). Each kill: 1 point. Teams must maintain same roster throughout.",
-        duration: "3 Days"
-      }
+        description:
+          "12 matches over 3 days (4/day). Scoring - Placement: 1st (15pts), 2nd (12pts), 3rd (10pts). Each kill: 1 point. Teams must maintain same roster throughout.",
+        duration: "3 Days",
+      },
     ],
     gameDetails: [
       {
@@ -554,8 +587,8 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
         format: "Online Qualifiers + Offline Finals",
         scoring: {
           placement: "1st: 12pts, 2nd: 9pts, 3rd: 8pts...",
-          kills: "1 point per kill"
-        }
+          kills: "1 point per kill",
+        },
       },
       {
         game: "PES",
@@ -565,8 +598,8 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
         scoring: {
           placement: "N/A",
           league: "Win: 3pts, Draw: 1pt, Loss: 0pt",
-          tiebreakers: "Goal Difference, Goals Scored, H2H"
-        }
+          tiebreakers: "Goal Difference, Goals Scored, H2H",
+        },
       },
       {
         game: "BGMI",
@@ -575,9 +608,9 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
         format: "3 Days, 4 matches per day",
         scoring: {
           placement: "1st: 15pts, 2nd: 12pts, 3rd: 10pts...",
-          kills: "1 point per kill"
-        }
-      }
+          kills: "1 point per kill",
+        },
+      },
     ],
     rules: [
       "Players must use registered accounts only",
@@ -587,7 +620,7 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
       "No refunds under any circumstances",
       "Fair play and sportsmanship mandatory",
       "ID card mandatory for offline rounds",
-      "Winners must attend prize distribution"
+      "Winners must attend prize distribution",
     ],
     guidelines: [
       "Arrive on time for matches",
@@ -597,50 +630,63 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
       "Maintain professional conduct",
       "Bring college ID for verification",
       "Offline finals at specified venue only",
-      "Prize distribution during Valedictory"
+      "Prize distribution during Valedictory",
     ],
     judgingCriteria: [
       {
         criterion: "Performance",
         weightage: "40%",
-        description: "Based on placement and kills/goals"
+        description: "Based on placement and kills/goals",
       },
       {
         criterion: "Fair Play",
         weightage: "30%",
-        description: "Adherence to rules and sportsmanship"
+        description: "Adherence to rules and sportsmanship",
       },
       {
         criterion: "Team Coordination",
         weightage: "30%",
-        description: "Strategy and teamwork effectiveness"
-      }
+        description: "Strategy and teamwork effectiveness",
+      },
     ],
     prizes: {
-      First: "₹3,000",
-      Second: "₹2,000",
-      Third: "₹1,000"
+      "Free Fire Squad": {
+        First: "₹3,000",
+        Second: "₹1,500",
+      },
+      "Free Fire Duo": {
+        First: "₹1,500",
+        Second: "₹500",
+      },
+      "BGMI Squad": {
+        First: "₹3,000",
+        Second: "₹1,000",
+      },
+      "PES Solo": {
+        First: "₹1,000",
+        Second: "₹500",
+      },
     },
     coordinators: [
       {
         name: "NV Yogeshwaran",
         role: "Gaming Head",
-        contact: "+91 72001 37507"
+        contact: "+91 72001 37507",
       },
       {
         name: "V Vishal",
         role: "Event Coordinator",
-        contact: "+91 93841 59875"
+        contact: "+91 93841 59875",
       },
       {
         name: "Anna Elizabeth Pravin",
         role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273"
-      }
+        contact: "+91 63824 96273",
+      },
     ],
     registrationFee: "Varies by game and team size",
     teamSize: "1-4 members (game dependent)",
-    status: "upcoming"
+    status: "upcoming",
   },
 ];
 

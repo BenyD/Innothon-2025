@@ -18,6 +18,7 @@ import {
   Loader2,
   GraduationCap,
   ExternalLink,
+  Gamepad2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -372,6 +373,20 @@ export default function RegistrationDetails() {
                         {formatYear(member.year)} Year
                       </div>
                     </div>
+                    
+                    {registration.selected_events.includes("pixel-showdown") && member.player_id && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Gamepad2 className="w-4 h-4 text-purple-400" />
+                        <span className="text-gray-400">
+                          {registration.game_details?.game === "bgmi" 
+                            ? "BGMI ID: "
+                            : registration.game_details?.game === "freefire"
+                              ? "Free Fire ID: "
+                              : "PES Username: "}
+                        </span>
+                        <span className="text-white font-medium">{member.player_id}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
