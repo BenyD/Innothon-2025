@@ -132,10 +132,15 @@ const Hero = () => {
                     Innothon 2025
                   </span>
                 </h1>
-                <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                  Join the next generation of tech innovators and showcase your
-                  skills at the biggest tech event of the year.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0">
+                    Join the next generation of tech innovators and showcase your
+                    skills at the biggest tech event of the year.
+                  </p>
+                  <p className="text-base sm:text-lg text-gray-400 max-w-xl leading-relaxed mx-auto lg:mx-0">
+                    Organized by Department of Computer Science and Engineering
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

@@ -8,8 +8,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import { SectionTitle } from "@/components/ui/section-title";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  IoMail,
-    IoCall,
+  IoCall,
   IoLogoLinkedin,
   IoLogoInstagram,
   IoCalendar,
@@ -33,29 +32,25 @@ const coreTeam = [
   {
     title: "President",
     name: "Beny Dishon K",
-    email: "president.bspc@gmail.com",
     phone: "+91 98848 19912",
     color: "blue",
   },
   {
     title: "Vice President",
     name: "M. Ashwini",
-    email: "vp.bspc@gmail.com",
-    phone: "+91 98765 43210",
+    phone: "+91 77399 62694",
     color: "purple",
   },
   {
     title: "General Secretary",
     name: "Shibani A B",
-    email: "secretary.bspc@gmail.com",
-    phone: "+91 93446 76938",
+    phone: "+91 73393 72992",
     color: "pink",
   },
   {
     title: "Joint Secretary",
     name: "Arsha M Nair",
-    email: "jsec.bspc@gmail.com",
-    phone: "+91 87654 32109",
+    phone: "+91 96795 97410",
     color: "blue",
   },
 ];
@@ -113,6 +108,43 @@ const eventManagementTeam = [
     name: "Anna Elizabeth Pravin",
     phone: "+91 63824 96273",
     color: "purple",
+  },
+  {
+    role: "PR Lead",
+    name: "Janani ER",
+    phone: "+91 9360 864828",
+    color: "pink",
+  },
+];
+
+// Add new staff section after the core team array
+const staffTeam = [
+  {
+    title: "Conveyor",
+    name: "Dr. J. Thangakumar, Professor & Head - CSE, HITS",
+    phone: "+91 95000 91229",
+    color: "blue",
+  },
+];
+
+const staffCoordinators = [
+  {
+    title: "Staff Coordinator",
+    name: "Ms. Praisy Evangelin A, AP, CSE",
+    phone: "+91 94439 61274",
+    color: "purple",
+  },
+  {
+    title: "Staff Coordinator",
+    name: "Ms.Meena Priyadharshini, AP, CSE",
+    phone: "+91 98406 95728",
+    color: "pink",
+  },
+  {
+    title: "Staff Coordinator",
+    name: "Ms. Dheepthi R, AP, CSE",
+    phone: "+91 97877 09639",
+    color: "blue",
   },
 ];
 
@@ -259,21 +291,103 @@ const ContactForm = () => {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h4 className="text-sm font-medium text-gray-400">{member.title}</h4>
-                          <p className="text-white font-medium mt-1">{member.name}</p>
+                          <h4 className="text-sm font-medium text-gray-400">
+                            {member.title}
+                          </h4>
+                          <p className="text-white font-medium mt-1">
+                            {member.name}
+                          </p>
                         </div>
-                        <div className={`p-2 rounded-lg bg-${member.color}-500/10`}>
-                          <IoCall className={`h-4 w-4 text-${member.color}-400`} />
+                        <div
+                          className={`p-2 rounded-lg bg-${member.color}-500/10`}
+                        >
+                          <IoCall
+                            className={`h-4 w-4 text-${member.color}-400`}
+                          />
                         </div>
                       </div>
                       <div className="space-y-2 mt-auto">
                         <a
-                          href={`mailto:${member.email}`}
-                          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                          href={`tel:${member.phone}`}
+                          className={`flex items-center gap-2 text-${member.color}-400 hover:text-${member.color}-300 transition-colors text-sm`}
                         >
-                          <IoMail className="h-4 w-4" />
-                          {member.email}
+                          <IoCall className="h-4 w-4" />
+                          {member.phone}
                         </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Staff Team Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                  Faculty Team
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {/* Conveyor */}
+                  {staffTeam.map((member, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all sm:col-span-2"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-400">
+                            {member.title}
+                          </h4>
+                          <p className="text-white font-medium mt-1">
+                            {member.name}
+                          </p>
+                        </div>
+                        <div
+                          className={`p-2 rounded-lg bg-${member.color}-500/10`}
+                        >
+                          <IoCall
+                            className={`h-4 w-4 text-${member.color}-400`}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-auto">
+                        <a
+                          href={`tel:${member.phone}`}
+                          className={`flex items-center gap-2 text-${member.color}-400 hover:text-${member.color}-300 transition-colors text-sm`}
+                        >
+                          <IoCall className="h-4 w-4" />
+                          {member.phone}
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Staff Coordinators */}
+                  {staffCoordinators.map((member, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-400">
+                            {member.title}
+                          </h4>
+                          <p className="text-white font-medium mt-1">
+                            {member.name}
+                          </p>
+                        </div>
+                        <div
+                          className={`p-2 rounded-lg bg-${member.color}-500/10`}
+                        >
+                          <IoCall
+                            className={`h-4 w-4 text-${member.color}-400`}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-auto">
                         <a
                           href={`tel:${member.phone}`}
                           className={`flex items-center gap-2 text-${member.color}-400 hover:text-${member.color}-300 transition-colors text-sm`}
@@ -302,8 +416,12 @@ const ContactForm = () => {
                       className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                     >
                       <div className="mb-3">
-                        <h4 className="text-sm font-medium text-gray-400">{coordinator.role}</h4>
-                        <p className="text-white font-medium mt-1">{coordinator.name}</p>
+                        <h4 className="text-sm font-medium text-gray-400">
+                          {coordinator.role}
+                        </h4>
+                        <p className="text-white font-medium mt-1">
+                          {coordinator.name}
+                        </p>
                       </div>
                       <a
                         href={`tel:${coordinator.phone}`}
@@ -332,8 +450,12 @@ const ContactForm = () => {
                       className="flex flex-col p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                     >
                       <div className="mb-3">
-                        <h4 className="text-sm font-medium text-gray-400">{member.role}</h4>
-                        <p className="text-white font-medium mt-1">{member.name}</p>
+                        <h4 className="text-sm font-medium text-gray-400">
+                          {member.role}
+                        </h4>
+                        <p className="text-white font-medium mt-1">
+                          {member.name}
+                        </p>
                       </div>
                       <a
                         href={`tel:${member.phone}`}
@@ -455,7 +577,7 @@ const ContactForm = () => {
                     />
                   </div>
 
-                  <Button 
+                  <Button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-6 text-lg"
