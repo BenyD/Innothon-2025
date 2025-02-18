@@ -434,13 +434,15 @@ const RegistrationForm = () => {
             paymentDetails.paymentScreenshot,
             registrationId
           );
-          // Store just the filename
           paymentProofUrl = fileName;
         } catch (uploadError) {
-          console.error("Upload error:", uploadError);
+          console.error("Upload error details:", uploadError);
           toast({
             title: "Upload Failed",
-            description: "Failed to upload payment proof. Please try again.",
+            description:
+              uploadError instanceof Error
+                ? uploadError.message
+                : "Failed to upload payment proof. Please ensure you have a stable internet connection and try again.",
             variant: "destructive",
           });
           setIsSubmitting(false);
@@ -494,7 +496,9 @@ const RegistrationForm = () => {
       toast({
         title: "Registration Failed",
         description:
-          "There was an error processing your registration. Please try again.",
+          error instanceof Error
+            ? error.message
+            : "Failed to complete registration. Please try again.",
         variant: "destructive",
       });
     } finally {
