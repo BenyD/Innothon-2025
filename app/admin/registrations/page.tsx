@@ -127,38 +127,6 @@ export default function Registrations() {
     setFilteredRegistrations(filtered);
   }, [searchQuery, registrations]);
 
-  // Update the revenue calculation in the stats section
-  const totalRevenue = registrations.reduce((acc, registration) => {
-    let revenue = 0;
-    
-    // Only calculate revenue for approved registrations
-    if (registration.status === "approved") {
-      registration.selected_events.forEach(eventId => {
-        if (eventId === "digital-divas") {
-          // Digital Divas: ₹200 per participant
-          revenue += registration.team_size * 200;
-        } else if (eventId === "pixel-showdown" && registration.game_details) {
-          // Pixel Showdown amounts based on game type
-          switch (registration.game_details.game) {
-            case "bgmi":
-              revenue += 200; // ₹200 per team
-              break;
-            case "pes":
-              revenue += 100; // ₹100 per individual
-              break;
-            case "freefire":
-              revenue += registration.game_details.format === "squad" ? 200 : 100; // ₹200 for squad, ₹100 for duo
-              break;
-          }
-        } else {
-          // Regular events: ₹500 per team
-          revenue += 500;
-        }
-      });
-    }
-    
-    return acc + revenue;
-  }, 0);
 
   return (
     <AdminLayout>
@@ -195,7 +163,7 @@ export default function Registrations() {
             <h3 className="text-gray-400 text-sm">Total Revenue</h3>
             <p className="text-2xl font-bold text-white mt-1 flex items-center">
               <span className="text-lg mr-1">₹</span>
-              {totalRevenue}
+              {registrations.reduce((acc, reg) => acc + reg.total_amount, 0)}
             </p>
           </motion.div>
           <motion.div
@@ -298,31 +266,7 @@ export default function Registrations() {
                   </div>
                   <div className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg bg-white/5">
                     <span className="text-sm font-medium text-yellow-400 mb-1">₹</span>
-                    <span className="text-sm text-gray-400">
-                      {registration.selected_events.reduce((acc, eventId) => {
-                        let amount = 0;
-                        if (registration.status === "approved") {
-                          if (eventId === "digital-divas") {
-                            amount = registration.team_size * 200;
-                          } else if (eventId === "pixel-showdown" && registration.game_details) {
-                            switch (registration.game_details.game) {
-                              case "bgmi":
-                                amount = 200;
-                                break;
-                              case "pes":
-                                amount = 100;
-                                break;
-                              case "freefire":
-                                amount = registration.game_details.format === "squad" ? 200 : 100;
-                                break;
-                            }
-                          } else {
-                            amount = 500;
-                          }
-                        }
-                        return acc + amount;
-                      }, 0)}
-                    </span>
+                    <span className="text-sm text-gray-400">{registration.total_amount}</span>
                     <span className="text-xs text-gray-500">Amount</span>
                   </div>
                 </div>
