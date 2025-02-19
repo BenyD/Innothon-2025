@@ -8,7 +8,6 @@ import {
   Users,
   Search,
   IndianRupee,
-  ArrowUpRight,
   Filter,
   CheckCircle2,
   Download,
@@ -58,8 +57,6 @@ export default function EventOverview() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [selectedGender, setSelectedGender] = useState<string>("all");
-  const [selectedCollege, setSelectedCollege] = useState<string>("all");
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -114,11 +111,6 @@ export default function EventOverview() {
     fetchRegistrations();
   }, [fetchRegistrations]);
 
-  // Get unique colleges for filter
-  const colleges = Array.from(
-    new Set(registrations.map((reg) => reg.team_members[0]?.college))
-  ).filter(Boolean);
-
   // Filter registrations based on all criteria
   const filteredRegistrations = registrations.filter((registration) => {
     const matchesSearch =
@@ -133,20 +125,8 @@ export default function EventOverview() {
       selectedEvent === "all" || registration.event_id === selectedEvent;
     const matchesStatus =
       selectedStatus === "all" || registration.status === selectedStatus;
-    const matchesGender =
-      selectedGender === "all" ||
-      registration.team_members[0]?.gender === selectedGender;
-    const matchesCollege =
-      selectedCollege === "all" ||
-      registration.team_members[0]?.college === selectedCollege;
 
-    return (
-      matchesSearch &&
-      matchesEvent &&
-      matchesStatus &&
-      matchesGender &&
-      matchesCollege
-    );
+    return matchesSearch && matchesEvent && matchesStatus;
   });
 
   // Group registrations by event
@@ -162,11 +142,20 @@ export default function EventOverview() {
     {} as Record<string, EventRegistration[]>
   );
 
-  // Calculate statistics
-  const totalParticipants = filteredRegistrations.reduce(
-    (acc, reg) => acc + reg.team_size,
-    0
-  );
+  // Update the total participants calculation to count unique participants
+  const totalParticipants = filteredRegistrations.reduce((acc, reg) => {
+    // Get unique participant IDs from this registration
+    const participantIds = reg.team_members.map((member) => member.id);
+
+    // Add only unique IDs that we haven't seen before
+    participantIds.forEach((id) => {
+      if (!acc.has(id)) {
+        acc.add(id);
+      }
+    });
+
+    return acc;
+  }, new Set()).size;
 
   // Update revenue calculation to handle different event prices
   const calculateEventRevenue = (registration: EventRegistration) => {
@@ -259,7 +248,7 @@ export default function EventOverview() {
       <div className="space-y-6 sm:space-y-8">
         {/* Header & Stats */}
         <div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
               Event Overview
             </h1>
@@ -271,7 +260,53 @@ export default function EventOverview() {
               Export All
             </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4">
+
+          {/* Global Filters */}
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search teams or colleges..."
+                  className="pl-9 bg-white/5 border-white/10 text-white w-full"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 sm:flex gap-2">
+                <Select value={selectedEvent} onValueChange={setSelectedEvent}>
+                  <SelectTrigger className="w-full sm:w-[140px] bg-white/5 border-white/10">
+                    <SelectValue placeholder="Event" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Events</SelectItem>
+                    {events.map((event) => (
+                      <SelectItem key={event.id} value={event.id}>
+                        {event.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedStatus}
+                  onValueChange={setSelectedStatus}
+                >
+                  <SelectTrigger className="w-full sm:w-[140px] bg-white/5 border-white/10">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <motion.div
               variants={item}
               className="p-4 sm:p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10 backdrop-blur-sm"
@@ -327,67 +362,7 @@ export default function EventOverview() {
           </div>
         </div>
 
-        {/* Filters Section */}
-        <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-          <div className="relative col-span-full lg:col-span-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search teams or colleges..."
-              className="pl-9 bg-white/5 border-white/10 text-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Select Event" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Events</SelectItem>
-              {events.map((event) => (
-                <SelectItem key={event.id} value={event.id}>
-                  {event.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={selectedGender} onValueChange={setSelectedGender}>
-            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Genders</SelectItem>
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={selectedCollege} onValueChange={setSelectedCollege}>
-            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="College" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Colleges</SelectItem>
-              {colleges.map((college) => (
-                <SelectItem key={college} value={college}>
-                  {college}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Event Cards */}
+        {/* Event Cards - Remove individual filters */}
         <motion.div
           variants={container}
           initial="hidden"
@@ -449,51 +424,55 @@ export default function EventOverview() {
                   </div>
                 </div>
 
-                {/* Registration Table */}
+                {/* Mobile-optimized table - without filters */}
                 <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-black/20">
+                  <table className="min-w-full divide-y divide-white/10">
+                    <thead className="bg-white/5">
                       <tr>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                           Team
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
                           College
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
                           Amount
-                        </th>
-                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-400">
-                          Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-white/10">
                       {eventRegistrations.map((registration) => (
                         <tr
-                          key={registration.id}
-                          className="hover:bg-white/5 transition-colors"
+                          key={`${registration.id}-${registration.event_id}`}
                           onClick={() =>
                             router.push(
                               `/admin/registrations/${registration.id}`
                             )
                           }
+                          className="hover:bg-white/5 cursor-pointer"
                         >
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4 text-gray-400" />
-                              <span className="text-white">
-                                {registration.team_name}
+                          <td className="px-4 py-4">
+                            <div className="flex flex-col">
+                              <span className="font-medium text-white">
+                                {registration.team_members[0]?.name}
                               </span>
+                              <span className="text-sm text-gray-400 sm:hidden">
+                                {registration.team_members[0]?.college}
+                              </span>
+                              {registration.team_size > 1 && (
+                                <span className="text-xs text-gray-500">
+                                  +{registration.team_size - 1} members
+                                </span>
+                              )}
                             </div>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 text-gray-300 max-w-[200px] truncate">
+                          <td className="px-4 py-4 text-gray-300 hidden sm:table-cell">
                             {registration.team_members[0]?.college}
                           </td>
-                          <td className="px-4 sm:px-6 py-4">
+                          <td className="px-4 py-4">
                             <span
                               className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                 registration.status === "approved"
@@ -507,11 +486,8 @@ export default function EventOverview() {
                                 registration.status.slice(1)}
                             </span>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 text-gray-300">
+                          <td className="px-4 py-4 text-right text-gray-300">
                             ₹{registration.total_amount}
-                          </td>
-                          <td className="px-4 sm:px-6 py-4 text-right">
-                            <ArrowUpRight className="w-4 h-4 text-purple-400 inline-block" />
                           </td>
                         </tr>
                       ))}
@@ -538,11 +514,11 @@ export default function EventOverview() {
 
         {/* Game Statistics for Pixel Showdown */}
         {selectedEvent === "pixel-showdown" && (
-          <div className="mt-6">
+          <div className="mt-6 px-4">
             <h3 className="text-lg font-medium text-white mb-4">
               Game Statistics
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
                 <h4 className="text-sm text-gray-400">BGMI Teams</h4>
                 <div className="flex items-end justify-between mt-2">
