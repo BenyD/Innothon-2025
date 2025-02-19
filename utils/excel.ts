@@ -10,34 +10,46 @@ interface GameDetails {
 type ExcelRow = Record<string, string | number>;
 
 export const exportToExcel = (data: ExcelRow[], filename: string) => {
-  // Add column widths for better readability
+  // Updated column widths for better readability
   const colWidths = [
+    { wch: 12 }, // Team ID
+    { wch: 20 }, // Registration Date
     { wch: 25 }, // Team Name
-    { wch: 30 }, // College
-    { wch: 15 }, // Status
+    { wch: 12 }, // Status
     { wch: 12 }, // Amount
-    { wch: 25 }, // Transaction ID
+    { wch: 15 }, // Payment Status
+    { wch: 20 }, // Transaction ID
+    { wch: 20 }, // Payment Date
     { wch: 25 }, // Leader Name
     { wch: 30 }, // Leader Email
     { wch: 15 }, // Leader Phone
+    { wch: 30 }, // Leader College
+    { wch: 20 }, // Leader Department
+    { wch: 8 },  // Leader Year
+    { wch: 10 }, // Leader Gender
     { wch: 25 }, // Member 2
+    { wch: 30 }, // Member 2 Email
+    { wch: 15 }, // Member 2 Phone
     { wch: 30 }, // Member 2 College
+    { wch: 20 }, // Member 2 Department
+    { wch: 8 },  // Member 2 Year
     { wch: 25 }, // Member 3
+    { wch: 30 }, // Member 3 Email
+    { wch: 15 }, // Member 3 Phone
     { wch: 30 }, // Member 3 College
-    { wch: 20 }, // Registration Date
-    { wch: 15 }, // Payment Status
+    { wch: 20 }, // Member 3 Department
+    { wch: 8 },  // Member 3 Year
+    { wch: 40 }, // Selected Events
+    { wch: 25 }, // Game Details
   ];
 
   const worksheet = XLSX.utils.json_to_sheet(data);
-
-  // Apply column widths
   worksheet["!cols"] = colWidths;
 
   // Add some styling
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Registrations");
 
-  // Add the file creation date to the filename
   const date = new Date().toISOString().split("T")[0];
   XLSX.writeFile(workbook, `${filename}_${date}.xlsx`);
 };
@@ -62,17 +74,16 @@ const formatGameDetails = (details: GameDetails): string => {
 };
 
 export const formatRegistrationForExcel = (registration: Registration) => {
-  // Format the date
-  const registrationDate = new Date(registration.created_at).toLocaleString(
-    "en-IN",
-    {
+  // Format the date with time
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString("en-IN", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }
-  );
+    });
+  };
 
   // Format the amount with Indian currency
   const formattedAmount = new Intl.NumberFormat("en-IN", {
@@ -85,26 +96,40 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     registration.status.charAt(0).toUpperCase() + registration.status.slice(1);
 
   return {
+    "Team ID": registration.team_id || "N/A",
+    "Registration Date": formatDate(registration.created_at),
     "Team Name": registration.team_name || "N/A",
-    College: registration.team_members[0]?.college || "N/A",
     Status: formattedStatus,
     Amount: formattedAmount,
-    "Transaction ID": registration.transaction_id || "Pending",
     "Payment Status": registration.payment_status || "Pending",
-    "Payment Date": registration.payment_date
-      ? new Date(registration.payment_date).toLocaleString("en-IN")
-      : "Pending",
+    "Transaction ID": registration.transaction_id || "Pending",
+    "Payment Date": formatDate(registration.created_at), // Use registration date as payment date
+    
+    // Leader Details
     "Leader Name": registration.team_members[0]?.name || "N/A",
     "Leader Email": registration.team_members[0]?.email || "N/A",
     "Leader Phone": registration.team_members[0]?.phone || "N/A",
+    "Leader College": registration.team_members[0]?.college || "N/A",
+    "Leader Department": registration.team_members[0]?.department || "N/A",
+    "Leader Year": registration.team_members[0]?.year || "N/A",
     "Leader Gender": registration.team_members[0]?.gender || "N/A",
+    
+    // Member 2 Details
     "Member 2": registration.team_members[1]?.name || "-",
-    "Member 2 College": registration.team_members[1]?.college || "-",
+    "Member 2 Email": registration.team_members[1]?.email || "-",
     "Member 2 Phone": registration.team_members[1]?.phone || "-",
+    "Member 2 College": registration.team_members[1]?.college || "-",
+    "Member 2 Department": registration.team_members[1]?.department || "-",
+    "Member 2 Year": registration.team_members[1]?.year || "-",
+    
+    // Member 3 Details
     "Member 3": registration.team_members[2]?.name || "-",
-    "Member 3 College": registration.team_members[2]?.college || "-",
+    "Member 3 Email": registration.team_members[2]?.email || "-",
     "Member 3 Phone": registration.team_members[2]?.phone || "-",
-    "Registration Date": registrationDate,
+    "Member 3 College": registration.team_members[2]?.college || "-",
+    "Member 3 Department": registration.team_members[2]?.department || "-",
+    "Member 3 Year": registration.team_members[2]?.year || "-",
+    
     "Selected Events": Array.isArray(registration.selected_events)
       ? getEventTitles(registration.selected_events)
       : "N/A",
@@ -114,7 +139,6 @@ export const formatRegistrationForExcel = (registration: Registration) => {
   };
 };
 
-// Add a new function for event-specific exports
 export const formatEventRegistrationForExcel = (
   registration: Registration,
   eventId: string
@@ -125,7 +149,7 @@ export const formatEventRegistrationForExcel = (
   // Add event-specific fields
   const eventSpecificFormat = {
     ...baseFormat,
-    Event: event?.title || "Unknown Event",
+    "Event Name": event?.title || "Unknown Event",
     "Event Fee": event?.registrationFee || "N/A",
   };
 
@@ -133,8 +157,9 @@ export const formatEventRegistrationForExcel = (
   if (eventId === "pixel-showdown" && registration.game_details) {
     return {
       ...eventSpecificFormat,
-      "Game Type": registration.game_details.game || "N/A",
-      "Game ID": registration.game_details.format || "N/A",
+      "Game Type": registration.game_details.game?.toUpperCase() || "N/A",
+      "Game Format": registration.game_details.format?.toUpperCase() || "N/A",
+      "Player ID": registration.team_members[0]?.player_id || "N/A",
     };
   }
 
