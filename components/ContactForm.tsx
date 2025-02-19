@@ -136,7 +136,7 @@ const staffCoordinators = [
   },
   {
     title: "Staff Coordinator",
-    name: "Ms.Meena Priyadharshini, AP, CSE",
+    name: "Ms.Meena Priyadharsini, AP, CSE",
     phone: "+91 98406 95728",
     color: "pink",
   },

@@ -354,6 +354,43 @@ const RegistrationForm = () => {
     if (isSubmitting) return;
 
     if (currentStep === 1) {
+      // Add validation for gaming events team size
+      if (selectedEvents.includes("pixel-showdown")) {
+        if (pixelShowdownGame?.game === "pes" && teamSize !== 1) {
+          toast({
+            title: "Team Size Error",
+            description: "PES requires exactly 1 participant",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (
+          pixelShowdownGame?.game === "freefire" &&
+          pixelShowdownGame.format === "duo" &&
+          teamSize !== 2
+        ) {
+          toast({
+            title: "Team Size Error",
+            description: "Free Fire Duo requires exactly 2 participants",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (
+          (pixelShowdownGame?.game === "bgmi" ||
+            (pixelShowdownGame?.game === "freefire" &&
+              pixelShowdownGame.format === "squad")) &&
+          teamSize !== 4
+        ) {
+          toast({
+            title: "Team Size Error",
+            description: "Squad events require exactly 4 participants",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const isValid = teamMembers.every(
         (member) =>
           member.name &&
@@ -655,7 +692,9 @@ const RegistrationForm = () => {
                           >
                             <span className="text-lg">BGMI</span>
                             <br />
-                            <span className="text-sm">Squad Only</span>
+                            <span className="text-sm">
+                              Squad (4 players required)
+                            </span>
                             <br />
                             <span className="text-xs text-gray-400">
                               ₹200 per team
@@ -708,6 +747,10 @@ const RegistrationForm = () => {
                             >
                               <span className="text-lg">Free Fire Squad</span>
                               <br />
+                              <span className="text-sm">
+                                Squad (4 players required)
+                              </span>
+                              <br />
                               <span className="text-xs text-gray-400">
                                 ₹200 per team
                               </span>
@@ -736,6 +779,10 @@ const RegistrationForm = () => {
                             >
                               <span className="text-lg">Free Fire Duo</span>
                               <br />
+                              <span className="text-sm">
+                                Duo (2 players required)
+                              </span>
+                              <br />
                               <span className="text-xs text-gray-400">
                                 ₹100 per team
                               </span>
@@ -753,67 +800,29 @@ const RegistrationForm = () => {
                       />
                       <div className="grid grid-cols-3 gap-3 mt-4">
                         {selectedEvents.includes("pixel-showdown") ? (
-                          // Pixel Showdown team size options based on game selection
-                          pixelShowdownGame?.game === "pes" ? (
-                            // PES - Only individual participation
-                            <button
-                              type="button"
-                              onClick={() => handleTeamSizeChange(1)}
-                              className="p-4 rounded-xl border text-center transition-all bg-white/10 border-purple-500 text-white"
-                            >
-                              <span className="text-lg">1</span>
-                              <br />
-                              <span className="text-sm">Individual</span>
-                            </button>
-                          ) : pixelShowdownGame?.game === "freefire" &&
-                            pixelShowdownGame.format === "duo" ? (
-                            // Free Fire Duo - Max 2 players
-                            [1, 2].map((size) => (
-                              <button
-                                key={size}
-                                type="button"
-                                onClick={() => handleTeamSizeChange(size)}
-                                className={`p-4 rounded-xl border text-center transition-all ${
-                                  teamSize === size
-                                    ? "bg-white/10 border-purple-500 text-white"
-                                    : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
-                                }`}
-                              >
-                                <span className="text-lg">{size}</span>
-                                <br />
-                                <span className="text-sm">
-                                  {size === 1 ? "Member" : "Members"}
-                                </span>
-                              </button>
-                            ))
-                          ) : pixelShowdownGame?.game === "bgmi" ||
-                            (pixelShowdownGame?.game === "freefire" &&
-                              pixelShowdownGame.format === "squad") ? (
-                            // BGMI or Free Fire Squad - 1-4 players
-                            [1, 2, 3, 4].map((size) => (
-                              <button
-                                key={size}
-                                type="button"
-                                onClick={() => handleTeamSizeChange(size)}
-                                className={`p-4 rounded-xl border text-center transition-all ${
-                                  teamSize === size
-                                    ? "bg-white/10 border-purple-500 text-white"
-                                    : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5 hover:text-white"
-                                }`}
-                              >
-                                <span className="text-lg">{size}</span>
-                                <br />
-                                <span className="text-sm">
-                                  {size === 1 ? "Member" : "Members"}
-                                </span>
-                              </button>
-                            ))
-                          ) : (
-                            // No game selected yet
-                            <div className="col-span-3 text-center p-4 text-gray-400">
-                              Please select a game first
-                            </div>
-                          )
+                          // For gaming events, just show the fixed team size info
+                          <div className="col-span-3 text-center p-4 bg-white/5 border border-white/10 rounded-xl">
+                            {pixelShowdownGame?.game === "pes" ? (
+                              <span className="text-gray-400">
+                                Individual Event (1 participant)
+                              </span>
+                            ) : pixelShowdownGame?.game === "freefire" &&
+                              pixelShowdownGame.format === "duo" ? (
+                              <span className="text-gray-400">
+                                Duo Event (2 participants required)
+                              </span>
+                            ) : pixelShowdownGame?.game === "bgmi" ||
+                              (pixelShowdownGame?.game === "freefire" &&
+                                pixelShowdownGame.format === "squad") ? (
+                              <span className="text-gray-400">
+                                Squad Event (4 participants required)
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">
+                                Please select a game first
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           // Regular events team size options
                           (selectedEvents.includes("digital-divas")
