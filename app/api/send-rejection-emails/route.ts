@@ -13,6 +13,7 @@ export async function POST(request: Request) {
       selectedEvents,
       totalAmount,
       teamSize,
+      teamId,
     } = await request.json();
 
     const emailPromises = teamMembers.map(
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
             totalAmount,
             isTeamLeader: index === 0,
             teamSize,
+            teamId,
           }),
         });
       }

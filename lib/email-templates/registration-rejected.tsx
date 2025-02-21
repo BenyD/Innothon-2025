@@ -8,7 +8,6 @@ import {
   Preview,
   Img,
   Hr,
-  Link,
 } from "@react-email/components";
 import * as React from "react";
 import type { TeamMember } from "@/types/registration";
@@ -18,6 +17,9 @@ interface RegistrationRejectedEmailProps {
   registrationId: string;
   selectedEvents: string[];
   teamId: string;
+  totalAmount: number;
+  teamSize: number;
+  isTeamLeader: boolean;
 }
 
 export const RegistrationRejectedEmail = ({
@@ -25,6 +27,9 @@ export const RegistrationRejectedEmail = ({
   registrationId,
   selectedEvents,
   teamId,
+  totalAmount,
+  teamSize,
+  isTeamLeader,
 }: RegistrationRejectedEmailProps) => {
   const previewText = `Important update regarding your Innothon'25 registration`;
 
@@ -41,16 +46,17 @@ export const RegistrationRejectedEmail = ({
             alt="HITS Logo"
             style={logo}
           />
-          
+
           <Text style={title}>Registration Status Update</Text>
           <Text style={subtitle}>INNOTHON&apos;25</Text>
 
           <Section style={content}>
             <Text style={greeting}>Dear {teamMember.name},</Text>
-            
+
             <Text style={paragraph}>
-              We regret to inform you that we couldn&apos;t verify your payment for Innothon&apos;25.
-              Please review the details below and follow the instructions to resolve this issue.
+              We regret to inform you that we couldn&apos;t verify your payment
+              for Innothon&apos;25. Please review the details below and follow
+              the instructions to resolve this issue.
             </Text>
 
             {/* Registration Details */}
@@ -88,32 +94,73 @@ export const RegistrationRejectedEmail = ({
                   <Text style={value}>{selectedEvents.length}</Text>
                 </div>
               </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Team Size:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>
+                    {teamSize} member{teamSize > 1 ? "s" : ""}
+                  </Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Total Amount:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>₹{totalAmount}</Text>
+                </div>
+              </div>
             </Section>
 
             {/* Resolution Steps */}
             <Text style={sectionTitle}>How to Resolve</Text>
             <ol style={stepsList}>
-              <li style={stepItem}>Check if your payment transaction was completed</li>
-              <li style={stepItem}>If amount was deducted, email us the transaction screenshot</li>
-              <li style={stepItem}>You can try registering again with a different payment method</li>
-              <li style={stepItem}>Any deducted amount will be refunded within 5-7 working days</li>
+              <li style={stepItem}>
+                Check if your payment transaction was completed
+              </li>
+              <li style={stepItem}>
+                If amount was deducted, email us the transaction screenshot
+              </li>
+              <li style={stepItem}>
+                You can try registering again with a different payment method
+              </li>
+              <li style={stepItem}>
+                Any deducted amount will be refunded within 5-7 working days
+              </li>
             </ol>
+
+            {isTeamLeader && teamSize > 1 && (
+              <Text style={paragraph}>
+                As team leader, please share this information with your team
+                members.
+              </Text>
+            )}
 
             <Hr style={divider} />
 
             <Text style={footerText}>
-              For any queries, contact:<br />
-              Blue Screen Programming Club<br />
-              Department of Computer Science and Engineering<br />
-              Hindustan Institute of Technology and Science<br />
-              Email: bspc.hit@gmail.com<br />
+              For any queries, contact:
+              <br />
+              Blue Screen Programming Club
+              <br />
+              Department of Computer Science and Engineering
+              <br />
+              Hindustan Institute of Technology and Science
+              <br />
+              Email: bspc.hit@gmail.com
+              <br />
               Phone: +91 98848 19912 (Beny Dishon K)
             </Text>
 
             <Text style={instituteName}>
-              Blue Screen Programming Club<br />
-              Department of Computer Science and Engineering<br />
-              Hindustan Institute of Technology and Science<br />
+              Blue Screen Programming Club
+              <br />
+              Department of Computer Science and Engineering
+              <br />
+              Hindustan Institute of Technology and Science
+              <br />
               Chennai, India
             </Text>
           </Section>
@@ -126,7 +173,8 @@ export const RegistrationRejectedEmail = ({
 // Styles (mostly shared with approved template)
 const main = {
   backgroundColor: "#f4f4f5",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
 };
 
 const container = {
@@ -248,6 +296,10 @@ const instituteName = {
   color: "#71717a",
   textAlign: "center" as const,
   lineHeight: "1.6",
+};
+
+const content = {
+  padding: "0",
 };
 
 export default RegistrationRejectedEmail;

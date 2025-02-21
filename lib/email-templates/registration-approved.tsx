@@ -8,7 +8,6 @@ import {
   Preview,
   Img,
   Hr,
-  Link,
 } from "@react-email/components";
 import * as React from "react";
 import type { TeamMember } from "@/types/registration";
