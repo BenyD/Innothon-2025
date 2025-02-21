@@ -17,17 +17,16 @@ interface RegistrationRejectedEmailProps {
   teamMember: TeamMember;
   registrationId: string;
   selectedEvents: string[];
-  totalAmount: number;
-  isTeamLeader: boolean;
-  teamSize: number;
+  teamId: string;
 }
 
 export const RegistrationRejectedEmail = ({
   teamMember,
   registrationId,
   selectedEvents,
+  teamId,
 }: RegistrationRejectedEmailProps) => {
-  const previewText = `Important update regarding your Innothon'25 payment`;
+  const previewText = `Important update regarding your Innothon'25 registration`;
 
   return (
     <Html>
@@ -35,110 +34,88 @@ export const RegistrationRejectedEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header */}
-          <Section style={header}>
-            <Img
-              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/email-header.png"
-              width="600"
-              height="200"
-              alt="Innothon'25 Header"
-              style={headerImage}
-            />
-          </Section>
+          <Img
+            src="https://jycgacsicczslkfiazkw.supabase.co/storage/v1/object/public/beny//hits-logo-black.png"
+            width="150"
+            height="150"
+            alt="HITS Logo"
+            style={logo}
+          />
+          
+          <Text style={title}>Registration Status Update</Text>
+          <Text style={subtitle}>INNOTHON&apos;25</Text>
 
           <Section style={content}>
-            <Text style={title}>Registration Update</Text>
-
             <Text style={greeting}>Dear {teamMember.name},</Text>
-
+            
             <Text style={paragraph}>
-              We regret to inform you that we couldn&apos;t verify your payment
-              for Innothon&apos;25. This could be due to one of the following
-              reasons:
+              We regret to inform you that we couldn&apos;t verify your payment for Innothon&apos;25.
+              Please review the details below and follow the instructions to resolve this issue.
             </Text>
 
             {/* Registration Details */}
-            <Section style={card}>
-              <Text style={cardTitle}>Registration Details</Text>
-              <div style={cardGrid}>
-                <div style={cardItem}>
-                  <Text style={cardLabel}>Registration ID</Text>
-                  <Text style={cardValue}>{registrationId}</Text>
+            <Text style={sectionTitle}>Registration Details</Text>
+            <Section style={detailsTable}>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Name:</Text>
                 </div>
-                <div style={cardItem}>
-                  <Text style={cardLabel}>Selected Events</Text>
-                  <Text style={cardValue}>{selectedEvents.length}</Text>
+                <div style={valueContainer}>
+                  <Text style={value}>{teamMember.name}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Team ID:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{teamId}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Registration ID:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{registrationId}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Selected Events:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{selectedEvents.length}</Text>
                 </div>
               </div>
             </Section>
 
-            {/* Next Steps */}
-            <Section style={card}>
-              <Text style={cardTitle}>What&apos;s Next?</Text>
-              <ul style={notesList}>
-                <li style={notesItem}>
-                  Please ensure your payment transaction was completed
-                  successfully
-                </li>
-                <li style={notesItem}>
-                  If amount was deducted, please share the transaction details
-                  and screenshot to bspc.hit@gmail.com
-                </li>
-                <li style={notesItem}>
-                  You can try registering again with a different payment method
-                </li>
-                <li style={notesItem}>
-                  If amount was deducted, it will be refunded within 5-7 working
-                  days
-                </li>
-              </ul>
-            </Section>
-
-            {/* Contact Section */}
-            <Section style={contactSection}>
-              <Text style={contactTitle}>Questions?</Text>
-              <Text style={contactText}>
-                If you have any questions or need clarification, please contact
-                us:
-                <br />
-                <br />
-                Email: bspc.hit@gmail.com
-                <br />
-                Phone: +91 98848 19912 (Beny Dishon K)
-                <br />
-                Website:{" "}
-                <Link style={link} href="https://www.hitscseinnothon.com">
-                  hitscseinnothon.com
-                </Link>
-              </Text>
-            </Section>
-
-            {/* Payment Support Section */}
-            <Section style={card}>
-              <Text style={cardTitle}>Common Payment Issues</Text>
-              <ul style={notesList}>
-                <li style={notesItem}>Transaction timeout or network error</li>
-                <li style={notesItem}>Payment gateway technical issues</li>
-                <li style={notesItem}>
-                  Incorrect or incomplete transaction details
-                </li>
-                <li style={notesItem}>Bank server downtime</li>
-              </ul>
-            </Section>
+            {/* Resolution Steps */}
+            <Text style={sectionTitle}>How to Resolve</Text>
+            <ol style={stepsList}>
+              <li style={stepItem}>Check if your payment transaction was completed</li>
+              <li style={stepItem}>If amount was deducted, email us the transaction screenshot</li>
+              <li style={stepItem}>You can try registering again with a different payment method</li>
+              <li style={stepItem}>Any deducted amount will be refunded within 5-7 working days</li>
+            </ol>
 
             <Hr style={divider} />
 
-            <Section style={footer}>
-              <Text style={footerText}>
-                Blue Screen Programming Club
-                <br />
-                Department of Computer Science and Engineering
-                <br />
-                Hindustan Institute of Technology and Science
-                <br />
-                Chennai, India
-              </Text>
-            </Section>
+            <Text style={footerText}>
+              For any queries, contact:<br />
+              Blue Screen Programming Club<br />
+              Department of Computer Science and Engineering<br />
+              Hindustan Institute of Technology and Science<br />
+              Email: bspc.hit@gmail.com<br />
+              Phone: +91 98848 19912 (Beny Dishon K)
+            </Text>
+
+            <Text style={instituteName}>
+              Blue Screen Programming Club<br />
+              Department of Computer Science and Engineering<br />
+              Hindustan Institute of Technology and Science<br />
+              Chennai, India
+            </Text>
           </Section>
         </Container>
       </Body>
@@ -146,146 +123,131 @@ export const RegistrationRejectedEmail = ({
   );
 };
 
-// Styles (same as approved email template)
+// Styles (mostly shared with approved template)
 const main = {
-  backgroundColor: "#f5f5f5",
-  fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  backgroundColor: "#f4f4f5",
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
 };
 
 const container = {
   margin: "0 auto",
-  padding: "20px 0",
-  width: "100%",
-  maxWidth: "600px",
+  padding: "20px",
 };
 
-const header = {
-  padding: "0",
-  margin: "0",
-};
-
-const headerImage = {
-  width: "100%",
-  height: "auto",
-  borderRadius: "8px 8px 0 0",
-};
-
-const content = {
-  backgroundColor: "#ffffff",
-  padding: "40px",
-  borderRadius: "8px",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+const logo = {
+  margin: "0 auto 24px",
+  display: "block",
+  width: "150px",
+  height: "150px",
+  objectFit: "contain" as const,
 };
 
 const title = {
-  fontSize: "28px",
-  lineHeight: "1.3",
-  fontWeight: "700",
+  fontSize: "24px",
+  fontWeight: "800",
   textAlign: "center" as const,
-  color: "#1a1a1a",
-  margin: "0 0 30px",
+  color: "#dc2626",
+  margin: "0",
+  lineHeight: "1.3",
+};
+
+const subtitle = {
+  fontSize: "16px",
+  color: "#3b82f6",
+  textAlign: "center" as const,
+  margin: "8px 0 32px",
+  fontWeight: "600",
 };
 
 const greeting = {
   fontSize: "18px",
-  lineHeight: "1.4",
-  color: "#1a1a1a",
-  margin: "0 0 15px",
+  color: "#18181b",
+  marginBottom: "16px",
+  fontWeight: "600",
 };
 
 const paragraph = {
   fontSize: "16px",
-  lineHeight: "1.4",
-  color: "#4a4a4a",
-  margin: "0 0 30px",
+  color: "#3f3f46",
+  lineHeight: "1.5",
+  marginBottom: "32px",
 };
 
-const card = {
-  backgroundColor: "#f8f9fa",
-  padding: "25px",
-  borderRadius: "8px",
-  marginBottom: "30px",
-};
-
-const cardTitle = {
+const sectionTitle = {
   fontSize: "18px",
   fontWeight: "600",
-  color: "#1a1a1a",
-  margin: "0 0 20px",
+  color: "#18181b",
+  marginBottom: "16px",
 };
 
-const cardGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
-  gap: "15px",
+const detailsTable = {
+  width: "100%",
+  backgroundColor: "#f8fafc",
+  borderRadius: "8px",
+  padding: "16px",
+  marginBottom: "32px",
 };
 
-const cardItem = {
-  padding: "10px 0",
+const detailRow = {
+  display: "flex",
+  padding: "12px 16px",
+  borderBottom: "1px solid #e5e7eb",
+  backgroundColor: "#ffffff",
+  marginBottom: "8px",
+  borderRadius: "6px",
 };
 
-const cardLabel = {
+const labelContainer = {
+  width: "140px",
+  paddingRight: "16px",
+};
+
+const valueContainer = {
+  flex: "1",
+};
+
+const label = {
   fontSize: "14px",
-  color: "#666666",
-  margin: "0 0 5px",
-};
-
-const cardValue = {
-  fontSize: "16px",
+  color: "#4b5563",
   fontWeight: "500",
-  color: "#1a1a1a",
-  margin: "0",
 };
 
-const notesList = {
+const value = {
+  fontSize: "14px",
+  color: "#111827",
+  fontWeight: "600",
+};
+
+const stepsList = {
   margin: "0",
   padding: "0 0 0 20px",
 };
 
-const notesItem = {
+const stepItem = {
   fontSize: "14px",
-  color: "#4a4a4a",
-  margin: "0 0 8px",
-};
-
-const contactSection = {
-  textAlign: "center" as const,
-  padding: "30px 0",
-};
-
-const contactTitle = {
-  fontSize: "18px",
-  fontWeight: "600",
-  color: "#1a1a1a",
-  margin: "0 0 15px",
-};
-
-const contactText = {
-  fontSize: "14px",
-  lineHeight: "1.6",
-  color: "#4a4a4a",
-};
-
-const link = {
-  color: "#0066cc",
-  textDecoration: "none",
+  marginBottom: "12px",
+  color: "#374151",
+  lineHeight: "1.5",
 };
 
 const divider = {
-  margin: "30px 0",
+  margin: "32px 0",
   border: "none",
-  borderTop: "1px solid #e0e0e0",
-};
-
-const footer = {
-  textAlign: "center" as const,
+  borderTop: "1px solid #e5e7eb",
 };
 
 const footerText = {
-  fontSize: "13px",
+  fontSize: "14px",
+  color: "#71717a",
+  textAlign: "center" as const,
   lineHeight: "1.6",
-  color: "#666666",
+};
+
+const instituteName = {
+  fontSize: "14px",
+  color: "#71717a",
+  textAlign: "center" as const,
+  lineHeight: "1.6",
 };
 
 export default RegistrationRejectedEmail;

@@ -42,47 +42,88 @@ export async function POST(request: Request) {
         console.log(`Admit card generated successfully for ${member.name}`);
 
         console.log(`Sending email to ${member.email}...`);
-        const emailResult = await resend.emails.send({
-          from: "Innothon'25 <noreply@hitscseinnothon.com>",
-          to: member.email,
-          subject: "Registration Approved - Innothon'25",
-          react: RegistrationApprovedEmail({
-            teamMember: member,
+        try {
+          // Log the email data before sending
+          console.log("Email data:", {
+            to: member.email,
             registrationId,
+            teamId,
             selectedEvents,
-            totalAmount,
-            isTeamLeader: teamMembers.indexOf(member) === 0,
-            teamSize,
-          }),
-          attachments: [
-            {
-              filename: `admit-card-${registrationId}.pdf`,
-              content: admitCard,
-            },
-          ],
-        });
-        console.log(`Email sent successfully to ${member.email}`, emailResult);
+            admitCardSize: admitCard?.length || 0,
+          });
 
-        emailResults.push({ 
-          success: true, 
-          email: member.email, 
-          result: emailResult 
-        });
+          const emailResult = await resend.emails.send({
+            from: "Innothon'25 <noreply@hitscseinnothon.com>",
+            to: member.email,
+            subject: "Registration Approved - Innothon'25",
+            react: RegistrationApprovedEmail({
+              teamMember: member,
+              registrationId,
+              selectedEvents,
+              totalAmount,
+              isTeamLeader: teamMembers.indexOf(member) === 0,
+              teamSize,
+              teamId,
+            }),
+            attachments: admitCard
+              ? [
+                  {
+                    filename: `admit-card-${registrationId}.pdf`,
+                    content: admitCard,
+                  },
+                ]
+              : undefined,
+          });
+
+          console.log(
+            `Email sent successfully to ${member.email}`,
+            emailResult
+          );
+
+          emailResults.push({
+            success: true,
+            email: member.email,
+            result: emailResult,
+          });
+        } catch (emailError) {
+          console.error(
+            "Detailed email error for",
+            member.email,
+            ":",
+            emailError,
+            "\nFull error object:",
+            JSON.stringify(emailError, null, 2)
+          );
+          throw emailError;
+        }
       } catch (error) {
-        console.error(`Error sending email to ${member.email}:`, error);
+        const errorDetails = {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          fullError: error,
+        };
+
+        console.error(
+          `Detailed error for ${member.email}:`,
+          JSON.stringify(errorDetails, null, 2)
+        );
+
         emailResults.push({
           success: false,
           email: member.email,
-          error: error instanceof Error ? error.message : String(error),
-          details: error
+          error: errorDetails.message,
+          details: errorDetails,
         });
       }
     }
 
-    const failedEmails = emailResults.filter(result => !result.success);
-    
+    const failedEmails = emailResults.filter((result) => !result.success);
+
     if (failedEmails.length > 0) {
-      console.error("Failed emails:", failedEmails);
+      console.error(
+        "Failed emails details:",
+        JSON.stringify(failedEmails, null, 2)
+      );
       return NextResponse.json(
         {
           success: false,
@@ -98,12 +139,21 @@ export async function POST(request: Request) {
       details: emailResults,
     });
   } catch (error) {
-    console.error("Error in send-approval-emails:", error);
+    const errorDetails = {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      fullError: error,
+    };
+
+    console.error(
+      "Detailed route error:",
+      JSON.stringify(errorDetails, null, 2)
+    );
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to send emails",
-        details: error
+        error: errorDetails.message,
+        details: errorDetails,
       },
       { status: 500 }
     );

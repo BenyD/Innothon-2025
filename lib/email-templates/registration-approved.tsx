@@ -20,6 +20,7 @@ interface RegistrationApprovedEmailProps {
   totalAmount: number;
   isTeamLeader: boolean;
   teamSize: number;
+  teamId: string;
 }
 
 export const RegistrationApprovedEmail = ({
@@ -29,6 +30,7 @@ export const RegistrationApprovedEmail = ({
   totalAmount,
   isTeamLeader,
   teamSize,
+  teamId,
 }: RegistrationApprovedEmailProps) => {
   const previewText = `Your registration for Innothon'25 has been confirmed!`;
 
@@ -38,103 +40,142 @@ export const RegistrationApprovedEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header */}
-          <Section style={header}>
-            <Img
-              src="https://vxybvvrsiujnqatmncjt.supabase.co/storage/v1/object/public/innothon/images/email-header.png"
-              width="600"
-              height="200"
-              alt="Innothon'25 Header"
-              style={headerImage}
-            />
-          </Section>
+          <Img
+            src="https://jycgacsicczslkfiazkw.supabase.co/storage/v1/object/public/beny//hits-logo-black.png"
+            width="200"
+            height="200"
+            alt="HITS Logo"
+            style={logo}
+          />
+          
+          <Text style={title}>Registration Confirmation</Text>
+          <Text style={subtitle}>INNOTHON&apos;25</Text>
 
           <Section style={content}>
-            <Text style={title}>Registration Confirmed!</Text>
-            
             <Text style={greeting}>Dear {teamMember.name},</Text>
             
             <Text style={paragraph}>
-              We&apos;re excited to confirm your registration for Innothon&apos;25.
-              {isTeamLeader && teamSize > 1
-                ? ` As the team leader, please ensure all team members are informed about the event details.`
-                : ``}
+              Thank you for registering for Innothon&apos;25. Your registration has been confirmed.
+              {isTeamLeader && teamSize > 1 && " As team leader, please share this information with your team members."}
             </Text>
 
-            {/* Registration Card */}
-            <Section style={card}>
-              <Text style={cardTitle}>Registration Details</Text>
-              <div style={cardGrid}>
-                <div style={cardItem}>
-                  <Text style={cardLabel}>Registration ID</Text>
-                  <Text style={cardValue}>{registrationId}</Text>
+            {/* Registration Details */}
+            <Text style={sectionTitle}>Registration Details</Text>
+            <Section style={detailsTable}>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Name:</Text>
                 </div>
-                <div style={cardItem}>
-                  <Text style={cardLabel}>Amount Paid</Text>
-                  <Text style={cardValue}>₹{totalAmount}</Text>
+                <div style={valueContainer}>
+                  <Text style={value}>{teamMember.name}</Text>
                 </div>
-                <div style={cardItem}>
-                  <Text style={cardLabel}>Team Size</Text>
-                  <Text style={cardValue}>{teamSize} member{teamSize > 1 ? 's' : ''}</Text>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Team ID:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{teamId}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Registration ID:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{registrationId}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Team Size:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>{teamSize} member{teamSize > 1 ? 's' : ''}</Text>
+                </div>
+              </div>
+              <div style={detailRow}>
+                <div style={labelContainer}>
+                  <Text style={label}>Amount Paid:</Text>
+                </div>
+                <div style={valueContainer}>
+                  <Text style={value}>₹{totalAmount}</Text>
                 </div>
               </div>
             </Section>
 
-            {/* Events Section */}
-            <Section style={card}>
-              <Text style={cardTitle}>Your Events</Text>
-              <ul style={eventList}>
-                {selectedEvents.map((event) => (
-                  <li key={event} style={eventItem}>
-                    {event}
-                  </li>
-                ))}
-              </ul>
-            </Section>
+            {/* Events */}
+            <Text style={sectionTitle}>Registered Events</Text>
+            <ul style={eventsList}>
+              {selectedEvents.map((event) => (
+                <li key={event} style={eventItem}>{event}</li>
+              ))}
+            </ul>
 
-            {/* Schedule Card */}
-            <Section style={card}>
-              <Text style={cardTitle}>Event Day Schedule</Text>
-              <div style={timelineContainer}>
-                {scheduleItems.map((item, index) => (
-                  <div key={index} style={timelineItem}>
-                    <Text style={timelineTime}>{item.time}</Text>
-                    <Text style={timelineEvent}>{item.event}</Text>
-                  </div>
-                ))}
+            {/* Schedule */}
+            <Text style={sectionTitle}>Event Schedule - March 21st</Text>
+            <Section style={scheduleTable}>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>8:30 AM</Text>
+                <Text style={eventColumn}>Registration & Check-in</Text>
+              </div>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>9:30 AM</Text>
+                <Text style={eventColumn}>Opening Ceremony</Text>
+              </div>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>11:00 AM - 1:00 PM</Text>
+                <Text style={eventColumn}>AI Genesis, Digital Divas</Text>
+              </div>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>1:00 PM - 2:00 PM</Text>
+                <Text style={eventColumn}>Lunch Break</Text>
+              </div>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>2:00 PM - 4:00 PM</Text>
+                <Text style={eventColumn}>CodeArena, HackQuest</Text>
+              </div>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>11:00 AM - 4:00 PM</Text>
+                <Text style={eventColumn}>IdeaFusion, Pixel Showdown</Text>
               </div>
             </Section>
 
-            {/* Important Notes */}
-            <Section style={card}>
-              <Text style={cardTitle}>Important Notes</Text>
-              <ul style={notesList}>
-                {importantNotes.map((note, index) => (
-                  <li key={index} style={notesItem}>{note}</li>
-                ))}
-              </ul>
+            <Text style={sectionTitle}>Event Schedule - March 22nd</Text>
+            <Section style={scheduleTable}>
+              <div style={scheduleRow}>
+                <Text style={timeColumn}>11:00 AM</Text>
+                <Text style={eventColumn}>Valedictory Ceremony</Text>
+              </div>
             </Section>
 
-            {/* Contact Section */}
-            <Section style={contactSection}>
-              <Text style={contactTitle}>Need Help?</Text>
-              <Text style={contactText}>
-                Email: bspc.hit@gmail.com<br />
-                Phone: +91 98848 19912 (Beny Dishon K)<br />
-                Website: <Link style={link} href="https://www.hitscseinnothon.com">hitscseinnothon.com</Link>
-              </Text>
-            </Section>
+            {/* Rules */}
+            <Text style={sectionTitle}>Important Rules</Text>
+            <ul style={rulesList}>
+              <li style={ruleItem}>Bring your college ID card</li>
+              <li style={ruleItem}>Carry your laptop and charger</li>
+              <li style={ruleItem}>Report 30 minutes before your event</li>
+              <li style={ruleItem}>Follow the dress code (Smart Casuals)</li>
+              <li style={ruleItem}>Maintain decorum during the event</li>
+            </ul>
 
             <Hr style={divider} />
 
-            <Section style={footer}>
-              <Text style={footerText}>
-                Organized by Blue Screen Programming Club<br />
-                Department of Computer Science and Engineering<br />
-                Hindustan Institute of Technology and Science<br />
-                Chennai, India
-              </Text>
-            </Section>
+            <Text style={footerText}>
+              For any queries, contact:<br />
+              Blue Screen Programming Club<br />
+              Department of Computer Science and Engineering<br />
+              Hindustan Institute of Technology and Science<br />
+              Email: bspc.hit@gmail.com<br />
+              Phone: +91 98848 19912 (Beny Dishon K)
+            </Text>
+
+            <Text style={instituteName}>
+              Blue Screen Programming Club<br />
+              Department of Computer Science and Engineering<br />
+              Hindustan Institute of Technology and Science<br />
+              Chennai, India
+            </Text>
           </Section>
         </Container>
       </Body>
@@ -142,206 +183,176 @@ export const RegistrationApprovedEmail = ({
   );
 };
 
-// Constants
-const scheduleItems = [
-  { time: "8:30 AM", event: "Registration & Check-in" },
-  { time: "9:30 AM", event: "Opening Ceremony" },
-  { time: "11:00 AM", event: "Events Begin (AI Genesis, Digital Divas, IdeaFusion, Pixel Showdown)" },
-  { time: "1:00 PM", event: "Lunch Break" },
-  { time: "2:00 PM", event: "Events Begin (CodeArena, HackQuest)" },
-  { time: "4:00 PM", event: "Day 1 Concludes" }
-];
-
-const importantNotes = [
-  "Bring your college ID card",
-  "Carry your laptop and charger",
-  "Report 30 minutes before your event",
-  "Keep this email handy for reference",
-  "Follow the dress code (Smart Casuals)",
-  "Internet access will be provided"
-];
-
 // Styles
 const main = {
-  backgroundColor: "#f5f5f5",
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  fontFamily: '-apple-system, "Segoe UI", sans-serif',
+  backgroundColor: "#ffffff",
 };
 
 const container = {
   margin: "0 auto",
-  padding: "20px 0",
+  padding: "20px",
   width: "100%",
   maxWidth: "600px",
 };
 
-const header = {
-  padding: "0",
-  margin: "0",
-};
-
-const headerImage = {
-  width: "100%",
-  height: "auto",
-  borderRadius: "8px 8px 0 0",
-};
-
-const content = {
-  backgroundColor: "#ffffff",
-  padding: "40px",
-  borderRadius: "8px",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+const logo = {
+  margin: "0 auto 24px",
+  display: "block",
+  width: "200px",
+  height: "200px",
+  objectFit: "contain" as const,
 };
 
 const title = {
-  fontSize: "28px",
+  fontSize: "24px",
   lineHeight: "1.3",
   fontWeight: "700",
   textAlign: "center" as const,
-  color: "#1a1a1a",
-  margin: "0 0 30px",
+  margin: "0",
+};
+
+const subtitle = {
+  fontSize: "16px",
+  color: "#4b5563",
+  textAlign: "center" as const,
+  margin: "8px 0 24px",
+};
+
+const content = {
+  padding: "0",
 };
 
 const greeting = {
-  fontSize: "18px",
+  fontSize: "16px",
   lineHeight: "1.4",
-  color: "#1a1a1a",
-  margin: "0 0 15px",
+  margin: "0 0 16px",
+  fontWeight: "600",
 };
 
 const paragraph = {
+  fontSize: "14px",
+  lineHeight: "1.5",
+  margin: "0 0 24px",
+  color: "#374151",
+};
+
+const sectionTitle = {
   fontSize: "16px",
-  lineHeight: "1.4",
-  color: "#4a4a4a",
-  margin: "0 0 30px",
-};
-
-const card = {
-  backgroundColor: "#f8f9fa",
-  padding: "25px",
-  borderRadius: "8px",
-  marginBottom: "30px",
-};
-
-const cardTitle = {
-  fontSize: "18px",
   fontWeight: "600",
-  color: "#1a1a1a",
-  margin: "0 0 20px",
+  margin: "32px 0 16px",
 };
 
-const cardGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
-  gap: "15px",
+const detailsTable = {
+  width: "100%",
+  backgroundColor: "#f8fafc",
+  borderRadius: "8px",
+  padding: "16px",
+  marginBottom: "32px",
 };
 
-const cardItem = {
-  padding: "10px 0",
-};
-
-const cardLabel = {
-  fontSize: "14px",
-  color: "#666666",
-  margin: "0 0 5px",
-};
-
-const cardValue = {
-  fontSize: "16px",
-  fontWeight: "500",
-  color: "#1a1a1a",
-  margin: "0",
-};
-
-const eventList = {
-  margin: "0",
-  padding: "0",
-  listStyle: "none",
-};
-
-const eventItem = {
-  padding: "10px 15px",
-  backgroundColor: "#ffffff",
-  borderRadius: "6px",
-  marginBottom: "8px",
-  fontSize: "15px",
-  color: "#1a1a1a",
-};
-
-const timelineContainer = {
-  padding: "0",
-  margin: "0",
-};
-
-const timelineItem = {
+const detailRow = {
   display: "flex",
-  alignItems: "flex-start",
-  padding: "12px 0",
-  borderBottom: "1px dashed #e0e0e0",
+  padding: "12px 16px",
+  borderBottom: "1px solid #e5e7eb",
+  backgroundColor: "#ffffff",
+  marginBottom: "8px",
+  borderRadius: "6px",
 };
 
-const timelineTime = {
-  width: "100px",
-  fontSize: "14px",
-  fontWeight: "500",
-  color: "#666666",
-  margin: "0",
+const labelContainer = {
+  width: "140px",
+  paddingRight: "16px",
 };
 
-const timelineEvent = {
+const valueContainer = {
   flex: "1",
-  fontSize: "15px",
-  color: "#1a1a1a",
-  margin: "0",
 };
 
-const notesList = {
+const label = {
+  fontSize: "14px",
+  color: "#4b5563",
+  fontWeight: "500",
+};
+
+const value = {
+  fontSize: "14px",
+  color: "#111827",
+  fontWeight: "600",
+};
+
+const eventsList = {
   margin: "0",
   padding: "0 0 0 20px",
 };
 
-const notesItem = {
+const eventItem = {
   fontSize: "14px",
-  color: "#4a4a4a",
-  margin: "0 0 8px",
+  marginBottom: "8px",
+  color: "#374151",
 };
 
-const contactSection = {
-  textAlign: "center" as const,
-  padding: "30px 0",
+const scheduleTable = {
+  width: "100%",
+  backgroundColor: "#f8fafc",
+  borderRadius: "8px",
+  padding: "16px",
+  marginBottom: "32px",
 };
 
-const contactTitle = {
-  fontSize: "18px",
-  fontWeight: "600",
-  color: "#1a1a1a",
-  margin: "0 0 15px",
+const scheduleRow = {
+  display: "flex",
+  padding: "12px 16px",
+  borderBottom: "1px solid #e5e7eb",
+  backgroundColor: "#ffffff",
+  marginBottom: "8px",
+  borderRadius: "6px",
 };
 
-const contactText = {
+const timeColumn = {
+  width: "180px",
   fontSize: "14px",
-  lineHeight: "1.6",
-  color: "#4a4a4a",
+  color: "#4b5563",
+  fontWeight: "500",
 };
 
-const link = {
-  color: "#0066cc",
-  textDecoration: "none",
+const eventColumn = {
+  flex: "1",
+  fontSize: "14px",
+  color: "#111827",
+  fontWeight: "500",
+};
+
+const rulesList = {
+  margin: "0",
+  padding: "0 0 0 20px",
+};
+
+const ruleItem = {
+  fontSize: "14px",
+  marginBottom: "8px",
+  color: "#374151",
 };
 
 const divider = {
-  margin: "30px 0",
+  margin: "32px 0",
   border: "none",
-  borderTop: "1px solid #e0e0e0",
-};
-
-const footer = {
-  textAlign: "center" as const,
+  borderTop: "1px solid #e5e7eb",
 };
 
 const footerText = {
+  fontSize: "14px",
+  color: "#4b5563",
+  textAlign: "center" as const,
+  margin: "0 0 24px",
+  lineHeight: "1.5",
+};
+
+const instituteName = {
   fontSize: "13px",
-  lineHeight: "1.6",
-  color: "#666666",
+  color: "#6b7280",
+  textAlign: "center" as const,
+  lineHeight: "1.5",
 };
 
 export default RegistrationApprovedEmail;
