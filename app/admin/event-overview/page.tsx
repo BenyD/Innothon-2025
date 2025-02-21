@@ -566,6 +566,18 @@ export default function EventOverview() {
                   </span>
                 </div>
               </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">VALORANT Teams</h4>
+                <div className="flex items-end justify-between mt-2">
+                  <p className="text-2xl font-bold text-white">
+                    {gameStats.valorant}
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    ₹{gameStats.valorant * 250}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         )}

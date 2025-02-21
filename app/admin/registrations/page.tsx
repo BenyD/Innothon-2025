@@ -39,6 +39,8 @@ const getGameDetails = (registration: Registration) => {
       return 'BGMI Squad';
     case 'pes':
       return 'PES Individual';
+    case 'valorant':
+      return 'VALORANT 5v5';
     case 'freefire':
       return `Free Fire ${format === 'squad' ? 'Squad' : 'Duo'}`;
     default:

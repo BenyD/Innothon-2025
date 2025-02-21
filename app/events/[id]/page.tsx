@@ -22,6 +22,7 @@ import {
   Wrench,
   Layers,
   Gamepad2,
+  IndianRupee,
 } from "lucide-react";
 
 export default function EventPage() {
@@ -214,6 +215,29 @@ export default function EventPage() {
               </div>
               {event.id === "pixel-showdown" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* VALORANT - New Addition */}
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-red-500/10 to-transparent">
+                    <h3 className="text-red-400 font-medium mb-3">VALORANT</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-yellow-400 text-sm">
+                          First Prize
+                        </span>
+                        <span className="text-white">
+                          {event.prizes.VALORANT.First}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400 text-sm">
+                          Second Prize
+                        </span>
+                        <span className="text-white">
+                          {event.prizes.VALORANT.Second}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Free Fire Squad */}
                   <div className="p-4 rounded-lg bg-gradient-to-r from-orange-500/10 to-transparent">
                     <h3 className="text-orange-400 font-medium mb-3">
@@ -525,27 +549,73 @@ export default function EventPage() {
 
             {/* Game Details Section for Pixel Showdown */}
             {event.id === "pixel-showdown" && event.gameDetails && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-                  <Gamepad2 className="w-6 h-6 text-purple-400" />
-                  Game Details
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="flex items-center gap-2 mb-6">
+                  <Gamepad2 className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-xl font-semibold">Game Details</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {event.gameDetails.map((game) => (
                     <div
                       key={game.game}
-                      className="bg-white/5 border border-white/10 rounded-xl overflow-hidden"
+                      className={`p-4 rounded-lg bg-gradient-to-r ${
+                        game.game === "valorant"
+                          ? "from-red-500/10"
+                          : game.game === "Free Fire"
+                            ? "from-orange-500/10"
+                            : game.game === "BGMI"
+                              ? "from-purple-500/10"
+                              : "from-green-500/10"
+                      } to-transparent`}
                     >
-                      <div className="p-6 border-b border-white/10 bg-white/5">
-                        <h3 className="text-xl font-semibold text-white mb-2">
-                          {game.game}
-                        </h3>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-gray-400">
-                            <Users className="w-4 h-4" />
-                            <span>{game.teamSize}</span>
+                      <h3
+                        className={`font-medium mb-4 ${
+                          game.game === "valorant"
+                            ? "text-red-400"
+                            : game.game === "Free Fire"
+                              ? "text-orange-400"
+                              : game.game === "BGMI"
+                                ? "text-purple-400"
+                                : "text-green-400"
+                        }`}
+                      >
+                        {game.game.toUpperCase()}
+                      </h3>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Users className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">{game.teamSize}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <IndianRupee className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">
+                            {game.registrationFee}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Trophy className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">{game.format}</span>
+                        </div>
+
+                        <div className="mt-4 p-3 rounded-md bg-black/20">
+                          <p className="text-xs font-medium text-gray-400 mb-2">
+                            Scoring System
+                          </p>
+                          <div className="space-y-1 text-sm text-gray-300">
+                            <p>• {game.scoring.placement}</p>
+                            {game.scoring.kills && (
+                              <p>• {game.scoring.kills}</p>
+                            )}
+                            {game.scoring.league && (
+                              <p>• {game.scoring.league}</p>
+                            )}
+                            {game.scoring.tiebreakers && (
+                              <p>• {game.scoring.tiebreakers}</p>
+                            )}
                           </div>
-                          <p className="text-sm text-gray-300">{game.format}</p>
                         </div>
                       </div>
                     </div>

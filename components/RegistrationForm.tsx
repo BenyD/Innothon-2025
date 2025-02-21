@@ -133,7 +133,7 @@ const RegistrationForm = () => {
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [pixelShowdownGame, setPixelShowdownGame] = useState<{
-    game: "bgmi" | "freefire" | "pes" | null;
+    game: "bgmi" | "freefire" | "pes" | "valorant" | null;
     format?: "duo" | "squad";
   }>();
 
@@ -151,6 +151,8 @@ const RegistrationForm = () => {
           return 100; // 100 per individual
         case "freefire":
           return pixelShowdownGame.format === "squad" ? 200 : 100; // 200 for squad, 100 for duo
+        case "valorant":
+          return 250; // 250 per team
         default:
           return 0;
       }
@@ -788,6 +790,30 @@ const RegistrationForm = () => {
                               </span>
                             </button>
                           </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPixelShowdownGame({ game: "valorant" });
+                              setTeamSize(5);
+                              setTeamMembers([
+                                ...Array(5)
+                                  .fill(null)
+                                  .map(() => ({ ...INITIAL_MEMBER })),
+                              ]);
+                            }}
+                            className={`p-4 rounded-xl border text-center transition-all ${
+                              pixelShowdownGame?.game === "valorant"
+                                ? "bg-white/10 border-purple-500 text-white"
+                                : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
+                            }`}
+                          >
+                            <span className="text-lg">VALORANT</span>
+                            <br />
+                            <span className="text-sm">5v5 (5 players required)</span>
+                            <br />
+                            <span className="text-xs text-gray-400">₹250 per team</span>
+                          </button>
                         </div>
                       </div>
                     )}
@@ -816,6 +842,10 @@ const RegistrationForm = () => {
                                 pixelShowdownGame.format === "squad") ? (
                               <span className="text-gray-400">
                                 Squad Event (4 participants required)
+                              </span>
+                            ) : pixelShowdownGame?.game === "valorant" ? (
+                              <span className="text-gray-400">
+                                VALORANT requires exactly 5 participants
                               </span>
                             ) : (
                               <span className="text-gray-400">
@@ -1044,6 +1074,8 @@ const RegistrationForm = () => {
                                       ? "BGMI Character ID"
                                       : pixelShowdownGame?.game === "freefire"
                                         ? "Free Fire ID"
+                                        : pixelShowdownGame?.game === "valorant"
+                                        ? "Valorant Riot ID"
                                         : "PES Username"}
                                     <span className="text-red-500">*</span>
                                   </Label>
@@ -1061,9 +1093,10 @@ const RegistrationForm = () => {
                                       placeholder={
                                         pixelShowdownGame?.game === "bgmi"
                                           ? "Enter BGMI Character ID"
-                                          : pixelShowdownGame?.game ===
-                                              "freefire"
+                                          : pixelShowdownGame?.game === "freefire"
                                             ? "Enter Free Fire ID"
+                                            : pixelShowdownGame?.game === "valorant"
+                                            ? "Enter Valorant Riot ID"
                                             : "Enter PES Username"
                                       }
                                       className="bg-white/5 border-white/10 pl-10"
@@ -1144,7 +1177,9 @@ const RegistrationForm = () => {
                                         ? pixelShowdownGame.format === "squad"
                                           ? "₹200 per team"
                                           : "₹100 per team"
-                                        : "₹500"
+                                        : pixelShowdownGame?.game === "valorant"
+                                          ? "₹250 per team"
+                                          : "₹500"
                                   : "₹500"}
                             </span>
                           </div>

@@ -11,6 +11,7 @@ export const calculateRegistrationRevenue = (registration: Registration): number
       const { game, format } = registration.game_details;
       if (game === "pes") totalAmount += 100; // ₹100 per player
       else if (game === "bgmi") totalAmount += 200; // ₹200 per team
+      else if (game === "valorant") totalAmount += 250;
       else if (game === "freefire") {
         totalAmount += format === "squad" ? 200 : 100; // ₹200 for squad, ₹100 for duo
       }

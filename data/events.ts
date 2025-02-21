@@ -547,125 +547,75 @@ export const events: Event[] = [
     id: "pixel-showdown",
     title: "Pixel Showdown",
     shortDescription:
-      "Multi-game tournament featuring Free Fire, BGMI, and PES",
-    fullDescription: `Pixel Showdown is a gaming competition featuring three exciting tournaments:
+      "Multi-game tournament featuring VALORANT, Free Fire, BGMI, and PES",
+    fullDescription: `Join us for an action-packed gaming tournament featuring four competitive esports titles:
 
-1. Free Fire: Squad (₹200) or Duo (₹100) tournament with online qualifiers and offline finals
-2. PES eFootball: Individual tournament (₹100) with league and knockout stages
-3. BGMI: Squad tournament (₹200) with 12 matches over 3 days
+• VALORANT (5v5 Tactical Shooter)
+  - Online tournament with Best-of-3 matches
+  - Single elimination bracket system
+  - Mumbai server, standard competitive maps
+  - Prize pool: First ₹2,500, Second ₹1,500
 
-The event will conclude with winners announced during the Valedictory Ceremony.`,
-    image: "/events/pixel-showdown.jpg",
-    date: "March 21, 2025",
-    time: "11:00 AM - 4:00 PM",
-    venue: "Room-PX003, Ground Floor, Computer Science Extension Block",
-    eventStructure: [
-      {
-        phase: "Free Fire Tournament",
-        description:
-          "Online Qualifiers (Battle Royale Mode, Bermuda Map): Top 3 teams qualify. Finals: Best of Three (Clash Squad Mode). Scoring - Placement: 1st (12pts), 2nd (9pts), 3rd (8pts). Each kill: 1 point.",
-        duration: "Qualifiers + Finals",
-      },
-      {
-        phase: "PES eFootball Tournament",
-        description:
-          "League Stage: 26 players, 2 matches each. Points: Win (3), Draw (1), Loss (0). Top 16 advance to knockout. Tiebreakers: Goal Difference, Goals Scored, H2H.",
-        duration: "League (10min) + Knockout (6min)",
-      },
-      {
-        phase: "BGMI Tournament",
-        description:
-          "12 matches over 3 days (4/day). Scoring - Placement: 1st (15pts), 2nd (12pts), 3rd (10pts). Each kill: 1 point. Teams must maintain same roster throughout.",
-        duration: "3 Days",
-      },
-    ],
-    gameDetails: [
-      {
-        game: "Free Fire",
-        registrationFee: "Squad: ₹200 per team, Duo: ₹100 per team",
-        teamSize: "Squad: 4 members, Duo: 2 members",
-        format: "Online Qualifiers + Offline Finals",
-        scoring: {
-          placement: "1st: 12pts, 2nd: 9pts, 3rd: 8pts...",
-          kills: "1 point per kill",
-        },
-      },
-      {
-        game: "PES",
-        registrationFee: "₹100 per individual",
-        teamSize: "1 member",
-        format: "League (26 players) + Knockout (Top 16)",
-        scoring: {
-          placement: "N/A",
-          league: "Win: 3pts, Draw: 1pt, Loss: 0pt",
-          tiebreakers: "Goal Difference, Goals Scored, H2H",
-        },
-      },
-      {
-        game: "BGMI",
-        registrationFee: "₹200 per team",
-        teamSize: "4 members",
-        format: "3 Days, 4 matches per day",
-        scoring: {
-          placement: "1st: 15pts, 2nd: 12pts, 3rd: 10pts...",
-          kills: "1 point per kill",
-        },
-      },
-    ],
+• Free Fire
+  - Choose Squad (4 players) or Duo format
+  - Online qualifiers leading to finals
+  - Squad prize pool: First ₹3,000, Second ₹1,500
+  - Duo prize pool: First ₹1,500, Second ₹500
+
+• BGMI (Squad Tournament)
+  - 12 intense matches over 3 days
+  - Point-based scoring system
+  - Prize pool: First ₹3,000, Second ₹1,000
+
+• PES eFootball (Solo)
+  - League stage followed by knockouts
+  - Competitive matches with standard rules
+  - Prize pool: First ₹1,000, Second ₹500`,
+
     rules: [
-      "Players must use registered accounts only",
-      "No hacks, mods, or external software allowed",
-      "Stable internet connection required",
-      "Teams must join custom rooms within 5 minutes",
-      "No refunds under any circumstances",
-      "Fair play and sportsmanship mandatory",
-      "ID card mandatory for offline rounds",
-      "Winners must attend prize distribution",
+      // VALORANT Rules
+      "VALORANT teams must maintain same 5-player roster throughout",
+      "All players must use registered Riot IDs",
+      "Teams must join lobby 10 minutes before match time",
+      "Matches played on Mumbai server only",
+      "Standard competitive map pool and rules",
+
+      // General Gaming Rules
+      "Valid game accounts required for all titles",
+      "No cheating, hacks, or external tools allowed",
+      "Stable internet connection mandatory",
+      "Prompt attendance for all matches",
+      "Team composition cannot be changed mid-tournament",
+      "Decisions of admins are final",
+      "Violations result in immediate disqualification",
     ],
+
     guidelines: [
-      "Arrive on time for matches",
-      "Use registered in-game IDs only",
-      "Report technical issues immediately",
-      "Follow game-specific rules strictly",
-      "Maintain professional conduct",
-      "Bring college ID for verification",
-      "Offline finals at specified venue only",
-      "Prize distribution during Valedictory",
-    ],
-    judgingCriteria: [
-      {
-        criterion: "Performance",
-        weightage: "40%",
-        description: "Based on placement and kills/goals",
-      },
-      {
-        criterion: "Fair Play",
-        weightage: "30%",
-        description: "Adherence to rules and sportsmanship",
-      },
-      {
-        criterion: "Team Coordination",
-        weightage: "30%",
-        description: "Strategy and teamwork effectiveness",
-      },
+      // Technical Guidelines
+      "Test your game and setup before tournament day",
+      "Keep your game client updated",
+      "Ensure stable internet connection (minimum 10 Mbps)",
+      "Use ethernet connection when possible",
+
+      // Tournament Guidelines
+      "Join the official Discord server for updates",
+      "Check tournament brackets 24 hours before start",
+      "Report issues to admins immediately",
+      "Save and submit match screenshots as proof",
+      "Follow standard competitive settings",
+      "Maintain professional conduct throughout",
+
+      // Participation Guidelines
+      "Keep college ID ready for verification",
+      "Winners must be present for prize distribution",
+      "Follow all game-specific tournament rules",
     ],
     prizes: {
-      "Free Fire Squad": {
-        First: "₹3,000",
-        Second: "₹1,500",
-      },
-      "Free Fire Duo": {
-        First: "₹1,500",
-        Second: "₹500",
-      },
-      "BGMI Squad": {
-        First: "₹3,000",
-        Second: "₹1,000",
-      },
-      "PES Solo": {
-        First: "₹1,000",
-        Second: "₹500",
-      },
+      "Free Fire Squad": { First: "₹3,000", Second: "₹1,500" },
+      "Free Fire Duo": { First: "₹1,500", Second: "₹500" },
+      "BGMI Squad": { First: "₹3,000", Second: "₹1,000" },
+      "PES Solo": { First: "₹1,000", Second: "₹500" },
+      VALORANT: { First: "₹2,500", Second: "₹1,500" },
     },
     coordinators: [
       {
@@ -685,8 +635,55 @@ The event will conclude with winners announced during the Valedictory Ceremony.`
       },
     ],
     registrationFee: "Varies by game and team size",
-    teamSize: "1-4 members (game dependent)",
+    teamSize: "1-5 members (game dependent)",
     status: "upcoming",
+    image: "/events/pixel-showdown.jpg",
+    date: "March 21, 2025",
+    time: "11:00 AM - 4:00 PM",
+    venue: "Room-PX003, Ground Floor, Computer Science Extension Block",
+    gameDetails: [
+      {
+        game: "valorant",
+        registrationFee: "₹250 per team",
+        teamSize: "5 members (fixed)",
+        format: "Online Single Elimination",
+        scoring: {
+          placement: "Single elimination bracket, Best-of-3 matches",
+          tiebreakers: "Standard VALORANT overtime rules",
+        },
+      },
+      {
+        game: "Free Fire",
+        registrationFee: "Squad: ₹200 per team, Duo: ₹100 per team",
+        teamSize: "Squad: 4 members, Duo: 2 members",
+        format: "Online Qualifiers + Offline Finals",
+        scoring: {
+          placement: "1st: 12pts, 2nd: 9pts, 3rd: 8pts...",
+          kills: "1 point per kill",
+        },
+      },
+      {
+        game: "BGMI",
+        registrationFee: "₹200 per team",
+        teamSize: "4 members",
+        format: "3 Days, 4 matches per day",
+        scoring: {
+          placement: "1st: 15pts, 2nd: 12pts, 3rd: 10pts...",
+          kills: "1 point per kill",
+        },
+      },
+      {
+        game: "PES",
+        registrationFee: "₹100 per individual",
+        teamSize: "1 member",
+        format: "League (26 players) + Knockout (Top 16)",
+        scoring: {
+          placement: "N/A",
+          league: "Win: 3pts, Draw: 1pt, Loss: 0pt",
+          tiebreakers: "Goal Difference, Goals Scored, H2H",
+        },
+      },
+    ],
   },
 ];
 
