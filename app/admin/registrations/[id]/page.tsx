@@ -25,22 +25,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { events } from "@/data/events";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
-import Image from "next/image";
 
 const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
+  show: { opacity: 1, y: 0 },
 };
 
 export default function RegistrationDetails() {
@@ -50,7 +48,6 @@ export default function RegistrationDetails() {
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [signedUrl, setSignedUrl] = useState<string>('');
 
   const formatYear = (year: string) => {
     const yearMap: { [key: string]: string } = {
@@ -67,10 +64,12 @@ export default function RegistrationDetails() {
       console.log("Fetching registration data for ID:", params.id);
       const { data, error } = await supabase
         .from("registrations")
-        .select(`
+        .select(
+          `
           *,
           team_members!team_members_registration_id_fkey (*)
-        `)
+        `
+        )
         .eq("id", params.id)
         .single();
 
@@ -99,48 +98,12 @@ export default function RegistrationDetails() {
     fetchRegistration();
   }, [fetchRegistration]);
 
-  const getSignedUrl = async (fileName: string) => {
-    try {
-      if (!fileName) return null;
-      
-      const { data, error } = await supabase
-        .storage
-        .from('payment-proofs')
-        .createSignedUrl(fileName, 60); // 60 seconds expiry
-
-      if (error) {
-        console.error('Error getting signed URL:', error);
-        return null;
-      }
-
-      return data.signedUrl;
-    } catch (error) {
-      console.error('Error in getSignedUrl:', error);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    if (registration?.payment_proof) {
-      const fetchSignedUrl = async () => {
-        if (typeof registration.payment_proof === 'string') {
-          const url = await getSignedUrl(registration.payment_proof);
-          if (url) {
-            setSignedUrl(url);
-          }
-        }
-      };
-      
-      fetchSignedUrl();
-    }
-  }, [registration?.payment_proof]);
-
   const handleStatusUpdate = async (status: "approved" | "rejected") => {
     if (!registration?.team_members) return;
-    
+
     try {
       setUpdating(true);
-      
+
       const { error: updateError } = await supabase
         .from("registrations")
         .update({
@@ -152,7 +115,7 @@ export default function RegistrationDetails() {
       if (updateError) throw updateError;
 
       // Send emails based on status
-      const emailResult = await (status === "approved" 
+      const emailResult = await (status === "approved"
         ? sendApprovalEmails(
             registration.team_members,
             registration.id,
@@ -208,7 +171,7 @@ export default function RegistrationDetails() {
     try {
       setUpdating(true);
       console.log("Starting email resend process...");
-      
+
       const emailResult = await sendApprovalEmails(
         registration.team_members,
         registration.id,
@@ -222,8 +185,8 @@ export default function RegistrationDetails() {
 
       if (!emailResult.success) {
         throw new Error(
-          emailResult.error || 
-          `Failed to send emails: ${JSON.stringify(emailResult.details)}`
+          emailResult.error ||
+            `Failed to send emails: ${JSON.stringify(emailResult.details)}`
         );
       }
 
@@ -236,9 +199,10 @@ export default function RegistrationDetails() {
       console.error("Error resending emails:", error);
       toast({
         title: "Error",
-        description: error instanceof Error 
-          ? error.message 
-          : "Failed to send approval emails",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to send approval emails",
         variant: "destructive",
       });
     } finally {
@@ -261,7 +225,9 @@ export default function RegistrationDetails() {
     return (
       <AdminLayout>
         <div className="p-6 text-center">
-          <h2 className="text-xl font-medium text-gray-400">Registration not found</h2>
+          <h2 className="text-xl font-medium text-gray-400">
+            Registration not found
+          </h2>
           <Button
             variant="ghost"
             onClick={() => router.back()}
@@ -294,28 +260,38 @@ export default function RegistrationDetails() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Registrations
             </Button>
-            <h1 className="text-2xl font-bold text-white">Registration Details</h1>
+            <h1 className="text-2xl font-bold text-white">
+              Registration Details
+            </h1>
           </div>
-          
+
           {/* Action Buttons */}
           {registration.status === "pending" && (
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 onClick={() => handleStatusUpdate("rejected")}
                 variant="destructive"
                 disabled={updating}
-                className="bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
+                className="w-full sm:w-auto bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
               >
-                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4 mr-2" />}
+                {updating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <X className="w-4 h-4 mr-2" />
+                )}
                 Reject
               </Button>
               <Button
                 onClick={() => handleStatusUpdate("approved")}
                 variant="default"
                 disabled={updating}
-                className="bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
+                className="w-full sm:w-auto bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
               >
-                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 mr-2" />}
+                {updating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
                 Approve
               </Button>
             </div>
@@ -323,60 +299,48 @@ export default function RegistrationDetails() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {/* Team Information */}
-          <motion.div
-            variants={item}
-            className="lg:col-span-2 space-y-6"
-          >
+          <motion.div variants={item} className="space-y-4 sm:space-y-6">
             {/* Team Details */}
-            <div className="bg-white/5 rounded-xl p-6 space-y-4">
-              <h2 className="text-lg font-medium text-white">Team Information</h2>
-              
-              {/* Team Status */}
-              <div className="flex items-center justify-between">
+            <div className="bg-white/5 rounded-xl p-4 sm:p-6 space-y-4">
+              {/* Team Status - Make it stack on mobile */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-purple-400" />
                   <span className="text-white font-medium">
                     {registration.team_members[0]?.name}
-                    {registration.team_size > 1 && 
-                      <span className="text-gray-400 ml-2">
-                        +{registration.team_size - 1} members
-                      </span>
-                    }
+                    <span className="text-gray-400 ml-2">
+                      +{registration.team_size - 1} members
+                    </span>
                   </span>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium
-                  ${registration.status === "approved"
-                    ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                    : registration.status === "rejected"
-                    ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                    : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
+                <span
+                  className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-medium
+                  ${
+                    registration.status === "approved"
+                      ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                      : registration.status === "rejected"
+                        ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                        : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
                   }`}
                 >
-                  {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                  {registration.status.charAt(0).toUpperCase() +
+                    registration.status.slice(1)}
                 </span>
               </div>
 
-              {/* Team Members List */}
-              <div className="space-y-4 mt-6">
-                {registration.team_members.map((member, index) => (
-                  <div 
+              {/* Team Members List - Adjust padding and spacing */}
+              <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                {registration.team_members.map((member) => (
+                  <div
                     key={member.id}
-                    className="p-4 rounded-lg bg-white/[0.02] space-y-3"
+                    className="p-3 sm:p-4 rounded-lg bg-white/[0.02] space-y-3"
                   >
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-white font-medium">
-                        {member.name}
-                        {index === 0 && 
-                          <span className="text-xs text-purple-400 ml-2">Team Leader</span>
-                        }
-                      </h3>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 text-sm">
                       <div className="flex items-center gap-2 text-gray-400">
                         <Mail className="w-4 h-4 text-blue-400" />
-                        {member.email}
+                        <span className="truncate">{member.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
                         <Phone className="w-4 h-4 text-green-400" />
@@ -391,38 +355,45 @@ export default function RegistrationDetails() {
                         {formatYear(member.year)} Year
                       </div>
                     </div>
-                    
-                    {registration.selected_events.includes("pixel-showdown") && member.player_id && (
-                      <div className="flex items-center gap-2 mt-2">
-                        <Gamepad2 className="w-4 h-4 text-purple-400" />
-                        <span className="text-gray-400">
-                          {registration.game_details?.game === "bgmi" 
-                            ? "BGMI ID: "
-                            : registration.game_details?.game === "freefire"
-                              ? "Free Fire ID: "
-                              : "PES Username: "}
-                        </span>
-                        <span className="text-white font-medium">{member.player_id}</span>
-                      </div>
-                    )}
+
+                    {registration.selected_events.includes("pixel-showdown") &&
+                      member.player_id && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <Gamepad2 className="w-4 h-4 text-purple-400" />
+                          <span className="text-gray-400">
+                            {registration.game_details?.game === "bgmi"
+                              ? "BGMI ID: "
+                              : registration.game_details?.game === "freefire"
+                                ? "Free Fire ID: "
+                                : "PES Username: "}
+                          </span>
+                          <span className="text-white font-medium">
+                            {member.player_id}
+                          </span>
+                        </div>
+                      )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Selected Events */}
-            <div className="bg-white/5 rounded-xl p-6">
-              <h2 className="text-lg font-medium text-white mb-4">Selected Events</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Selected Events - Adjust grid for mobile */}
+            <div className="bg-white/5 rounded-xl p-4 sm:p-6">
+              <h2 className="text-lg font-medium text-white mb-3 sm:mb-4">
+                Selected Events
+              </h2>
+              <div className="grid grid-cols-1 gap-2 sm:gap-3">
                 {registration.selected_events.map((eventId) => {
-                  const event = events.find(e => e.id === eventId);
+                  const event = events.find((e) => e.id === eventId);
                   return (
                     <div
                       key={eventId}
                       className="p-3 rounded-lg bg-white/[0.02] flex items-center gap-2"
                     >
                       <Calendar className="w-4 h-4 text-purple-400" />
-                      <span className="text-gray-400">{event?.title || eventId}</span>
+                      <span className="text-gray-400">
+                        {event?.title || eventId}
+                      </span>
                     </div>
                   );
                 })}
@@ -430,101 +401,73 @@ export default function RegistrationDetails() {
             </div>
           </motion.div>
 
-          {/* Side Panel */}
-          <motion.div variants={item} className="space-y-6">
+          {/* Side Panel - Full width on mobile */}
+          <motion.div variants={item} className="space-y-4 sm:space-y-6">
             {/* Payment Information */}
-            <div className="bg-white/5 rounded-xl p-6">
-              <h2 className="text-lg font-medium text-white mb-4">Payment Details</h2>
-              <div className="space-y-3">
+            <div className="bg-white/5 rounded-xl p-4 sm:p-6">
+              <h2 className="text-lg font-medium text-white mb-3 sm:mb-4">
+                Payment Details
+              </h2>
+              <div className="space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                   <span className="text-gray-400">Amount</span>
-                  <span className="text-white font-medium">₹{registration.total_amount}</span>
+                  <span className="text-white font-medium">
+                    ₹{registration.total_amount}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                   <span className="text-gray-400">Payment Status</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium
-                    ${registration.payment_status === "completed"
-                      ? "bg-green-500/10 text-green-400"
-                      : "bg-yellow-500/10 text-yellow-400"
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium
+                    ${
+                      registration.payment_status === "completed"
+                        ? "bg-green-500/10 text-green-400"
+                        : "bg-yellow-500/10 text-yellow-400"
                     }`}
                   >
-                    {registration.payment_status.charAt(0).toUpperCase() + 
+                    {registration.payment_status.charAt(0).toUpperCase() +
                       registration.payment_status.slice(1)}
                   </span>
                 </div>
                 {registration.transaction_id && (
                   <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                     <span className="text-gray-400">Transaction ID</span>
-                    <span className="text-white font-medium">{registration.transaction_id}</span>
+                    <span className="text-white font-medium">
+                      {registration.transaction_id}
+                    </span>
                   </div>
                 )}
                 {registration.payment_proof && (
                   <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                     <span className="text-gray-400">Payment Proof</span>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          className="text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
-                        >
-                          View Proof
-                          <ExternalLink className="w-4 h-4 ml-2" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl bg-gray-900/95 border-white/10">
-                        <DialogHeader>
-                          <DialogTitle className="text-lg font-medium text-white">
-                            Payment Proof
-                          </DialogTitle>
-                          <DialogDescription className="text-sm text-gray-400">
-                            View the payment proof uploaded by the participant
-                          </DialogDescription>
-                        </DialogHeader>
-                        
-                        <div className="relative w-full max-h-[80vh] mt-2">
-                          {signedUrl ? (
-                            <Image
-                              src={signedUrl}
-                              alt="Payment Proof"
-                              width={800}
-                              height={1000}
-                              className="w-full h-full object-contain rounded-lg"
-                              unoptimized
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-48">
-                              <span className="text-gray-400">Loading payment proof...</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {signedUrl && (
-                          <div className="mt-4 flex justify-end">
-                            <a
-                              href={signedUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-2"
-                            >
-                              Open in New Tab
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        router.push(
+                          `/admin/registrations/${params.id}/payment-proof`
+                        )
+                      }
+                      className="text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
+                    >
+                      View Proof
+                      <ExternalLink className="w-4 h-4 ml-2" />
+                    </Button>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Registration Info */}
-            <div className="bg-white/5 rounded-xl p-6">
-              <h2 className="text-lg font-medium text-white mb-4">Registration Info</h2>
-              <div className="space-y-3">
+            <div className="bg-white/5 rounded-xl p-4 sm:p-6">
+              <h2 className="text-lg font-medium text-white mb-3 sm:mb-4">
+                Registration Info
+              </h2>
+              <div className="space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                   <span className="text-gray-400">Team ID</span>
-                  <span className="text-white font-medium">{registration.team_id}</span>
+                  <span className="text-white font-medium">
+                    {registration.team_id}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                   <span className="text-gray-400">Registered On</span>
