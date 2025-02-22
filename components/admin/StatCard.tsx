@@ -6,6 +6,7 @@ interface StatCardProps {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   loading?: boolean;
+  subtitle?: string;
 }
 
 export function StatCardSkeleton() {
@@ -28,6 +29,7 @@ export function StatCard({
   icon: Icon,
   color,
   loading,
+  subtitle,
 }: StatCardProps) {
   if (loading) return <StatCardSkeleton />;
 
@@ -38,9 +40,10 @@ export function StatCard({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <p className="text-gray-400 text-sm truncate">{title}</p>
-            <p className="text-xl lg:text-2xl font-bold text-white mt-1">
-              {value}
-            </p>
+            <div className="mt-1">
+              <div className="text-2xl font-semibold">{value}</div>
+              {subtitle && <div className="text-sm text-gray-400">{subtitle}</div>}
+            </div>
           </div>
           <div className={`p-3 rounded-lg bg-white/5 flex-shrink-0 ${color}`}>
             <Icon className="w-5 h-5" />

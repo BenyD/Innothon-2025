@@ -45,16 +45,18 @@ export default function AdminDashboard() {
       const [registrationsData, messagesData] = await Promise.all([
         supabase
           .from("registrations")
-          .select(`
+          .select(
+            `
             *,
             team_members!team_members_registration_id_fkey (*)
-          `)
-          .order('created_at', { ascending: false }),
+          `
+          )
+          .order("created_at", { ascending: false }),
         supabase
           .from("contact_messages")
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5)
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(5),
       ]);
 
       if (registrationsData.error) throw registrationsData.error;
@@ -74,10 +76,21 @@ export default function AdminDashboard() {
   }, [fetchData]);
 
   // Calculate statistics
-  const totalRevenue = registrations.reduce((acc, reg) => acc + reg.total_amount, 0);
-  const pendingRegistrations = registrations.filter(reg => reg.status === "pending").length;
-  const totalParticipants = registrations.reduce((acc, reg) => acc + reg.team_size, 0);
-  const unreadMessages = recentMessages.filter(msg => !msg.read).length;
+  const totalRevenue = registrations.reduce(
+    (acc, reg) => acc + reg.total_amount,
+    0
+  );
+  const approvedRevenue = registrations
+    .filter((reg) => reg.status === "approved")
+    .reduce((acc, reg) => acc + reg.total_amount, 0);
+  const pendingRegistrations = registrations.filter(
+    (reg) => reg.status === "pending"
+  ).length;
+  const totalParticipants = registrations.reduce(
+    (acc, reg) => acc + reg.team_size,
+    0
+  );
+  const unreadMessages = recentMessages.filter((msg) => !msg.read).length;
 
   return (
     <AdminLayout>
@@ -102,6 +115,7 @@ export default function AdminDashboard() {
           <StatCard
             title="Total Revenue"
             value={`₹${totalRevenue}`}
+            subtitle={`₹${approvedRevenue} approved`}
             icon={IndianRupee}
             color="text-green-400"
             loading={loading}
@@ -137,7 +151,9 @@ export default function AdminDashboard() {
             className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-white">Recent Registrations</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Recent Registrations
+              </h2>
               <Link
                 href="/admin/registrations"
                 className="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition-colors"
@@ -160,25 +176,28 @@ export default function AdminDashboard() {
                       <div>
                         <p className="text-white font-medium">
                           {registration.team_members[0]?.name}
-                          {registration.team_size > 1 && 
+                          {registration.team_size > 1 && (
                             <span className="text-gray-400 text-sm ml-1">
                               +{registration.team_size - 1} others
                             </span>
-                          }
+                          )}
                         </p>
                         <p className="text-sm text-gray-400">
                           {registration.team_members[0]?.college}
                         </p>
                       </div>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      registration.status === "approved"
-                        ? "bg-green-500/10 text-green-400"
-                        : registration.status === "rejected"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-yellow-500/10 text-yellow-400"
-                    }`}>
-                      {registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        registration.status === "approved"
+                          ? "bg-green-500/10 text-green-400"
+                          : registration.status === "rejected"
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-yellow-500/10 text-yellow-400"
+                      }`}
+                    >
+                      {registration.status.charAt(0).toUpperCase() +
+                        registration.status.slice(1)}
                     </span>
                   </div>
                 </Link>
@@ -192,7 +211,9 @@ export default function AdminDashboard() {
             className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-6"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-white">Recent Messages</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Recent Messages
+              </h2>
               <Link
                 href="/admin/messages"
                 className="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition-colors"
@@ -214,7 +235,9 @@ export default function AdminDashboard() {
                       <MessageSquare className="w-5 h-5 text-purple-400" />
                       <div>
                         <p className="text-white font-medium">{message.name}</p>
-                        <p className="text-sm text-gray-400">{message.message.slice(0, 50)}...</p>
+                        <p className="text-sm text-gray-400">
+                          {message.message.slice(0, 50)}...
+                        </p>
                       </div>
                     </div>
                     {!message.read && (

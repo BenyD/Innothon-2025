@@ -6,20 +6,148 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import {
   LogOut,
-  MessageSquare,
-  User,
   LayoutDashboard,
-  Home,
+  Users,
+  Gamepad2,
+  Calendar,
+  Settings,
+  BarChart3,
+  MessagesSquare,
+  Bell,
   Menu,
   X,
-  Users,
-  Calendar,
+  User,
+  Home,
+  IndianRupee,
 } from "lucide-react";
 import Image from "next/image";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
+
+// Organize nav items into categories
+const navItems = [
+  {
+    category: "Overview",
+    items: [
+      {
+        title: "Dashboard",
+        href: "/admin",
+        icon: LayoutDashboard,
+        color: "text-blue-400",
+        bgColor: "bg-blue-400/10",
+      },
+      {
+        title: "Analytics",
+        href: "/admin/analytics",
+        icon: BarChart3,
+        color: "text-purple-400",
+        bgColor: "bg-purple-400/10",
+      },
+    ],
+  },
+  {
+    category: "Events",
+    items: [
+      {
+        title: "Event Overview",
+        href: "/admin/event-overview",
+        icon: Calendar,
+        color: "text-green-400",
+        bgColor: "bg-green-400/10",
+      },
+      {
+        title: "Gaming Overview",
+        href: "/admin/gaming-overview",
+        icon: Gamepad2,
+        color: "text-pink-400",
+        bgColor: "bg-pink-400/10",
+      },
+    ],
+  },
+  {
+    category: "Registrations",
+    items: [
+      {
+        title: "All Registrations",
+        href: "/admin/registrations",
+        icon: Users,
+        color: "text-yellow-400",
+        bgColor: "bg-yellow-400/10",
+      },
+      {
+        title: "Notifications",
+        href: "/admin/notifications",
+        icon: Bell,
+        color: "text-red-400",
+        bgColor: "bg-red-400/10",
+      },
+    ],
+  },
+  {
+    category: "Support",
+    items: [
+      {
+        title: "Messages",
+        href: "/admin/messages",
+        icon: MessagesSquare,
+        color: "text-cyan-400",
+        bgColor: "bg-cyan-400/10",
+      },
+      {
+        title: "Expense Tracker",
+        href: "/admin/expenses",
+        icon: IndianRupee,
+        color: "text-teal-400",
+        bgColor: "bg-teal-400/10",
+      },
+      {
+        title: "Settings",
+        href: "/admin/settings",
+        icon: Settings,
+        color: "text-orange-400",
+        bgColor: "bg-orange-400/10",
+      },
+    ],
+  },
+];
+
+// Update the sidebar rendering in both mobile and desktop views
+const SidebarContent = ({ pathname }: { pathname: string }) => (
+  <div className="space-y-6">
+    {navItems.map((category) => (
+      <div key={category.category} className="space-y-2">
+        <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          {category.category}
+        </h3>
+        {category.items.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-white/10"
+                  : "hover:bg-white/5"
+              }`}
+            >
+              <div className={`p-1.5 rounded-md ${isActive ? item.bgColor : "bg-transparent group-hover:" + item.bgColor}`}>
+                <Icon className={`w-4 h-4 ${item.color}`} />
+              </div>
+              <span className={`text-sm ${isActive ? "text-white" : "text-gray-400 group-hover:text-white"}`}>
+                {item.title}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+);
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
@@ -87,13 +215,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     await supabase.auth.signOut();
     router.push("/admin/login");
   };
-
-  const navItems = [
-    { href: "/admin", title: "Overview", icon: LayoutDashboard },
-    { href: "/admin/registrations", title: "Registrations", icon: Users },
-    { href: "/admin/event-overview", title: "Events", icon: Calendar },
-    { href: "/admin/messages", title: "Messages", icon: MessageSquare },
-  ];
 
   if (loading) {
     return (
@@ -192,53 +313,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           } transition-transform duration-200 ease-in-out`}
         >
           <div className="pt-20 p-4">
-            <div className="space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-white/10 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.title}</span>
-                  </Link>
-                );
-              })}
-            </div>
+            <SidebarContent pathname={pathname} />
           </div>
         </div>
 
         {/* Desktop Sidebar */}
         <div className="hidden lg:block fixed left-0 w-64 h-[calc(100vh-4rem)] border-r border-white/10 bg-black/95 p-4">
-          <div className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-white/10 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.title}</span>
-                </Link>
-              );
-            })}
-          </div>
+          <SidebarContent pathname={pathname} />
         </div>
 
         {/* Main Content */}

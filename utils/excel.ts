@@ -3,7 +3,7 @@ import { events } from "@/data/events";
 import type { Registration } from "@/types/registration";
 
 interface GameDetails {
-  game: "bgmi" | "freefire" | "pes" | null;
+  game: "bgmi" | "freefire" | "pes" | "valorant" | null;
   format?: "duo" | "squad";
 }
 
@@ -25,20 +25,20 @@ export const exportToExcel = (data: ExcelRow[], filename: string) => {
     { wch: 15 }, // Leader Phone
     { wch: 30 }, // Leader College
     { wch: 20 }, // Leader Department
-    { wch: 8 },  // Leader Year
+    { wch: 8 }, // Leader Year
     { wch: 10 }, // Leader Gender
     { wch: 25 }, // Member 2
     { wch: 30 }, // Member 2 Email
     { wch: 15 }, // Member 2 Phone
     { wch: 30 }, // Member 2 College
     { wch: 20 }, // Member 2 Department
-    { wch: 8 },  // Member 2 Year
+    { wch: 8 }, // Member 2 Year
     { wch: 25 }, // Member 3
     { wch: 30 }, // Member 3 Email
     { wch: 15 }, // Member 3 Phone
     { wch: 30 }, // Member 3 College
     { wch: 20 }, // Member 3 Department
-    { wch: 8 },  // Member 3 Year
+    { wch: 8 }, // Member 3 Year
     { wch: 40 }, // Selected Events
     { wch: 25 }, // Game Details
   ];
@@ -104,7 +104,7 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     "Payment Status": registration.payment_status || "Pending",
     "Transaction ID": registration.transaction_id || "Pending",
     "Payment Date": formatDate(registration.created_at), // Use registration date as payment date
-    
+
     // Leader Details
     "Leader Name": registration.team_members[0]?.name || "N/A",
     "Leader Email": registration.team_members[0]?.email || "N/A",
@@ -113,7 +113,7 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     "Leader Department": registration.team_members[0]?.department || "N/A",
     "Leader Year": registration.team_members[0]?.year || "N/A",
     "Leader Gender": registration.team_members[0]?.gender || "N/A",
-    
+
     // Member 2 Details
     "Member 2": registration.team_members[1]?.name || "-",
     "Member 2 Email": registration.team_members[1]?.email || "-",
@@ -121,7 +121,7 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     "Member 2 College": registration.team_members[1]?.college || "-",
     "Member 2 Department": registration.team_members[1]?.department || "-",
     "Member 2 Year": registration.team_members[1]?.year || "-",
-    
+
     // Member 3 Details
     "Member 3": registration.team_members[2]?.name || "-",
     "Member 3 Email": registration.team_members[2]?.email || "-",
@@ -129,7 +129,7 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     "Member 3 College": registration.team_members[2]?.college || "-",
     "Member 3 Department": registration.team_members[2]?.department || "-",
     "Member 3 Year": registration.team_members[2]?.year || "-",
-    
+
     "Selected Events": Array.isArray(registration.selected_events)
       ? getEventTitles(registration.selected_events)
       : "N/A",
