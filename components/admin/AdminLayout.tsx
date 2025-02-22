@@ -13,7 +13,6 @@ import {
   Settings,
   BarChart3,
   MessagesSquare,
-  Bell,
   Menu,
   X,
   User,
