@@ -16,6 +16,7 @@ import { Plus, Minus, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { uploadExpenseBill } from "@/lib/upload-helper";
+import { useRole } from "@/hooks/useRole";
 
 interface AddExpenseModalProps {
   open: boolean;
@@ -42,6 +43,7 @@ export function AddExpenseModal({
   });
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { role } = useRole();
 
   const handleAddItem = () => {
     setFormData((prev) => ({
@@ -61,6 +63,14 @@ export function AddExpenseModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (role !== 'super-admin' && role !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to add expenses",
+        variant: "destructive"
+      });
+      return;
+    }
     setLoading(true);
 
     try {

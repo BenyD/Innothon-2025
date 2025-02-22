@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { events } from "@/data/events";
 import { motion } from "framer-motion";
+import { RoleGuard } from "@/components/admin/RoleGuard";
 
 const container = {
   hidden: { opacity: 0 },
@@ -266,7 +267,14 @@ export default function RegistrationDetails() {
           </div>
 
           {/* Action Buttons */}
-          {registration.status === "pending" && (
+          <RoleGuard 
+            allowedRoles={['super-admin', 'admin']}
+            fallback={
+              <div className="text-sm text-gray-400">
+                You don&apos;t have permission to approve/reject registrations
+              </div>
+            }
+          >
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 onClick={() => handleStatusUpdate("rejected")}
@@ -295,7 +303,7 @@ export default function RegistrationDetails() {
                 Approve
               </Button>
             </div>
-          )}
+          </RoleGuard>
         </div>
 
         {/* Main Content Grid */}

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Settings } from "lucide-react";
+import { useRole } from "@/hooks/useRole";
 
 export default function Sidebar() {
+  const { role } = useRole();
   const pathname = usePathname();
 
   const navigation = [
@@ -19,6 +21,13 @@ export default function Sidebar() {
       href: "/admin/registrations",
       icon: Users,
     },
+    ...(role === "super-admin" ? [
+      {
+        name: "Settings",
+        href: "/admin/settings",
+        icon: Settings,
+      }
+    ] : [])
   ];
 
   return (

@@ -20,6 +20,7 @@ import {
   IndianRupee,
 } from "lucide-react";
 import Image from "next/image";
+import { useRole } from "@/hooks/useRole";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -137,9 +138,9 @@ const SidebarContent = ({ pathname }: { pathname: string }) => (
 );
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
+  const { role, loading } = useRole();
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{
     id: string;
     email: string | undefined;
@@ -164,8 +165,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       }
     } catch {
       router.push("/admin/login");
-    } finally {
-      setLoading(false);
     }
   }, [router]);
 
@@ -185,7 +184,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               }
             : null
         );
-        setLoading(false);
       }
     );
 
@@ -198,6 +196,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    // Redirect from settings if not super-admin
+    if (!loading && pathname?.includes('/admin/settings') && role !== 'super-admin') {
+      router.push('/admin');
+    }
+  }, [loading, role, pathname, router]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
@@ -209,6 +214,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     );
+  }
+
+  if (!role) {
+    router.push('/admin/login');
+    return null;
   }
 
   return (

@@ -10,6 +10,7 @@ import { ExpenseStats } from "@/components/admin/expenses/ExpenseStats";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Expense } from "@/types/expense";
+import { RoleGuard } from "@/components/admin/RoleGuard";
 
 export default function ExpenseTracker() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -52,13 +53,18 @@ export default function ExpenseTracker() {
               Track and manage event expenses
             </p>
           </div>
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="w-full sm:w-auto flex items-center gap-2 bg-gradient-to-r from-teal-400/10 to-emerald-400/10 hover:from-teal-400/20 hover:to-emerald-400/20 border border-teal-400/20"
+          <RoleGuard 
+            allowedRoles={['super-admin', 'admin']}
+            fallback={null}
           >
-            <Plus className="w-4 h-4" />
-            Add Expense
-          </Button>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto flex items-center gap-2 bg-gradient-to-r from-teal-400/10 to-emerald-400/10 hover:from-teal-400/20 hover:to-emerald-400/20 border border-teal-400/20"
+            >
+              <Plus className="w-4 h-4" />
+              Add Expense
+            </Button>
+          </RoleGuard>
         </div>
 
         {/* Stats Section */}

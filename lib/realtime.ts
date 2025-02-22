@@ -1,11 +1,11 @@
-import { supabase } from './supabase';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import { supabase } from "./supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 // Add specific type for payload and handler
 interface RealtimePayload {
   new: Record<string, unknown>;
   old: Record<string, unknown>;
-  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  eventType: "INSERT" | "UPDATE" | "DELETE";
   [key: string]: unknown;
 }
 
@@ -18,18 +18,13 @@ export function createRealtimeSubscription(
   return supabase
     .channel(`${table}_changes`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
+        event: "*",
+        schema: "public",
         table: table,
       },
       (payload) => onUpdate(payload as RealtimePayload)
     )
     .subscribe();
 }
-
-// Remove unused function since it's not being used
-// export const handleRealtimeUpdate = (payload: RealtimePayload) => {
-//   // ... rest of the code
-// }; 
