@@ -26,7 +26,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-// Organize nav items into categories
+// Reorganized nav items into categories
 const navItems = [
   {
     category: "Overview",
@@ -45,10 +45,17 @@ const navItems = [
         color: "text-purple-400",
         bgColor: "bg-purple-400/10",
       },
+      {
+        title: "Registrations",
+        href: "/admin/registrations",
+        icon: Users,
+        color: "text-yellow-400",
+        bgColor: "bg-yellow-400/10",
+      },
     ],
   },
   {
-    category: "Events",
+    category: "Event Management",
     items: [
       {
         title: "Event Overview",
@@ -64,29 +71,17 @@ const navItems = [
         color: "text-pink-400",
         bgColor: "bg-pink-400/10",
       },
-    ],
-  },
-  {
-    category: "Registrations",
-    items: [
       {
-        title: "All Registrations",
-        href: "/admin/registrations",
-        icon: Users,
-        color: "text-yellow-400",
-        bgColor: "bg-yellow-400/10",
-      },
-      {
-        title: "Notifications",
-        href: "/admin/notifications",
-        icon: Bell,
-        color: "text-red-400",
-        bgColor: "bg-red-400/10",
+        title: "Expense Tracker",
+        href: "/admin/expenses",
+        icon: IndianRupee,
+        color: "text-teal-400",
+        bgColor: "bg-teal-400/10",
       },
     ],
   },
   {
-    category: "Support",
+    category: "Communication",
     items: [
       {
         title: "Messages",
@@ -94,13 +89,6 @@ const navItems = [
         icon: MessagesSquare,
         color: "text-cyan-400",
         bgColor: "bg-cyan-400/10",
-      },
-      {
-        title: "Expense Tracker",
-        href: "/admin/expenses",
-        icon: IndianRupee,
-        color: "text-teal-400",
-        bgColor: "bg-teal-400/10",
       },
       {
         title: "Settings",
