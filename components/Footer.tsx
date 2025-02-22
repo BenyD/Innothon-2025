@@ -46,14 +46,20 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Navigation</h3>
             <ul className="space-y-3">
-              {["Home", "Events", "Rules", "Contact"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
+              {[
+                { name: "Home", href: "/" },
+                { name: "Events", href: "#events" },
+                { name: "Rules", href: "#rules" },
+                { name: "Contact", href: "#contact" },
+                { name: "Admin", href: "/admin" },
+              ].map((item) => (
+                <li key={item.name} className="flex items-center gap-2">
                   <span className="hidden sm:inline-block h-1.5 w-1.5 rounded-full bg-purple-400/70"></span>
                   <Link
-                    href={item === "Home" ? "/" : `#${item.toLowerCase()}`}
+                    href={item.href}
                     className="text-gray-400 hover:text-white transition-colors inline-block py-1"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 </li>
               ))}
@@ -66,11 +72,15 @@ const Footer = () => {
             <div className="space-y-4 sm:space-y-6">
               {/* Staff Contacts */}
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-purple-400">Staff Coordinators</h4>
+                <h4 className="text-sm font-medium text-purple-400">
+                  Staff Coordinators
+                </h4>
                 <ul className="space-y-3">
                   <li>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <span className="font-medium text-gray-300">Dr. J. Thangakumar</span>
+                      <span className="font-medium text-gray-300">
+                        Dr. J. Thangakumar
+                      </span>
                       <span className="text-gray-500 text-sm">(Convenor)</span>
                     </div>
                     <a
@@ -83,7 +93,9 @@ const Footer = () => {
                   </li>
                   <li>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <span className="font-medium text-gray-300">Ms. Praisy Evangelin A</span>
+                      <span className="font-medium text-gray-300">
+                        Ms. Praisy Evangelin A
+                      </span>
                     </div>
                     <a
                       href="tel:+919443961274"
@@ -98,11 +110,15 @@ const Footer = () => {
 
               {/* Student Contacts */}
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-purple-400">Student Coordinators</h4>
+                <h4 className="text-sm font-medium text-purple-400">
+                  Student Coordinators
+                </h4>
                 <ul className="space-y-3">
                   <li>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <span className="font-medium text-gray-300">Beny Dishon K</span>
+                      <span className="font-medium text-gray-300">
+                        Beny Dishon K
+                      </span>
                       <span className="text-gray-500 text-sm">(President)</span>
                     </div>
                     <a
@@ -115,8 +131,12 @@ const Footer = () => {
                   </li>
                   <li>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <span className="font-medium text-gray-300">M. Ashwini</span>
-                      <span className="text-gray-500 text-sm">(Vice President)</span>
+                      <span className="font-medium text-gray-300">
+                        M. Ashwini
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        (Vice President)
+                      </span>
                     </div>
                     <a
                       href="tel:+917739962694"
