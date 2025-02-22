@@ -47,7 +47,7 @@ export default function ExpenseTracker() {
         fallback={
           <div className="p-6 text-center">
             <h2 className="text-xl font-medium text-gray-400">
-              You don't have permission to view expenses
+              You don&apos;t have permission to view expenses
             </h2>
           </div>
         }
@@ -63,10 +63,7 @@ export default function ExpenseTracker() {
                 Track and manage event expenses
               </p>
             </div>
-            <RoleGuard 
-              allowedRoles={['super-admin', 'admin']}
-              fallback={null}
-            >
+            <RoleGuard allowedRoles={["super-admin", "admin"]} fallback={null}>
               <Button
                 onClick={() => setIsModalOpen(true)}
                 className="w-full sm:w-auto flex items-center gap-2 bg-gradient-to-r from-teal-400/10 to-emerald-400/10 hover:from-teal-400/20 hover:to-emerald-400/20 border border-teal-400/20"
