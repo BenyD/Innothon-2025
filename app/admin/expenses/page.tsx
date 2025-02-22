@@ -42,49 +42,60 @@ export default function ExpenseTracker() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
-        {/* Header Section - Improved mobile layout */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-400">
-              Expense Tracker
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">
-              Track and manage event expenses
-            </p>
+      <RoleGuard
+        allowedRoles={["super-admin", "admin"]}
+        fallback={
+          <div className="p-6 text-center">
+            <h2 className="text-xl font-medium text-gray-400">
+              You don't have permission to view expenses
+            </h2>
           </div>
-          <RoleGuard 
-            allowedRoles={['super-admin', 'admin']}
-            fallback={null}
-          >
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto flex items-center gap-2 bg-gradient-to-r from-teal-400/10 to-emerald-400/10 hover:from-teal-400/20 hover:to-emerald-400/20 border border-teal-400/20"
+        }
+      >
+        <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
+          {/* Header Section - Improved mobile layout */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-400">
+                Expense Tracker
+              </h1>
+              <p className="text-sm text-gray-400 mt-1">
+                Track and manage event expenses
+              </p>
+            </div>
+            <RoleGuard 
+              allowedRoles={['super-admin', 'admin']}
+              fallback={null}
             >
-              <Plus className="w-4 h-4" />
-              Add Expense
-            </Button>
-          </RoleGuard>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                className="w-full sm:w-auto flex items-center gap-2 bg-gradient-to-r from-teal-400/10 to-emerald-400/10 hover:from-teal-400/20 hover:to-emerald-400/20 border border-teal-400/20"
+              >
+                <Plus className="w-4 h-4" />
+                Add Expense
+              </Button>
+            </RoleGuard>
+          </div>
+
+          {/* Stats Section */}
+          <ExpenseStats expenses={expenses} />
+
+          {/* Expenses List */}
+          <div className="rounded-xl overflow-hidden">
+            <ExpenseList expenses={expenses} onUpdate={fetchExpenses} />
+          </div>
+
+          {/* Add Expense Modal */}
+          <AddExpenseModal
+            open={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSuccess={() => {
+              setIsModalOpen(false);
+              fetchExpenses();
+            }}
+          />
         </div>
-
-        {/* Stats Section */}
-        <ExpenseStats expenses={expenses} />
-
-        {/* Expenses List */}
-        <div className="rounded-xl overflow-hidden">
-          <ExpenseList expenses={expenses} onUpdate={fetchExpenses} />
-        </div>
-
-        {/* Add Expense Modal */}
-        <AddExpenseModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={() => {
-            setIsModalOpen(false);
-            fetchExpenses();
-          }}
-        />
-      </div>
+      </RoleGuard>
     </AdminLayout>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Settings, IndianRupee } from "lucide-react";
 import { useRole } from "@/hooks/useRole";
 
 export default function Sidebar() {
@@ -21,6 +21,13 @@ export default function Sidebar() {
       href: "/admin/registrations",
       icon: Users,
     },
+    ...(role === "super-admin" || role === "admin" ? [
+      {
+        name: "Expense Tracker",
+        href: "/admin/expenses",
+        icon: IndianRupee,
+      }
+    ] : []),
     ...(role === "super-admin" ? [
       {
         name: "Settings",

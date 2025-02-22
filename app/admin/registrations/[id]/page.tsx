@@ -267,8 +267,8 @@ export default function RegistrationDetails() {
           </div>
 
           {/* Action Buttons */}
-          <RoleGuard 
-            allowedRoles={['super-admin', 'admin']}
+          <RoleGuard
+            allowedRoles={["super-admin", "admin"]}
             fallback={
               <div className="text-sm text-gray-400">
                 You don&apos;t have permission to approve/reject registrations
