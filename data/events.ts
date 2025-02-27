@@ -547,18 +547,14 @@ export const events: Event[] = [
     id: "pixel-showdown",
     title: "Pixel Showdown",
     shortDescription:
-      "Multi-game tournament featuring VALORANT, Free Fire, BGMI, and PES",
-    fullDescription: `Join us for an action-packed gaming tournament featuring four competitive esports titles:
-
-• VALORANT (5v5 Tactical Shooter)
-  - Online tournament with Best-of-3 matches
-  - Single elimination bracket system
-  - Mumbai server, standard competitive maps
-  - Prize pool: First ₹2,500, Second ₹1,500
+      "Multi-game tournament featuring Free Fire, BGMI, and PES",
+    fullDescription: `Join us for an action-packed gaming tournament featuring three competitive esports titles:
 
 • Free Fire (Squad Tournament)
-  - 4 players per team
-  - Online qualifiers leading to finals
+  - Online Qualifiers (Battle Royale - Bermuda)
+  - Top 15-20 teams advance to Offline Finals
+  - Offline Finals: Clash Squad with Knockout Format
+  - Open to all college students
   - Prize pool: First ₹3,000, Second ₹1,500
 
 • BGMI (Squad Tournament)
@@ -572,13 +568,6 @@ export const events: Event[] = [
   - Prize pool: First ₹1,000, Second ₹500`,
 
     rules: [
-      // VALORANT Rules
-      "VALORANT teams must maintain same 5-player roster throughout",
-      "All players must use registered Riot IDs",
-      "Teams must join lobby 10 minutes before match time",
-      "Matches played on Mumbai server only",
-      "Standard competitive map pool and rules",
-
       // General Gaming Rules
       "Valid game accounts required for all titles",
       "No cheating, hacks, or external tools allowed",
@@ -587,6 +576,16 @@ export const events: Event[] = [
       "Team composition cannot be changed mid-tournament",
       "Decisions of admins are final",
       "Violations result in immediate disqualification",
+
+      // Free Fire Specific Rules
+      "No VPN usage allowed",
+      "PC players not allowed",
+      "Single player cannot participate in multiple teams",
+      "Teams must use only registered players",
+      "Custom lobbies hosted by tournament officials only",
+      "Must join custom room within 5 minutes of receiving ID/password",
+      "Late teams face disqualification",
+      "No refunds provided",
     ],
 
     guidelines: [
@@ -613,7 +612,6 @@ export const events: Event[] = [
       "Free Fire Squad": { First: "₹3,000", Second: "₹1,500" },
       "BGMI Squad": { First: "₹3,000", Second: "₹1,000" },
       "PES Solo": { First: "₹1,000", Second: "₹500" },
-      VALORANT: { First: "₹2,500", Second: "₹1,500" },
     },
     coordinators: [
       {
@@ -633,7 +631,7 @@ export const events: Event[] = [
       },
     ],
     registrationFee: "Varies by game and team size",
-    teamSize: "1-5 members (game dependent)",
+    teamSize: "1-4 members (game dependent)",
     status: "upcoming",
     image: "/events/pixel-showdown.jpg",
     date: "March 21, 2025",
@@ -641,23 +639,36 @@ export const events: Event[] = [
     venue: "Room-PX003, Ground Floor, Computer Science Extension Block",
     gameDetails: [
       {
-        game: "valorant",
-        registrationFee: "₹250 per team",
-        teamSize: "5 members (fixed)",
-        format: "Online Single Elimination",
-        scoring: {
-          placement: "Single elimination bracket, Best-of-3 matches",
-          tiebreakers: "Standard VALORANT overtime rules",
-        },
-      },
-      {
         game: "Free Fire",
         registrationFee: "₹200 per team",
         teamSize: "4 members",
-        format: "Online Qualifiers + Offline Finals",
+        format: "Online Qualifiers (BR) + Offline Finals (CS)",
         scoring: {
-          placement: "1st: 12pts, 2nd: 9pts, 3rd: 8pts...",
+          placement:
+            "1st: 12pts, 2nd: 9pts, 3rd: 8pts, 4th: 7pts, 5th: 6pts, 6th: 5pts, 7th: 4pts, 8th: 3pts, 9th: 2pts, 10th: 1pt",
           kills: "1 point per kill",
+        },
+        rules: {
+          qualifiers: [
+            "Battle Royale mode on Bermuda map",
+            "Online matches can be played from anywhere",
+            "Top 15-20 teams qualify for finals (based on registration)",
+            "No VPN usage allowed",
+            "PC players not allowed",
+            "Gun property remains odd in BR mode",
+            "Full map matches will be BR-Ranked",
+          ],
+          finals: [
+            "Offline matches at Hindustan University (21.3.25)",
+            "Clash Squad mode with Knockout format",
+            "Character skills and gun property disabled in CS mode",
+            "One AWM per team in Clash Squad",
+            "No throwables or double vectors in CS",
+            "Roof climbing and gloo wall breaking allowed",
+            "Gun property remains odd in CS mode",
+            "Unlimited ammo in CS mode",
+            "Teams must join custom room within 5 minutes",
+          ],
         },
       },
       {

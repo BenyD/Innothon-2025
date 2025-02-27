@@ -49,5 +49,9 @@ export interface Event {
       league?: string;
       tiebreakers?: string;
     };
+    rules?: {
+      qualifiers?: string[];
+      finals?: string[];
+    };
   }[];
-} 
+}
