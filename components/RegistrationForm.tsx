@@ -134,7 +134,7 @@ const RegistrationForm = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [pixelShowdownGame, setPixelShowdownGame] = useState<{
     game: "bgmi" | "freefire" | "pes" | "valorant" | null;
-    format?: "duo" | "squad";
+    format?: "squad";
   }>();
 
   const calculateTotal = () => {
@@ -150,7 +150,7 @@ const RegistrationForm = () => {
         case "pes":
           return 100; // 100 per individual
         case "freefire":
-          return pixelShowdownGame.format === "squad" ? 200 : 100; // 200 for squad, 100 for duo
+          return 200; // 200 for squad
         case "valorant":
           return 250; // 250 per team
         default:
@@ -171,21 +171,8 @@ const RegistrationForm = () => {
         return;
       }
       if (
-        pixelShowdownGame?.game === "freefire" &&
-        pixelShowdownGame.format === "duo" &&
-        size > 2
-      ) {
-        toast({
-          title: "Team Size Error",
-          description: "Free Fire Duo allows maximum 2 participants",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (
         (pixelShowdownGame?.game === "bgmi" ||
-          (pixelShowdownGame?.game === "freefire" &&
-            pixelShowdownGame.format === "squad")) &&
+          pixelShowdownGame?.game === "freefire") &&
         size > 4
       ) {
         toast({
@@ -366,22 +353,17 @@ const RegistrationForm = () => {
           });
           return;
         }
-        if (
-          pixelShowdownGame?.game === "freefire" &&
-          pixelShowdownGame.format === "duo" &&
-          teamSize !== 2
-        ) {
+        if (pixelShowdownGame?.game === "freefire" && teamSize !== 2) {
           toast({
             title: "Team Size Error",
-            description: "Free Fire Duo requires exactly 2 participants",
+            description: "Free Fire requires exactly 2 participants",
             variant: "destructive",
           });
           return;
         }
         if (
           (pixelShowdownGame?.game === "bgmi" ||
-            (pixelShowdownGame?.game === "freefire" &&
-              pixelShowdownGame.format === "squad")) &&
+            pixelShowdownGame?.game === "freefire") &&
           teamSize !== 4
         ) {
           toast({
@@ -741,13 +723,12 @@ const RegistrationForm = () => {
                                 ]);
                               }}
                               className={`w-full p-4 rounded-xl border text-center transition-all ${
-                                pixelShowdownGame?.game === "freefire" &&
-                                pixelShowdownGame.format === "squad"
+                                pixelShowdownGame?.game === "freefire"
                                   ? "bg-white/10 border-purple-500 text-white"
                                   : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
                               }`}
                             >
-                              <span className="text-lg">Free Fire Squad</span>
+                              <span className="text-lg">Free Fire</span>
                               <br />
                               <span className="text-sm">
                                 Squad (4 players required)
@@ -755,38 +736,6 @@ const RegistrationForm = () => {
                               <br />
                               <span className="text-xs text-gray-400">
                                 ₹200 per team
-                              </span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPixelShowdownGame({
-                                  game: "freefire",
-                                  format: "duo",
-                                });
-                                setTeamSize(2);
-                                setTeamMembers([
-                                  ...Array(2)
-                                    .fill(null)
-                                    .map(() => ({ ...INITIAL_MEMBER })),
-                                ]);
-                              }}
-                              className={`w-full p-4 rounded-xl border text-center transition-all ${
-                                pixelShowdownGame?.game === "freefire" &&
-                                pixelShowdownGame.format === "duo"
-                                  ? "bg-white/10 border-purple-500 text-white"
-                                  : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
-                              }`}
-                            >
-                              <span className="text-lg">Free Fire Duo</span>
-                              <br />
-                              <span className="text-sm">
-                                Duo (2 players required)
-                              </span>
-                              <br />
-                              <span className="text-xs text-gray-400">
-                                ₹100 per team
                               </span>
                             </button>
                           </div>
@@ -810,9 +759,13 @@ const RegistrationForm = () => {
                           >
                             <span className="text-lg">VALORANT</span>
                             <br />
-                            <span className="text-sm">5v5 (5 players required)</span>
+                            <span className="text-sm">
+                              5v5 (5 players required)
+                            </span>
                             <br />
-                            <span className="text-xs text-gray-400">₹250 per team</span>
+                            <span className="text-xs text-gray-400">
+                              ₹250 per team
+                            </span>
                           </button>
                         </div>
                       </div>
@@ -832,14 +785,11 @@ const RegistrationForm = () => {
                               <span className="text-gray-400">
                                 Individual Event (1 participant)
                               </span>
-                            ) : pixelShowdownGame?.game === "freefire" &&
-                              pixelShowdownGame.format === "duo" ? (
+                            ) : pixelShowdownGame?.game === "freefire" ? (
                               <span className="text-gray-400">
-                                Duo Event (2 participants required)
+                                Squad Event (4 participants required)
                               </span>
-                            ) : pixelShowdownGame?.game === "bgmi" ||
-                              (pixelShowdownGame?.game === "freefire" &&
-                                pixelShowdownGame.format === "squad") ? (
+                            ) : pixelShowdownGame?.game === "bgmi" ? (
                               <span className="text-gray-400">
                                 Squad Event (4 participants required)
                               </span>
@@ -1075,8 +1025,8 @@ const RegistrationForm = () => {
                                       : pixelShowdownGame?.game === "freefire"
                                         ? "Free Fire ID"
                                         : pixelShowdownGame?.game === "valorant"
-                                        ? "Valorant Riot ID"
-                                        : "PES Username"}
+                                          ? "Valorant Riot ID"
+                                          : "PES Username"}
                                     <span className="text-red-500">*</span>
                                   </Label>
                                   <div className="relative">
@@ -1093,11 +1043,13 @@ const RegistrationForm = () => {
                                       placeholder={
                                         pixelShowdownGame?.game === "bgmi"
                                           ? "Enter BGMI Character ID"
-                                          : pixelShowdownGame?.game === "freefire"
+                                          : pixelShowdownGame?.game ===
+                                              "freefire"
                                             ? "Enter Free Fire ID"
-                                            : pixelShowdownGame?.game === "valorant"
-                                            ? "Enter Valorant Riot ID"
-                                            : "Enter PES Username"
+                                            : pixelShowdownGame?.game ===
+                                                "valorant"
+                                              ? "Enter Valorant Riot ID"
+                                              : "Enter PES Username"
                                       }
                                       className="bg-white/5 border-white/10 pl-10"
                                     />
@@ -1174,9 +1126,7 @@ const RegistrationForm = () => {
                                     : pixelShowdownGame?.game === "bgmi"
                                       ? "₹200 per team"
                                       : pixelShowdownGame?.game === "freefire"
-                                        ? pixelShowdownGame.format === "squad"
-                                          ? "₹200 per team"
-                                          : "₹100 per team"
+                                        ? "₹200 per team"
                                         : pixelShowdownGame?.game === "valorant"
                                           ? "₹250 per team"
                                           : "₹500"

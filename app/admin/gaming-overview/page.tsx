@@ -41,7 +41,6 @@ export default function GamingOverview() {
     bgmi: 0,
     pes: 0,
     freefire_squad: 0,
-    freefire_duo: 0,
   });
 
   const fetchGamingRegistrations = useCallback(async () => {
@@ -87,12 +86,6 @@ export default function GamingOverview() {
             (r) =>
               r.game_details?.game === "freefire" &&
               r.game_details?.format === "squad"
-          ).length || 0,
-        freefire_duo:
-          registrationsData?.filter(
-            (r) =>
-              r.game_details?.game === "freefire" &&
-              r.game_details?.format === "duo"
           ).length || 0,
       };
 
@@ -212,18 +205,6 @@ export default function GamingOverview() {
               </p>
               <span className="text-[10px] sm:text-xs text-gray-500">
                 ₹{gameStats.freefire_squad * 200}
-              </span>
-            </div>
-          </div>
-
-          <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-white/10">
-            <h4 className="text-xs sm:text-sm text-gray-400">Free Fire Duo</h4>
-            <div className="flex items-end justify-between mt-1.5 sm:mt-2">
-              <p className="text-lg sm:text-2xl font-bold text-white">
-                {gameStats.freefire_duo}
-              </p>
-              <span className="text-[10px] sm:text-xs text-gray-500">
-                ₹{gameStats.freefire_duo * 100}
               </span>
             </div>
           </div>

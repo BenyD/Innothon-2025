@@ -556,11 +556,10 @@ export const events: Event[] = [
   - Mumbai server, standard competitive maps
   - Prize pool: First ₹2,500, Second ₹1,500
 
-• Free Fire
-  - Choose Squad (4 players) or Duo format
+• Free Fire (Squad Tournament)
+  - 4 players per team
   - Online qualifiers leading to finals
-  - Squad prize pool: First ₹3,000, Second ₹1,500
-  - Duo prize pool: First ₹1,500, Second ₹500
+  - Prize pool: First ₹3,000, Second ₹1,500
 
 • BGMI (Squad Tournament)
   - 12 intense matches over 3 days
@@ -612,7 +611,6 @@ export const events: Event[] = [
     ],
     prizes: {
       "Free Fire Squad": { First: "₹3,000", Second: "₹1,500" },
-      "Free Fire Duo": { First: "₹1,500", Second: "₹500" },
       "BGMI Squad": { First: "₹3,000", Second: "₹1,000" },
       "PES Solo": { First: "₹1,000", Second: "₹500" },
       VALORANT: { First: "₹2,500", Second: "₹1,500" },
@@ -654,8 +652,8 @@ export const events: Event[] = [
       },
       {
         game: "Free Fire",
-        registrationFee: "Squad: ₹200 per team, Duo: ₹100 per team",
-        teamSize: "Squad: 4 members, Duo: 2 members",
+        registrationFee: "₹200 per team",
+        teamSize: "4 members",
         format: "Online Qualifiers + Offline Finals",
         scoring: {
           placement: "1st: 12pts, 2nd: 9pts, 3rd: 8pts...",

@@ -263,31 +263,6 @@ export default function EventPage() {
                     </div>
                   </div>
 
-                  {/* Free Fire Duo */}
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-transparent">
-                    <h3 className="text-blue-400 font-medium mb-3">
-                      Free Fire Duo
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-yellow-400 text-sm">
-                          First Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["Free Fire Duo"].First}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">
-                          Second Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["Free Fire Duo"].Second}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* BGMI */}
                   <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/10 to-transparent">
                     <h3 className="text-purple-400 font-medium mb-3">BGMI</h3>

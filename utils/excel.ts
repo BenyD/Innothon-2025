@@ -1,11 +1,6 @@
 import * as XLSX from "xlsx";
 import { events } from "@/data/events";
-import type { Registration } from "@/types/registration";
-
-interface GameDetails {
-  game: "bgmi" | "freefire" | "pes" | "valorant" | null;
-  format?: "duo" | "squad";
-}
+import type { Registration, GameDetails } from "@/types/registration";
 
 type ExcelRow = Record<string, string | number>;
 
@@ -63,7 +58,9 @@ const getEventTitles = (eventIds: string[]): string => {
     .join(", ");
 };
 
-const formatGameDetails = (details: GameDetails): string => {
+const formatGameDetails = (
+  details: Omit<GameDetails, "game"> & { game: GameDetails["game"] | null }
+): string => {
   if (!details) return "-";
 
   const parts = [];
@@ -134,7 +131,7 @@ export const formatRegistrationForExcel = (registration: Registration) => {
       ? getEventTitles(registration.selected_events)
       : "N/A",
     "Game Details": registration.game_details
-      ? formatGameDetails(registration.game_details)
+      ? formatGameDetails(registration.game_details as GameDetails)
       : "-",
   };
 };

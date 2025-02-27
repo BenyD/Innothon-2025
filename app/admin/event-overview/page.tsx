@@ -158,30 +158,34 @@ export default function EventOverview() {
   }, new Set()).size;
 
   // Update revenue calculation to handle different event prices
-  const calculateEventRevenue = (registration: EventRegistration) => {
-    if (registration.status !== "approved") return 0;
+  const calculateRevenue = (registration: Registration): number => {
+    if (registration.selected_events.includes("pixel-showdown")) {
+      if (!registration.game_details?.game) return 0;
 
-    if (registration.event_id === "digital-divas") {
-      return registration.team_size * 200; // ₹200 per participant
+      switch (registration.game_details.game) {
+        case "bgmi":
+          return 200; // 200 per team
+        case "pes":
+          return 100; // 100 per individual
+        case "freefire":
+          return 200; // 200 per squad
+        case "valorant":
+          return 250; // 250 per team
+        default:
+          return 0;
+      }
     }
 
-    if (
-      registration.event_id === "pixel-showdown" &&
-      registration.game_details
-    ) {
-      const { game, format } = registration.game_details;
-      if (game === "pes") return 100; // ₹100 per player
-      if (game === "bgmi") return 200; // ₹200 per team
-      if (game === "freefire") {
-        return format === "squad" ? 200 : 100; // ₹200 for squad, ₹100 for duo
-      }
+    // Handle other events
+    if (registration.selected_events.includes("digital-divas")) {
+      return 200; // ₹200 per participant
     }
 
     return 500; // Default price for other events
   };
 
   const totalAmount = filteredRegistrations.reduce(
-    (sum, reg) => sum + calculateEventRevenue(reg),
+    (sum, reg) => sum + calculateRevenue(reg),
     0
   );
 
@@ -196,22 +200,17 @@ export default function EventOverview() {
     );
 
     return {
-      bgmi: pixelShowdownRegs.filter((r) => r.game_details?.game === "bgmi")
+      valorant: pixelShowdownRegs.filter(
+        (reg) => reg.game_details?.game === "valorant"
+      ).length,
+      bgmi: pixelShowdownRegs.filter((reg) => reg.game_details?.game === "bgmi")
         .length,
-      pes: pixelShowdownRegs.filter((r) => r.game_details?.game === "pes")
+      pes: pixelShowdownRegs.filter((reg) => reg.game_details?.game === "pes")
         .length,
       freefire_squad: pixelShowdownRegs.filter(
-        (r) =>
-          r.game_details?.game === "freefire" &&
-          r.game_details?.format === "squad"
-      ).length,
-      freefire_duo: pixelShowdownRegs.filter(
-        (r) =>
-          r.game_details?.game === "freefire" &&
-          r.game_details?.format === "duo"
-      ).length,
-      valorant: pixelShowdownRegs.filter(
-        (r) => r.game_details?.game === "valorant"
+        (reg) =>
+          reg.game_details?.game === "freefire" &&
+          reg.game_details?.format === "squad"
       ).length,
     };
   };
@@ -557,19 +556,6 @@ export default function EventOverview() {
                   </p>
                   <span className="text-[10px] sm:text-xs text-gray-500">
                     ₹{gameStats.freefire_squad * 200}
-                  </span>
-                </div>
-              </div>
-              <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/10">
-                <h4 className="text-xs sm:text-sm text-gray-400">
-                  Free Fire Duo
-                </h4>
-                <div className="flex items-end justify-between mt-1.5 sm:mt-2">
-                  <p className="text-xl sm:text-2xl font-bold text-white">
-                    {gameStats.freefire_duo}
-                  </p>
-                  <span className="text-[10px] sm:text-xs text-gray-500">
-                    ₹{gameStats.freefire_duo * 100}
                   </span>
                 </div>
               </div>
