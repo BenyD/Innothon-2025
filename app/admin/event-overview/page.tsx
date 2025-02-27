@@ -157,22 +157,29 @@ export default function EventOverview() {
     return acc;
   }, new Set()).size;
 
-  // Update revenue calculation to exclude Valorant
+  // Update revenue calculation to exclude Valorant and only count approved registrations
   const calculateRevenue = (registration: EventRegistration) => {
-    if (registration.game_details?.game === "bgmi") {
-      return 200; // ₹200 per team
-    } else if (registration.game_details?.game === "freefire") {
-      return 200; // ₹200 per team
-    } else if (registration.game_details?.game === "pes") {
-      return 100; // ₹100 per person
+    if (registration.status !== "approved") {
+      return 0;
+    }
+
+    if (registration.event_id === "pixel-showdown") {
+      if (registration.game_details?.game === "bgmi") {
+        return 200; // ₹200 per team
+      } else if (registration.game_details?.game === "freefire") {
+        return 200; // ₹200 per team
+      } else if (registration.game_details?.game === "pes") {
+        return 100; // ₹100 per person
+      }
+    } else if (registration.event_id === "digital-divas") {
+      return registration.team_size * 200; // ₹200 per participant
     }
     return 500; // Default price for other events
   };
 
-  const totalAmount = filteredRegistrations.reduce(
-    (sum, reg) => sum + calculateRevenue(reg),
-    0
-  );
+  const totalAmount = filteredRegistrations
+    .filter((reg) => reg.status === "approved")
+    .reduce((sum, reg) => sum + calculateRevenue(reg), 0);
 
   const approvedCount = filteredRegistrations.filter(
     (reg) => reg.status === "approved"
