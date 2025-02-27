@@ -14,7 +14,7 @@ export type Tables = {
       created_at: string;
       updated_at: string;
       game_details: {
-        game: "bgmi" | "freefire" | "pes" | "valorant";
+        game: "bgmi" | "freefire" | "pes" | null;
         format?: "squad";
       } | null;
     };
@@ -51,6 +51,6 @@ export type Database = {
 };
 
 export type GameDetails = {
-  game: "bgmi" | "freefire" | "pes" | "valorant";
+  game: "bgmi" | "freefire" | "pes" | null;
   format?: "squad";
 };

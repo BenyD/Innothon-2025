@@ -157,30 +157,15 @@ export default function EventOverview() {
     return acc;
   }, new Set()).size;
 
-  // Update revenue calculation to handle different event prices
-  const calculateRevenue = (registration: Registration): number => {
-    if (registration.selected_events.includes("pixel-showdown")) {
-      if (!registration.game_details?.game) return 0;
-
-      switch (registration.game_details.game) {
-        case "bgmi":
-          return 200; // 200 per team
-        case "pes":
-          return 100; // 100 per individual
-        case "freefire":
-          return 200; // 200 per squad
-        case "valorant":
-          return 250; // 250 per team
-        default:
-          return 0;
-      }
+  // Update revenue calculation to exclude Valorant
+  const calculateRevenue = (registration: EventRegistration) => {
+    if (registration.game_details?.game === "bgmi") {
+      return 200; // ₹200 per team
+    } else if (registration.game_details?.game === "freefire") {
+      return 200; // ₹200 per team
+    } else if (registration.game_details?.game === "pes") {
+      return 100; // ₹100 per person
     }
-
-    // Handle other events
-    if (registration.selected_events.includes("digital-divas")) {
-      return 200; // ₹200 per participant
-    }
-
     return 500; // Default price for other events
   };
 

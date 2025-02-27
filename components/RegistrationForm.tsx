@@ -79,6 +79,35 @@ const isEventDisabled = (
   eventId: string,
   selectedEvents: string[]
 ): boolean => {
+  // Always allow unselecting the currently selected event
+  if (selectedEvents.includes(eventId)) {
+    return false;
+  }
+
+  // If Digital Divas is selected, disable all other events
+  if (selectedEvents.includes("digital-divas") && eventId !== "digital-divas") {
+    return true;
+  }
+
+  // If any other event is selected, disable Digital Divas
+  if (selectedEvents.length > 0 && eventId === "digital-divas") {
+    return true;
+  }
+
+  // If Pixel Showdown is selected, disable all other events
+  if (
+    selectedEvents.includes("pixel-showdown") &&
+    eventId !== "pixel-showdown"
+  ) {
+    return true;
+  }
+
+  // If any other event is selected, disable Pixel Showdown
+  if (selectedEvents.length > 0 && eventId === "pixel-showdown") {
+    return true;
+  }
+
+  // Check other mutually exclusive events
   for (const exclusiveGroup of MUTUALLY_EXCLUSIVE_EVENTS) {
     if (exclusiveGroup.includes(eventId)) {
       // Find the other events in this exclusive group
@@ -133,26 +162,24 @@ const RegistrationForm = () => {
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [pixelShowdownGame, setPixelShowdownGame] = useState<{
-    game: "bgmi" | "freefire" | "pes" | "valorant" | null;
+    game: "bgmi" | "freefire" | "pes" | null;
     format?: "squad";
   }>();
 
   const calculateTotal = () => {
     if (selectedEvents.includes("digital-divas")) {
-      return teamSize * 200; // 200 per participant for Digital Divas
+      return teamSize * 200; // ₹200 per participant for Digital Divas
     }
     if (selectedEvents.includes("pixel-showdown")) {
       if (!pixelShowdownGame?.game) return 0;
 
       switch (pixelShowdownGame.game) {
         case "bgmi":
-          return 200; // 200 per team
+          return 200; // ₹200 per team
         case "pes":
-          return 100; // 100 per individual
+          return 100; // ₹100 per individual
         case "freefire":
-          return 200; // 200 for squad
-        case "valorant":
-          return 250; // 250 per team
+          return 200; // ₹200 for squad
         default:
           return 0;
       }
@@ -162,10 +189,10 @@ const RegistrationForm = () => {
 
   const handleTeamSizeChange = (size: number) => {
     if (selectedEvents.includes("pixel-showdown")) {
-      if (pixelShowdownGame?.game === "pes" && size > 1) {
+      if (pixelShowdownGame?.game === "pes" && size !== 1) {
         toast({
           title: "Team Size Error",
-          description: "PES is an individual event",
+          description: "PES requires exactly 1 participant",
           variant: "destructive",
         });
         return;
@@ -253,35 +280,35 @@ const RegistrationForm = () => {
         setTeamMembers([{ ...INITIAL_MEMBER }]);
         // Reset game selection
         setPixelShowdownGame({ game: null });
-      } else if (selectedEvents.includes("pixel-showdown")) {
+      } else if (eventId === "digital-divas") {
+        // Reset any other selected events
+        setSelectedEvents(["digital-divas"]);
+        // Reset team size to maximum of 2 and ensure female participants
+        setTeamSize(1);
+        setTeamMembers([{ ...INITIAL_MEMBER, gender: "female" }]);
+      } else if (
+        selectedEvents.includes("pixel-showdown") ||
+        selectedEvents.includes("digital-divas")
+      ) {
         toast({
           title: "Event Selection Error",
-          description: "Pixel Showdown cannot be combined with other events",
+          description: selectedEvents.includes("pixel-showdown")
+            ? "Pixel Showdown cannot be combined with other events"
+            : "Digital Divas cannot be combined with other events",
           variant: "destructive",
         });
         return;
       } else {
-        // Handle other events as before...
-        if (eventId === "digital-divas") {
-          // Reset any other selected events and set team size max to 2
-          setSelectedEvents(["digital-divas"]);
-          if (teamSize > 2) setTeamSize(2);
-          // Ensure only female participants
-          setTeamMembers((prevMembers) =>
-            prevMembers
-              .map((member) => ({
-                ...member,
-                gender: "female",
-              }))
-              .slice(0, 2)
-          );
-        } else {
-          setSelectedEvents([...selectedEvents, eventId]);
-        }
+        setSelectedEvents([...selectedEvents, eventId]);
       }
     } else {
+      // Handle unselecting events
       if (eventId === "pixel-showdown") {
         setPixelShowdownGame({ game: null });
+      }
+      if (eventId === "digital-divas") {
+        // Reset team members to default state when unselecting Digital Divas
+        setTeamMembers(teamMembers.map(() => ({ ...INITIAL_MEMBER })));
       }
       setSelectedEvents(selectedEvents.filter((id) => id !== eventId));
     }
@@ -739,34 +766,6 @@ const RegistrationForm = () => {
                               </span>
                             </button>
                           </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPixelShowdownGame({ game: "valorant" });
-                              setTeamSize(5);
-                              setTeamMembers([
-                                ...Array(5)
-                                  .fill(null)
-                                  .map(() => ({ ...INITIAL_MEMBER })),
-                              ]);
-                            }}
-                            className={`p-4 rounded-xl border text-center transition-all ${
-                              pixelShowdownGame?.game === "valorant"
-                                ? "bg-white/10 border-purple-500 text-white"
-                                : "bg-black/50 border-white/10 text-gray-400 hover:bg-white/5"
-                            }`}
-                          >
-                            <span className="text-lg">VALORANT</span>
-                            <br />
-                            <span className="text-sm">
-                              5v5 (5 players required)
-                            </span>
-                            <br />
-                            <span className="text-xs text-gray-400">
-                              ₹250 per team
-                            </span>
-                          </button>
                         </div>
                       </div>
                     )}
@@ -792,10 +791,6 @@ const RegistrationForm = () => {
                             ) : pixelShowdownGame?.game === "bgmi" ? (
                               <span className="text-gray-400">
                                 Squad Event (4 participants required)
-                              </span>
-                            ) : pixelShowdownGame?.game === "valorant" ? (
-                              <span className="text-gray-400">
-                                VALORANT requires exactly 5 participants
                               </span>
                             ) : (
                               <span className="text-gray-400">
@@ -1024,9 +1019,7 @@ const RegistrationForm = () => {
                                       ? "BGMI Character ID"
                                       : pixelShowdownGame?.game === "freefire"
                                         ? "Free Fire ID"
-                                        : pixelShowdownGame?.game === "valorant"
-                                          ? "Valorant Riot ID"
-                                          : "PES Username"}
+                                        : "PES Username"}
                                     <span className="text-red-500">*</span>
                                   </Label>
                                   <div className="relative">
@@ -1046,10 +1039,7 @@ const RegistrationForm = () => {
                                           : pixelShowdownGame?.game ===
                                               "freefire"
                                             ? "Enter Free Fire ID"
-                                            : pixelShowdownGame?.game ===
-                                                "valorant"
-                                              ? "Enter Valorant Riot ID"
-                                              : "Enter PES Username"
+                                            : "Enter PES Username"
                                       }
                                       className="bg-white/5 border-white/10 pl-10"
                                     />
@@ -1127,9 +1117,7 @@ const RegistrationForm = () => {
                                       ? "₹200 per team"
                                       : pixelShowdownGame?.game === "freefire"
                                         ? "₹200 per team"
-                                        : pixelShowdownGame?.game === "valorant"
-                                          ? "₹250 per team"
-                                          : "₹500"
+                                        : "₹500"
                                   : "₹500"}
                             </span>
                           </div>

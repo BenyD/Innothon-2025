@@ -204,7 +204,7 @@ export default function EventPage() {
               </div>
             </div>
 
-            {/* Prizes Section - Moved to right column */}
+            {/* Prizes Section */}
             <div
               id="prizes"
               className="bg-white/5 p-6 rounded-xl border border-white/10"
@@ -214,98 +214,28 @@ export default function EventPage() {
                 <h2 className="text-xl font-semibold">Prizes</h2>
               </div>
               {event.id === "pixel-showdown" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* VALORANT - New Addition */}
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-red-500/10 to-transparent">
-                    <h3 className="text-red-400 font-medium mb-3">VALORANT</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-yellow-400 text-sm">
-                          First Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes.VALORANT.First}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">
-                          Second Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes.VALORANT.Second}
-                        </span>
-                      </div>
+                <div className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <h3 className="text-lg font-medium mb-2">BGMI</h3>
+                      <p className="text-sm text-gray-400">Squad (4 players)</p>
+                      <p className="text-sm text-purple-400 mt-2">
+                        ₹200 per team
+                      </p>
                     </div>
-                  </div>
-
-                  {/* Free Fire Squad */}
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-orange-500/10 to-transparent">
-                    <h3 className="text-orange-400 font-medium mb-3">
-                      Free Fire Squad
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-yellow-400 text-sm">
-                          First Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["Free Fire Squad"].First}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">
-                          Second Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["Free Fire Squad"].Second}
-                        </span>
-                      </div>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <h3 className="text-lg font-medium mb-2">PES</h3>
+                      <p className="text-sm text-gray-400">Individual</p>
+                      <p className="text-sm text-purple-400 mt-2">
+                        ₹100 per person
+                      </p>
                     </div>
-                  </div>
-
-                  {/* BGMI */}
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/10 to-transparent">
-                    <h3 className="text-purple-400 font-medium mb-3">BGMI</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-yellow-400 text-sm">
-                          First Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["BGMI Squad"].First}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">
-                          Second Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["BGMI Squad"].Second}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* PES */}
-                  <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-transparent">
-                    <h3 className="text-green-400 font-medium mb-3">PES</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-yellow-400 text-sm">
-                          First Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["PES Solo"].First}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">
-                          Second Prize
-                        </span>
-                        <span className="text-white">
-                          {event.prizes["PES Solo"].Second}
-                        </span>
-                      </div>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <h3 className="text-lg font-medium mb-2">Free Fire</h3>
+                      <p className="text-sm text-gray-400">Squad (4 players)</p>
+                      <p className="text-sm text-purple-400 mt-2">
+                        ₹200 per team
+                      </p>
                     </div>
                   </div>
                 </div>

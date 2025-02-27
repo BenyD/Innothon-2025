@@ -42,7 +42,7 @@ const getGameDetails = (registration: Registration) => {
     return null;
   }
 
-  const { game, format } = registration.game_details;
+  const { game } = registration.game_details;
 
   switch (game) {
     case "bgmi":

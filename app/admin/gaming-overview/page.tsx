@@ -37,10 +37,9 @@ export default function GamingOverview() {
 
   // Add game statistics state
   const [gameStats, setGameStats] = useState({
-    valorant: 0,
     bgmi: 0,
-    pes: 0,
     freefire_squad: 0,
+    pes: 0,
   });
 
   const fetchGamingRegistrations = useCallback(async () => {
@@ -71,25 +70,19 @@ export default function GamingOverview() {
       }
 
       // Calculate game statistics from valid registrations
-      const stats = {
-        valorant:
-          registrationsData?.filter((r) => r.game_details?.game === "valorant")
-            .length || 0,
-        bgmi:
-          registrationsData?.filter((r) => r.game_details?.game === "bgmi")
-            .length || 0,
-        pes:
-          registrationsData?.filter((r) => r.game_details?.game === "pes")
-            .length || 0,
-        freefire_squad:
-          registrationsData?.filter(
-            (r) =>
-              r.game_details?.game === "freefire" &&
-              r.game_details?.format === "squad"
-          ).length || 0,
-      };
+      registrationsData.forEach((registration) => {
+        if (registration.game_details?.game === "bgmi") {
+          setGameStats((prev) => ({ ...prev, bgmi: prev.bgmi + 1 }));
+        } else if (registration.game_details?.game === "freefire") {
+          setGameStats((prev) => ({
+            ...prev,
+            freefire_squad: prev.freefire_squad + 1,
+          }));
+        } else if (registration.game_details?.game === "pes") {
+          setGameStats((prev) => ({ ...prev, pes: prev.pes + 1 }));
+        }
+      });
 
-      setGameStats(stats);
       setRegistrations(registrationsData || []);
     } catch (error) {
       console.error("Error in fetchGamingRegistrations:", error);
@@ -99,7 +92,6 @@ export default function GamingOverview() {
   // Add game options constant
   const gameOptions = [
     { value: "all", label: "All Games" },
-    { value: "valorant", label: "VALORANT" },
     { value: "bgmi", label: "BGMI" },
     { value: "pes", label: "PES" },
     { value: "freefire", label: "Free Fire" },
@@ -158,19 +150,7 @@ export default function GamingOverview() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-4 mb-4 sm:mb-6">
-          <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/10">
-            <h4 className="text-xs sm:text-sm text-gray-400">VALORANT Teams</h4>
-            <div className="flex items-end justify-between mt-1.5 sm:mt-2">
-              <p className="text-lg sm:text-2xl font-bold text-white">
-                {gameStats.valorant}
-              </p>
-              <span className="text-[10px] sm:text-xs text-gray-500">
-                ₹{gameStats.valorant * 250}
-              </span>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-4 mb-4 sm:mb-6">
           <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-violet-500/10 border border-white/10">
             <h4 className="text-xs sm:text-sm text-gray-400">BGMI Teams</h4>
             <div className="flex items-end justify-between mt-1.5 sm:mt-2">
