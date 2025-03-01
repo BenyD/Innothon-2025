@@ -25,7 +25,7 @@ const Rules = () => {
         "No malpractice or unfair means will be tolerated",
         "Judges' decisions will be final and binding",
         "No unauthorized collaboration or external help allowed",
-        "Disqualification for any rule violations"
+        "Disqualification for any rule violations",
       ],
     },
     {
@@ -38,7 +38,7 @@ const Rules = () => {
         "Valedictory: 22nd March 2025",
         "Report 30 minutes before event start",
         "Strict adherence to event timings",
-        "Late submissions will not be accepted"
+        "Late submissions will not be accepted",
       ],
     },
     {
@@ -50,7 +50,7 @@ const Rules = () => {
         "Team changes not permitted after registration",
         "One participant can join multiple events",
         "Register early to secure your spot",
-        "All team members must be present during the event"
+        "All team members must be present during the event",
       ],
     },
     {
@@ -63,7 +63,7 @@ const Rules = () => {
         "Lab computers available if needed",
         "Technical support will be provided",
         "No unauthorized software or tools allowed",
-        "Internet access will be provided"
+        "Internet access will be provided",
       ],
     },
     {
@@ -75,7 +75,7 @@ const Rules = () => {
         "Carry all required documents",
         "On-spot registrations not allowed",
         "College ID mandatory for participation",
-        "Winners must attend prize distribution"
+        "Winners must attend prize distribution",
       ],
     },
     {
@@ -87,20 +87,20 @@ const Rules = () => {
         "Maintain professional behavior",
         "Follow venue-specific guidelines",
         "Respect fellow participants",
-        "Fair play and sportsmanship mandatory"
+        "Fair play and sportsmanship mandatory",
       ],
     },
   ];
 
   return (
-    <section id="rules" className="py-12 sm:py-16 scroll-mt-20">
+    <section id="rules" className="py-10 sm:py-16 scroll-mt-20">
       <div className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <SectionTitle
           title="Rules & Guidelines"
           subtitle="Important information for all participants"
         />
 
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="mt-6 sm:mt-8 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {rules.map((section, index) => (
             <motion.div
               key={section.title}
@@ -108,17 +108,17 @@ const Rules = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6 hover:border-purple-500/50 transition-colors duration-300"
+              className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 lg:p-6 hover:border-purple-500/50 transition-colors duration-300"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg bg-purple-500/10">
-                  <section.icon className="w-5 h-5 text-purple-400" />
+              <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-purple-500/10">
+                  <section.icon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-base sm:text-lg font-semibold text-white">
                   {section.title}
                 </h3>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 {section.rules.map((rule, ruleIndex) => (
                   <motion.li
                     key={ruleIndex}
@@ -126,10 +126,10 @@ const Rules = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 + ruleIndex * 0.05 }}
-                    className="flex items-start gap-2.5"
+                    className="flex items-start gap-2 sm:gap-2.5"
                   >
-                    <CheckCircle2 className="w-4 h-4 mt-1 text-green-400 shrink-0" />
-                    <span className="text-gray-300 text-sm leading-relaxed">
+                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 text-green-400 shrink-0" />
+                    <span className="text-xs sm:text-sm text-gray-300 leading-relaxed">
                       {rule}
                     </span>
                   </motion.li>
@@ -140,13 +140,13 @@ const Rules = () => {
         </div>
 
         <motion.div
-          className="mt-8 sm:mt-12 text-center"
+          className="mt-6 sm:mt-8 lg:mt-12 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm backdrop-blur-sm hover:border-purple-500/50 transition-colors duration-300">
-            <AlertCircle className="w-4 h-4 text-purple-400" />
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/5 border border-white/10 text-xs sm:text-sm backdrop-blur-sm hover:border-purple-500/50 transition-colors duration-300">
+            <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400" />
             <span className="text-gray-400">
               For event-specific rules, please check individual event pages
             </span>

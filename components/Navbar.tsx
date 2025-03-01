@@ -58,41 +58,44 @@ const Navbar = () => {
             : `blur(${scrollProgress * 16}px)`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4">
           <div
             className={`flex items-center justify-between ${
-              scrolled ? "py-2" : "py-3"
+              scrolled ? "py-1.5 sm:py-2" : "py-2 sm:py-3"
             } transition-all duration-300`}
           >
             {/* Left side - Logos */}
             <motion.div
-              className="flex items-center gap-4 sm:gap-6"
+              className="flex items-center gap-2 sm:gap-4 md:gap-6"
               animate={{ scale: scrolled ? 0.95 : 1 }}
               transition={{ duration: 0.3 }}
             >
-              <Link href="/" className="flex items-center gap-4 sm:gap-6">
+              <Link
+                href="/"
+                className="flex items-center gap-2 sm:gap-4 md:gap-6"
+              >
                 <Image
                   src="/hits_logo.png"
                   alt="College Logo"
                   width={180}
                   height={180}
-                  className="w-[120px] h-auto sm:w-[140px] md:w-[160px] hover:scale-105 transition-transform duration-300"
+                  className="w-[100px] h-auto sm:w-[120px] md:w-[140px] lg:w-[160px] hover:scale-105 transition-transform duration-300"
                   priority
                 />
-                <div className="hidden sm:block h-10 w-px bg-gradient-to-b from-blue-500/40 via-purple-500/40 to-pink-500/40" />
+                <div className="hidden sm:block h-8 sm:h-10 w-px bg-gradient-to-b from-blue-500/40 via-purple-500/40 to-pink-500/40" />
                 <Image
                   src="/bsp_logo.png"
                   alt="Club Logo"
                   width={80}
                   height={80}
-                  className="w-[50px] h-auto sm:w-[60px] md:w-[70px] hover:scale-105 transition-transform duration-300"
+                  className="w-[40px] h-auto sm:w-[50px] md:w-[60px] lg:w-[70px] hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </Link>
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
               {["Events", "Rules", "Contact"].map((item) => (
                 <a
                   key={item}
@@ -102,7 +105,7 @@ const Navbar = () => {
                     scrollToSection(item.toLowerCase());
                     setIsOpen(false);
                   }}
-                  className="relative text-gray-300 hover:text-white transition-colors group"
+                  className="relative text-gray-300 hover:text-white transition-colors group text-sm lg:text-base"
                 >
                   <span className="relative z-10">{item}</span>
                   <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
@@ -115,7 +118,7 @@ const Navbar = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full opacity-75 group-hover:opacity-100 blur transition duration-300" />
-                  <span className="relative px-6 py-2 bg-black rounded-full inline-block text-white group-hover:bg-black/95 transition-colors">
+                  <span className="relative px-4 lg:px-6 py-1.5 lg:py-2 bg-black rounded-full inline-block text-white group-hover:bg-black/95 transition-colors text-sm lg:text-base">
                     Register
                   </span>
                 </motion.button>
@@ -128,14 +131,14 @@ const Navbar = () => {
                 e.stopPropagation();
                 setIsOpen(!isOpen);
               }}
-              className="md:hidden relative group p-3 -mr-3 menu-button"
+              className="md:hidden relative group p-2 -mr-2 menu-button"
               aria-label="Toggle menu"
             >
-              <div className="w-6 h-5 flex flex-col justify-between">
+              <div className="w-5 sm:w-6 h-4 sm:h-5 flex flex-col justify-between">
                 <span
                   className={`w-full h-0.5 transition-all duration-300 ${
                     isOpen
-                      ? "rotate-45 translate-y-2.5 bg-gradient-to-r from-blue-500 to-purple-500"
+                      ? "rotate-45 translate-y-2 sm:translate-y-2.5 bg-gradient-to-r from-blue-500 to-purple-500"
                       : "bg-gradient-to-r from-blue-500 to-purple-500"
                   }`}
                 />
@@ -147,7 +150,7 @@ const Navbar = () => {
                 <span
                   className={`w-full h-0.5 transition-all duration-300 ${
                     isOpen
-                      ? "-rotate-45 -translate-y-2 bg-gradient-to-r from-pink-500 to-blue-500"
+                      ? "-rotate-45 -translate-y-1.5 sm:-translate-y-2 bg-gradient-to-r from-pink-500 to-blue-500"
                       : "bg-gradient-to-r from-pink-500 to-blue-500"
                   }`}
                 />
@@ -173,15 +176,15 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-x-0 top-[64px] bg-black/95 backdrop-blur-xl border-t border-white/10 mobile-menu" // Adjusted top position
+            className="md:hidden fixed inset-x-0 top-[52px] sm:top-[64px] bg-black/95 backdrop-blur-xl border-t border-white/10 mobile-menu" // Adjusted top position
           >
-            <div className="px-4 py-5 max-h-[calc(100vh-56px)] overflow-y-auto">
-              <div className="space-y-1.5">
+            <div className="px-4 py-4 sm:py-5 max-h-[calc(100vh-52px)] sm:max-h-[calc(100vh-64px)] overflow-y-auto">
+              <div className="space-y-1">
                 {["Events", "Rules", "Contact"].map((item) => (
                   <a
                     key={item}
                     href={`#${item.toLowerCase()}`}
-                    className="block px-4 py-2.5 text-base text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 active:bg-white/10"
+                    className="block px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 active:bg-white/10"
                     onClick={(e) => {
                       e.preventDefault();
                       scrollToSection(item.toLowerCase());
@@ -191,12 +194,12 @@ const Navbar = () => {
                     {item}
                   </a>
                 ))}
-                <div className="pt-3">
+                <div className="pt-2 sm:pt-3">
                   <Link href="/register" className="block">
                     <div className="relative group w-full">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg opacity-75 group-hover:opacity-100 blur transition duration-300" />
                       <button
-                        className="relative w-full px-6 py-2.5 bg-black rounded-lg text-white group-hover:bg-black/95 transition-colors active:scale-95 transform duration-200"
+                        className="relative w-full px-4 sm:px-6 py-2 sm:py-2.5 bg-black rounded-lg text-white group-hover:bg-black/95 transition-colors active:scale-95 transform duration-200 text-sm sm:text-base"
                         onClick={() => setIsOpen(false)}
                       >
                         Register

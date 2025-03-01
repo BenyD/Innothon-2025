@@ -14,16 +14,14 @@ export const metadata: Metadata = {
   description:
     "Join us for Innothon 2025, a technical fest at Hindustan Institute of Technology and Science.",
   manifest: "/site.webmanifest",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -33,6 +31,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={geist.className}>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="bg-black text-white selection:bg-purple-500/30 selection:text-white touch-manipulation antialiased min-h-screen">
         <MainLayout>{children}</MainLayout>
         <Toaster />
