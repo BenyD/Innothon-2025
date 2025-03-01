@@ -266,120 +266,16 @@ const ContactForm = () => {
   };
 
   return (
-    <section id="contact" className="py-10 sm:py-16 scroll-mt-20">
-      <div className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="contact" className="py-16 px-4">
+      <div className="max-w-6xl mx-auto space-y-12">
         <SectionTitle
-          title="Contact Us"
-          subtitle="Have questions? Reach out to our team"
+          title="Get in Touch"
+          subtitle="Have questions about Innothon 2025? We're here to help! Reach out to us through any of these channels."
         />
 
-        <div className="mt-6 sm:mt-8 lg:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16">
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6 lg:p-8 order-2 lg:order-1"
-          >
-            <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-              Send us a message
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-300"
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Your name"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-black/50 border border-white/10 rounded-lg focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 text-sm sm:text-base transition-colors"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-300"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="your.email@example.com"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-black/50 border border-white/10 rounded-lg focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 text-sm sm:text-base transition-colors"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-300"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="10-digit mobile number"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-black/50 border border-white/10 rounded-lg focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 text-sm sm:text-base transition-colors"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-medium text-gray-300"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  rows={4}
-                  placeholder="Your message or query"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-black/50 border border-white/10 rounded-lg focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 text-sm sm:text-base transition-colors resize-none"
-                  required
-                ></textarea>
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-spin h-4 w-4 border-2 border-white/20 border-t-white rounded-full"></span>
-                      <span>Sending...</span>
-                    </>
-                  ) : (
-                    "Send Message"
-                  )}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-
-          {/* Contact Information */}
-          <div className="space-y-6">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Contact Cards - Left Column */}
+          <div className="lg:col-span-2 grid gap-6">
             {/* Core Team Card */}
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
               <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
@@ -569,6 +465,185 @@ const ContactForm = () => {
                         {member.phone}
                       </a>
                     </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form and Additional Info - Right Column */}
+          <div className="space-y-6">
+            {/* Contact Form Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-6">
+                  Send us a Message
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      onBlur={(e) => {
+                        if (e.target.value && !isValidEmail(e.target.value)) {
+                          toast({
+                            title: "Invalid Email",
+                            description: "Please enter a valid email address",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Your email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Phone
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      onBlur={(e) => {
+                        if (
+                          e.target.value &&
+                          !isValidIndianPhone(e.target.value)
+                        ) {
+                          toast({
+                            title: "Invalid Phone Number",
+                            description:
+                              "Please enter a valid 10-digit Indian mobile number",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                      placeholder="Enter your 10-digit mobile number"
+                      maxLength={10}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none"
+                      placeholder="Your message"
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-6 text-lg"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Sending...</span>
+                      </div>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </div>
+
+            {/* Location Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
+                  Location
+                </h3>
+                <p className="text-gray-300">
+                  Hindustan Institute of Technology and Science
+                  <br />
+                  Old Mahabalipuram Road (OMR)
+                  <br />
+                  Padur, Chennai - 603103
+                </p>
+              </div>
+            </div>
+
+            {/* Social Links Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-gray-900 to-black p-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50" />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
+                  Connect With Us
+                </h3>
+                <div className="flex gap-4">
+                  {[
+                    {
+                      icon: IoLogoLinkedin,
+                      label: "LinkedIn",
+                      href: "https://www.linkedin.com/in/bspc-hits/",
+                      color: "blue",
+                    },
+                    {
+                      icon: IoLogoInstagram,
+                      label: "Instagram",
+                      href: "https://www.instagram.com/bspc_hits",
+                      color: "pink",
+                    },
+                  ].map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-${social.color}-500/10 hover:bg-${social.color}-500/20 text-${social.color}-400 transition-colors`}
+                    >
+                      <social.icon className="h-5 w-5" />
+                      <span className="font-medium">{social.label}</span>
+                    </a>
                   ))}
                 </div>
               </div>
