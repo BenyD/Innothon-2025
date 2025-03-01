@@ -88,7 +88,7 @@ const Hero = () => {
                   </p>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                  Department of Computer Science
+                  Department of Computer Science{" "}
                   <br className="hidden xs:block" />
                   and Engineering
                 </h2>
