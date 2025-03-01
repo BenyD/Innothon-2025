@@ -195,6 +195,14 @@ export default function EventPage() {
                     {event.registrationFee}
                   </span>
                 </p>
+                {event.id === "pixel-showdown" && (
+                  <div className="flex items-center gap-2 py-2 px-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                    <Calendar className="w-4 h-4 text-yellow-400 shrink-0" />
+                    <p className="text-sm text-yellow-300">
+                      Registrations close on 10th March 2025
+                    </p>
+                  </div>
+                )}
                 <Button
                   asChild
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
@@ -214,28 +222,109 @@ export default function EventPage() {
                 <h2 className="text-xl font-semibold">Prizes</h2>
               </div>
               {event.id === "pixel-showdown" ? (
-                <div className="space-y-6">
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <h3 className="text-lg font-medium mb-2">BGMI</h3>
-                      <p className="text-sm text-gray-400">Squad (4 players)</p>
-                      <p className="text-sm text-purple-400 mt-2">
-                        ₹200 per team
-                      </p>
+                <div className="space-y-4">
+                  {/* BGMI Card */}
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                          <Gamepad2 className="w-4 h-4 text-purple-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white">BGMI</h3>
+                          <p className="text-xs text-gray-400">
+                            Squad (4 players)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-2 py-1 text-xs bg-purple-500/10 rounded-lg border border-purple-500/20 text-purple-400">
+                        Cash Prizes
+                      </div>
                     </div>
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <h3 className="text-lg font-medium mb-2">PES</h3>
-                      <p className="text-sm text-gray-400">Individual</p>
-                      <p className="text-sm text-purple-400 mt-2">
-                        ₹100 per person
-                      </p>
+
+                    <div className="space-y-2 mt-4">
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-500/10 to-transparent rounded-lg">
+                        <span className="text-yellow-400 text-sm">
+                          First Prize
+                        </span>
+                        <span className="text-white font-medium">₹3,000</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-400/10 to-transparent rounded-lg">
+                        <span className="text-gray-400 text-sm">
+                          Second Prize
+                        </span>
+                        <span className="text-white font-medium">₹1,500</span>
+                      </div>
                     </div>
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <h3 className="text-lg font-medium mb-2">Free Fire</h3>
-                      <p className="text-sm text-gray-400">Squad (4 players)</p>
-                      <p className="text-sm text-purple-400 mt-2">
-                        ₹200 per team
-                      </p>
+                  </div>
+
+                  {/* PES Card */}
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                          <Gamepad2 className="w-4 h-4 text-green-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white">PES</h3>
+                          <p className="text-xs text-gray-400">Individual</p>
+                        </div>
+                      </div>
+                      <div className="px-2 py-1 text-xs bg-green-500/10 rounded-lg border border-green-500/20 text-green-400">
+                        Cash Prizes
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mt-4">
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-500/10 to-transparent rounded-lg">
+                        <span className="text-yellow-400 text-sm">
+                          First Prize
+                        </span>
+                        <span className="text-white font-medium">₹1,000</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-400/10 to-transparent rounded-lg">
+                        <span className="text-gray-400 text-sm">
+                          Second Prize
+                        </span>
+                        <span className="text-white font-medium">₹500</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Free Fire Card */}
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                          <Gamepad2 className="w-4 h-4 text-red-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white">
+                            Free Fire
+                          </h3>
+                          <p className="text-xs text-gray-400">
+                            Squad (4 players)
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-2 py-1 text-xs bg-red-500/10 rounded-lg border border-red-500/20 text-red-400">
+                        Cash Prizes
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mt-4">
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-500/10 to-transparent rounded-lg">
+                        <span className="text-yellow-400 text-sm">
+                          First Prize
+                        </span>
+                        <span className="text-white font-medium">₹3,000</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-gray-400/10 to-transparent rounded-lg">
+                        <span className="text-gray-400 text-sm">
+                          Second Prize
+                        </span>
+                        <span className="text-white font-medium">₹1,500</span>
+                      </div>
                     </div>
                   </div>
                 </div>

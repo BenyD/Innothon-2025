@@ -380,19 +380,15 @@ const RegistrationForm = () => {
           });
           return;
         }
-        if (pixelShowdownGame?.game === "freefire" && teamSize !== 2) {
+        if (pixelShowdownGame?.game === "freefire" && teamSize !== 4) {
           toast({
             title: "Team Size Error",
-            description: "Free Fire requires exactly 2 participants",
+            description: "Free Fire requires exactly 4 participants",
             variant: "destructive",
           });
           return;
         }
-        if (
-          (pixelShowdownGame?.game === "bgmi" ||
-            pixelShowdownGame?.game === "freefire") &&
-          teamSize !== 4
-        ) {
+        if (pixelShowdownGame?.game === "bgmi" && teamSize !== 4) {
           toast({
             title: "Team Size Error",
             description: "Squad events require exactly 4 participants",
