@@ -5,6 +5,7 @@ import Hero from "../components/Hero";
 import EventCards from "../components/EventCards";
 import Rules from "../components/Rules";
 import ContactForm from "../components/ContactForm";
+import HallOfFame from "../components/HallOfFame";
 
 export default function Home() {
   return (
@@ -34,6 +35,13 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <HallOfFame />
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
       >
         <ContactForm />
       </motion.div>
