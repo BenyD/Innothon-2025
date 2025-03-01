@@ -206,7 +206,10 @@ export default function Analytics() {
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       borderRadius: "0.5rem",
                       fontSize: "12px",
+                      color: "white",
                     }}
+                    itemStyle={{ color: "white" }}
+                    labelStyle={{ color: "white" }}
                   />
                   <Legend wrapperStyle={{ fontSize: "12px" }} />
                   <Line type="monotone" dataKey="count" stroke="#8B5CF6" />
@@ -246,7 +249,11 @@ export default function Analytics() {
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       borderRadius: "0.5rem",
                       fontSize: "12px",
+                      color: "white",
                     }}
+                    itemStyle={{ color: "white" }}
+                    labelStyle={{ color: "white" }}
+                    formatter={(value, name) => [`${value}`, `${name}`]}
                   />
                   <Legend
                     wrapperStyle={{ fontSize: "12px" }}
@@ -288,7 +295,10 @@ export default function Analytics() {
                         border: "1px solid rgba(255, 255, 255, 0.1)",
                         borderRadius: "0.5rem",
                         fontSize: "12px",
+                        color: "white",
                       }}
+                      itemStyle={{ color: "white" }}
+                      labelStyle={{ color: "white" }}
                       formatter={(value) => [`₹${value}`, ""]}
                     />
                     <Legend wrapperStyle={{ fontSize: "12px" }} />
@@ -340,7 +350,10 @@ export default function Analytics() {
                         border: "1px solid rgba(255, 255, 255, 0.1)",
                         borderRadius: "0.5rem",
                         fontSize: "12px",
+                        color: "white",
                       }}
+                      itemStyle={{ color: "white" }}
+                      labelStyle={{ color: "white" }}
                       formatter={(value) => [`₹${value}`, ""]}
                     />
                     <Legend wrapperStyle={{ fontSize: "12px" }} />
