@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { scrollToSection } from "@/utils/scroll";
 import Link from "next/link";
+import SponsorLogos from "./SponsorLogos";
 
 const Hero = () => {
   const eventDate = useMemo(() => new Date("2025-03-21T09:00:00"), []);
@@ -207,6 +208,16 @@ const Hero = () => {
                   Win exciting prizes worth up to{" "}
                   <span className="text-yellow-400 font-semibold">₹50,000</span>
                 </span>
+              </motion.div>
+
+              {/* Sponsor Logos - Moved inside a container for better mobile layout */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="w-full"
+              >
+                <SponsorLogos />
               </motion.div>
             </motion.div>
 
