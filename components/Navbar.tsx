@@ -5,12 +5,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { scrollToSection } from "@/utils/scroll";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [totalScrollProgress, setTotalScrollProgress] = useState(0);
+  const pathname = usePathname();
+
+  const navItems = [
+    { name: "Events", href: "#events", id: "events" },
+    { name: "Schedule", href: "#schedule", id: "schedule" },
+    { name: "Rules", href: "#rules", id: "rules" },
+    { name: "Speakers", href: "#speakers", id: "speakers" },
+    { name: "Venue", href: "#venue", id: "venue" },
+    { name: "FAQ", href: "#faq", id: "faq" },
+    { name: "Contact", href: "#contact", id: "contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,19 +109,22 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-              {["Events", "Rules", "Contact"].map((item) => (
+              {navItems.map((item) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    item.href === pathname
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  )}
                   onClick={(e) => {
                     e.preventDefault();
-                    scrollToSection(item.toLowerCase());
-                    setIsOpen(false);
+                    scrollToSection(item.id);
                   }}
-                  className="relative text-gray-300 hover:text-white transition-colors group text-sm lg:text-base"
                 >
-                  <span className="relative z-10">{item}</span>
-                  <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                  {item.name}
                 </a>
               ))}
               <Link href="/register">
@@ -172,41 +188,41 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-x-0 top-[52px] sm:top-[64px] bg-black/95 backdrop-blur-xl border-t border-white/10 mobile-menu" // Adjusted top position
+            className="absolute top-full left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 mobile-menu"
           >
-            <div className="px-4 py-4 sm:py-5 max-h-[calc(100vh-52px)] sm:max-h-[calc(100vh-64px)] overflow-y-auto">
-              <div className="space-y-1">
-                {["Events", "Rules", "Contact"].map((item) => (
+            <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+              <div className="space-y-2 py-6">
+                {navItems.map((item) => (
                   <a
-                    key={item}
-                    href={`#${item.toLowerCase()}`}
-                    className="block px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 active:bg-white/10"
+                    key={item.name}
+                    href={item.href}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-foreground hover:bg-muted"
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSection(item.toLowerCase());
+                      scrollToSection(item.id);
                       setIsOpen(false);
                     }}
                   >
-                    {item}
+                    {item.name}
                   </a>
                 ))}
-                <div className="pt-2 sm:pt-3">
-                  <Link href="/register" className="block">
-                    <div className="relative group w-full">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg opacity-75 group-hover:opacity-100 blur transition duration-300" />
-                      <button
-                        className="relative w-full px-4 sm:px-6 py-2 sm:py-2.5 bg-black rounded-lg text-white group-hover:bg-black/95 transition-colors active:scale-95 transform duration-200 text-sm sm:text-base"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Register
-                      </button>
-                    </div>
-                  </Link>
-                </div>
+              </div>
+              <div className="pt-2 sm:pt-3">
+                <Link href="/register" className="block">
+                  <div className="relative group w-full">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg opacity-75 group-hover:opacity-100 blur transition duration-300" />
+                    <button
+                      className="relative w-full px-4 sm:px-6 py-2 sm:py-2.5 bg-black rounded-lg text-white group-hover:bg-black/95 transition-colors active:scale-95 transform duration-200 text-sm sm:text-base"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Register
+                    </button>
+                  </div>
+                </Link>
               </div>
             </div>
           </motion.div>
