@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
@@ -11,6 +11,10 @@ import {
   Building2,
   Clock,
   Gamepad2,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  Tag,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
@@ -58,12 +62,38 @@ const getGameDetails = (registration: Registration) => {
   }
 };
 
+// Helper function to get event display names
+const getEventDisplayName = (eventCode: string) => {
+  switch (eventCode) {
+    case "pixel-showdown":
+      return "Pixel Showdown";
+    case "code-quest":
+      return "Code Quest";
+    case "design-derby":
+      return "Design Derby";
+    case "idea-innovate":
+      return "Idea Innovate";
+    case "capture-the-flag":
+      return "Capture The Flag";
+    default:
+      return eventCode
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+  }
+};
+
 export default function Registrations() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRegistrations, setFilteredRegistrations] = useState<
     Registration[]
   >([]);
+  const [sortBy, setSortBy] = useState<"created_at" | "team_id" | "events">(
+    "created_at"
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [filterEvent, setFilterEvent] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchRegistrations = useCallback(async () => {
@@ -130,18 +160,66 @@ export default function Registrations() {
     };
   }, []);
 
+  // Get unique events from all registrations
+  const allEvents = useMemo(() => {
+    const eventSet = new Set<string>();
+    registrations.forEach((reg) => {
+      reg.selected_events.forEach((event) => {
+        eventSet.add(event);
+      });
+    });
+    return Array.from(eventSet);
+  }, [registrations]);
+
   useEffect(() => {
-    const filtered = registrations.filter((reg) => {
+    // Filter registrations based on search query and event filter
+    let filtered = registrations.filter((reg) => {
       const searchLower = searchQuery.toLowerCase();
-      return (
+      const matchesSearch =
         reg.team_members[0]?.name?.toLowerCase().includes(searchLower) ||
         reg.team_members[0]?.email?.toLowerCase().includes(searchLower) ||
         reg.team_members[0]?.phone?.includes(searchQuery) ||
-        reg.team_members[0]?.college?.toLowerCase().includes(searchLower)
-      );
+        reg.team_members[0]?.college?.toLowerCase().includes(searchLower) ||
+        reg.team_id.toLowerCase().includes(searchLower); // Added search by Team ID
+
+      // Apply event filter if selected
+      const matchesEventFilter = filterEvent
+        ? reg.selected_events.includes(filterEvent)
+        : true;
+
+      return matchesSearch && matchesEventFilter;
     });
+
+    // Sort the filtered registrations
+    filtered = [...filtered].sort((a, b) => {
+      if (sortBy === "team_id") {
+        return sortDirection === "asc"
+          ? a.team_id.localeCompare(b.team_id)
+          : b.team_id.localeCompare(a.team_id);
+      } else if (sortBy === "events") {
+        return sortDirection === "asc"
+          ? a.selected_events.length - b.selected_events.length
+          : b.selected_events.length - a.selected_events.length;
+      } else {
+        // Default sort by created_at
+        return sortDirection === "asc"
+          ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+
     setFilteredRegistrations(filtered);
-  }, [searchQuery, registrations]);
+  }, [searchQuery, registrations, sortBy, sortDirection, filterEvent]);
+
+  // Toggle sort direction or change sort field
+  const handleSort = (field: "created_at" | "team_id" | "events") => {
+    if (sortBy === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
 
   // Update the revenue display in the stats section
   const totalRevenue = calculateTotalRevenue(registrations);
@@ -158,7 +236,7 @@ export default function Registrations() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search teams..."
+              placeholder="Search by name, email, team ID..."
               className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white 
                 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
             />
@@ -195,6 +273,72 @@ export default function Registrations() {
               {registrations.filter((reg) => reg.status === "pending").length}
             </p>
           </motion.div>
+        </div>
+
+        {/* Sorting and Filtering Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => handleSort("created_at")}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm 
+                ${sortBy === "created_at" ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-gray-400"}`}
+            >
+              <Clock className="w-4 h-4" />
+              Date
+              {sortBy === "created_at" &&
+                (sortDirection === "asc" ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                ))}
+            </button>
+            <button
+              onClick={() => handleSort("team_id")}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm 
+                ${sortBy === "team_id" ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-gray-400"}`}
+            >
+              <Tag className="w-4 h-4" />
+              Team ID
+              {sortBy === "team_id" &&
+                (sortDirection === "asc" ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                ))}
+            </button>
+            <button
+              onClick={() => handleSort("events")}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm 
+                ${sortBy === "events" ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-gray-400"}`}
+            >
+              <Calendar className="w-4 h-4" />
+              Events
+              {sortBy === "events" &&
+                (sortDirection === "asc" ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                ))}
+            </button>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filterEvent || ""}
+              onChange={(e) => setFilterEvent(e.target.value || null)}
+              className="appearance-none pl-8 pr-10 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white 
+                focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+            >
+              <option value="">All Events</option>
+              {allEvents.map((event) => (
+                <option key={event} value={event}>
+                  {getEventDisplayName(event)}
+                </option>
+              ))}
+            </select>
+            <Filter className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <ChevronDown className="absolute right-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          </div>
         </div>
 
         {/* Registration Cards */}
@@ -285,6 +429,18 @@ export default function Registrations() {
                   )}
                 </div>
 
+                {/* Registered Events */}
+                <div className="flex flex-wrap gap-2">
+                  {registration.selected_events.map((event) => (
+                    <span
+                      key={event}
+                      className="px-2 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                    >
+                      {getEventDisplayName(event)}
+                    </span>
+                  ))}
+                </div>
+
                 {/* Stats Grid */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-4">
                   <div className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-lg bg-white/5">
@@ -339,16 +495,6 @@ export default function Registrations() {
                     </div>
                   ))}
                 </div>
-
-                {/* Game Details */}
-                <div className="space-y-2 mt-2">
-                  <span className="text-xs sm:text-sm text-gray-400">
-                    {registration.game_details?.game?.toUpperCase() ||
-                      "No Game Selected"}
-                    {registration.game_details?.game === "freefire" &&
-                      " (SQUAD)"}
-                  </span>
-                </div>
               </div>
             </motion.div>
           ))}
@@ -366,8 +512,8 @@ export default function Registrations() {
               No registrations found
             </h3>
             <p className="text-gray-500 mt-1">
-              {searchQuery
-                ? "Try adjusting your search"
+              {searchQuery || filterEvent
+                ? "Try adjusting your search or filters"
                 : "Registrations will appear here"}
             </p>
           </motion.div>
