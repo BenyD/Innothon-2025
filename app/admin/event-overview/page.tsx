@@ -30,6 +30,15 @@ import {
   formatEventRegistrationForExcel,
 } from "@/utils/excel";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/use-toast";
 
 type EventRegistration = Registration & {
   event_id: string;
@@ -211,19 +220,77 @@ export default function EventOverview() {
 
   const handleExportEvent = (
     eventId: string,
-    eventRegistrations: EventRegistration[]
+    eventRegistrations: EventRegistration[],
+    type: string = "all"
   ) => {
     const eventName =
       events.find((e) => e.id === eventId)?.title || "Unknown Event";
-    const formattedData = eventRegistrations.map((registration) =>
+
+    let registrationsToExport = [...eventRegistrations];
+    let filenameSuffix = "";
+
+    switch (type) {
+      case "approved":
+        registrationsToExport = eventRegistrations.filter(
+          (reg) => reg.status === "approved"
+        );
+        filenameSuffix = "-approved";
+        break;
+      case "pending":
+        registrationsToExport = eventRegistrations.filter(
+          (reg) => reg.status === "pending"
+        );
+        filenameSuffix = "-pending";
+        break;
+      default:
+        break;
+    }
+
+    const formattedData = registrationsToExport.map((registration) =>
       formatEventRegistrationForExcel(registration, eventId)
     );
-    exportToExcel(formattedData, `${eventName}-registrations`);
+
+    exportToExcel(formattedData, `${eventName}${filenameSuffix}-registrations`);
+
+    toast({
+      title: "Export started",
+      description: `Your ${eventName} registrations data is being prepared for download`,
+    });
   };
 
-  const handleExportAllRegistrations = () => {
-    const formattedData = filteredRegistrations.map(formatRegistrationForExcel);
-    exportToExcel(formattedData, `all-registrations`);
+  const handleExportAllRegistrations = (type: string = "all") => {
+    let registrationsToExport = [...filteredRegistrations];
+    let filenameSuffix = "";
+
+    switch (type) {
+      case "approved":
+        registrationsToExport = filteredRegistrations.filter(
+          (reg) => reg.status === "approved"
+        );
+        filenameSuffix = "-approved";
+        break;
+      case "pending":
+        registrationsToExport = filteredRegistrations.filter(
+          (reg) => reg.status === "pending"
+        );
+        filenameSuffix = "-pending";
+        break;
+      case "filtered":
+        // Already filtered
+        filenameSuffix = "-filtered";
+        break;
+      default:
+        break;
+    }
+
+    const formattedData = registrationsToExport.map(formatRegistrationForExcel);
+    exportToExcel(formattedData, `all${filenameSuffix}-registrations`);
+
+    toast({
+      title: "Export started",
+      description:
+        "Your event registrations data is being prepared for download",
+    });
   };
 
   if (loading) {
@@ -246,13 +313,47 @@ export default function EventOverview() {
             <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
               Event Overview
             </h1>
-            <Button
-              onClick={handleExportAllRegistrations}
-              className="bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20 w-full sm:w-auto"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export All
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 hover:text-purple-300 border border-purple-500/20 w-full sm:w-auto">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export All
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="bg-black/95 border border-white/10 text-white"
+              >
+                <DropdownMenuLabel className="text-gray-400">
+                  Export Options
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  onClick={() => handleExportAllRegistrations("all")}
+                >
+                  Export All Event Registrations
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  onClick={() => handleExportAllRegistrations("approved")}
+                >
+                  Export Approved Event Registrations
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  onClick={() => handleExportAllRegistrations("filtered")}
+                >
+                  Export Filtered Event Registrations
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  onClick={() => handleExportAllRegistrations("pending")}
+                >
+                  Export Pending Event Registrations
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Global Filters - Adjust for mobile */}
@@ -407,15 +508,61 @@ export default function EventOverview() {
                           </span>
                         </div>
                       </div>
-                      <Button
-                        onClick={() =>
-                          handleExportEvent(eventId, eventRegistrations)
-                        }
-                        size="sm"
-                        className="bg-white/5 hover:bg-white/10 text-white p-1.5 sm:p-2"
-                      >
-                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            size="sm"
+                            className="bg-white/5 hover:bg-white/10 text-white hover:text-white p-1.5 sm:p-2"
+                          >
+                            <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="bg-black/95 border border-white/10 text-white"
+                        >
+                          <DropdownMenuLabel className="text-gray-400">
+                            Export Options
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem
+                            className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                            onClick={() =>
+                              handleExportEvent(
+                                eventId,
+                                eventRegistrations,
+                                "all"
+                              )
+                            }
+                          >
+                            All Registrations
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                            onClick={() =>
+                              handleExportEvent(
+                                eventId,
+                                eventRegistrations,
+                                "approved"
+                              )
+                            }
+                          >
+                            Approved Only
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                            onClick={() =>
+                              handleExportEvent(
+                                eventId,
+                                eventRegistrations,
+                                "pending"
+                              )
+                            }
+                          >
+                            Pending Only
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>

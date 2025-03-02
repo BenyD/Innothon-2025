@@ -114,7 +114,7 @@ const Navbar = () => {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary",
+                    "text-sm font-medium transition-colors hover:text-white",
                     item.href === pathname
                       ? "text-foreground"
                       : "text-muted-foreground"

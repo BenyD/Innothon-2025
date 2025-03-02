@@ -1315,14 +1315,22 @@ const RegistrationForm = () => {
                         <Input
                           id="transactionId"
                           value={paymentDetails.transactionId}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            // Only allow numeric characters
+                            const numericValue = e.target.value.replace(
+                              /\D/g,
+                              ""
+                            );
                             setPaymentDetails({
                               ...paymentDetails,
-                              transactionId: e.target.value,
-                            })
-                          }
+                              transactionId: numericValue,
+                            });
+                          }}
                           placeholder="Enter your transaction ID"
                           className="mt-1.5 bg-white/5 border-white/10"
+                          required
+                          pattern="[0-9]*"
+                          inputMode="numeric"
                         />
                       </div>
 
@@ -1358,6 +1366,7 @@ const RegistrationForm = () => {
                               type="file"
                               className="hidden"
                               accept="image/*"
+                              required
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {

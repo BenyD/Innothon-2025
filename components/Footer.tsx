@@ -51,8 +51,13 @@ const Footer = () => {
               {[
                 { name: "Home", href: "/" },
                 { name: "Events", href: "#events" },
+                { name: "Schedule", href: "#schedule" },
                 { name: "Rules", href: "#rules" },
+                { name: "Speakers", href: "#speakers" },
+                { name: "Venue", href: "#venue" },
+                { name: "FAQ", href: "#faq" },
                 { name: "Contact", href: "#contact" },
+                { name: "Register", href: "/register" },
                 { name: "Admin", href: "/admin" },
               ].map((item) => (
                 <li
