@@ -46,16 +46,19 @@ export const RegistrationApprovedEmail = ({
             alt="HITS Logo"
             style={logo}
           />
-          
+
           <Text style={title}>Registration Confirmation</Text>
           <Text style={subtitle}>INNOTHON&apos;25</Text>
 
           <Section style={content}>
             <Text style={greeting}>Dear {teamMember.name},</Text>
-            
+
             <Text style={paragraph}>
-              Thank you for registering for Innothon&apos;25. Your registration has been confirmed.
-              {isTeamLeader && teamSize > 1 && " As team leader, please share this information with your team members."}
+              Thank you for registering for Innothon&apos;25. Your registration
+              has been confirmed.
+              {isTeamLeader &&
+                teamSize > 1 &&
+                " As team leader, please share this information with your team members."}
             </Text>
 
             {/* Registration Details */}
@@ -90,7 +93,9 @@ export const RegistrationApprovedEmail = ({
                   <Text style={label}>Team Size:</Text>
                 </div>
                 <div style={valueContainer}>
-                  <Text style={value}>{teamSize} member{teamSize > 1 ? 's' : ''}</Text>
+                  <Text style={value}>
+                    {teamSize} member{teamSize > 1 ? "s" : ""}
+                  </Text>
                 </div>
               </div>
               <div style={detailRow}>
@@ -107,7 +112,9 @@ export const RegistrationApprovedEmail = ({
             <Text style={sectionTitle}>Registered Events</Text>
             <ul style={eventsList}>
               {selectedEvents.map((event) => (
-                <li key={event} style={eventItem}>{event}</li>
+                <li key={event} style={eventItem}>
+                  {event}
+                </li>
               ))}
             </ul>
 
@@ -158,21 +165,42 @@ export const RegistrationApprovedEmail = ({
               <li style={ruleItem}>Maintain decorum during the event</li>
             </ul>
 
+            <Text style={sectionTitle}>Join Our WhatsApp Group</Text>
+            <Text style={paragraph}>
+              Please join our official WhatsApp group for important updates and
+              announcements:
+              <br />
+              <a
+                href="https://chat.whatsapp.com/EJ71kKE5Qs5J3WLEm6AMRI"
+                style={linkStyle}
+              >
+                Click here to join the WhatsApp group
+              </a>
+            </Text>
+
             <Hr style={divider} />
 
             <Text style={footerText}>
-              For any queries, contact:<br />
-              Blue Screen Programming Club<br />
-              Department of Computer Science and Engineering<br />
-              Hindustan Institute of Technology and Science<br />
-              Email: bspc.hit@gmail.com<br />
+              For any queries, contact:
+              <br />
+              Blue Screen Programming Club
+              <br />
+              Department of Computer Science and Engineering
+              <br />
+              Hindustan Institute of Technology and Science
+              <br />
+              Email: bspc.hit@gmail.com
+              <br />
               Phone: +91 98848 19912 (Beny Dishon K)
             </Text>
 
             <Text style={instituteName}>
-              Blue Screen Programming Club<br />
-              Department of Computer Science and Engineering<br />
-              Hindustan Institute of Technology and Science<br />
+              Blue Screen Programming Club
+              <br />
+              Department of Computer Science and Engineering
+              <br />
+              Hindustan Institute of Technology and Science
+              <br />
               Chennai, India
             </Text>
           </Section>
@@ -352,6 +380,14 @@ const instituteName = {
   color: "#6b7280",
   textAlign: "center" as const,
   lineHeight: "1.5",
+};
+
+const linkStyle = {
+  color: "#3b82f6",
+  textDecoration: "underline",
+  fontWeight: "500",
+  display: "inline-block",
+  marginTop: "8px",
 };
 
 export default RegistrationApprovedEmail;

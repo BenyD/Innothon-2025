@@ -5,16 +5,24 @@ import type { Registration, GameDetails } from "@/types/registration";
 type ExcelRow = Record<string, string | number>;
 
 export const exportToExcel = (data: ExcelRow[], filename: string) => {
+  // Sort data by Team ID in ascending order
+  const sortedData = [...data].sort((a, b) => {
+    const teamIdA = (a["Team ID"] as string) || "";
+    const teamIdB = (b["Team ID"] as string) || "";
+    return teamIdA.localeCompare(teamIdB);
+  });
+
   // Updated column widths for better readability
   const colWidths = [
-    { wch: 12 }, // Team ID
+    { wch: 15 }, // Registration ID
+    { wch: 15 }, // Team ID
     { wch: 20 }, // Registration Date
     { wch: 25 }, // Team Name
     { wch: 12 }, // Status
-    { wch: 12 }, // Amount
-    { wch: 15 }, // Payment Status
+    { wch: 12 }, // Payment Status
     { wch: 20 }, // Transaction ID
     { wch: 20 }, // Payment Date
+    { wch: 15 }, // Amount
     { wch: 25 }, // Leader Name
     { wch: 30 }, // Leader Email
     { wch: 15 }, // Leader Phone
@@ -35,16 +43,63 @@ export const exportToExcel = (data: ExcelRow[], filename: string) => {
     { wch: 20 }, // Member 3 Department
     { wch: 8 }, // Member 3 Year
     { wch: 40 }, // Selected Events
-    { wch: 25 }, // Game Details
+    { wch: 25 }, // Game Type
+    { wch: 15 }, // Game Format
+    { wch: 15 }, // Player ID
   ];
 
-  const worksheet = XLSX.utils.json_to_sheet(data);
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Create the main worksheet with sorted data
+  const worksheet = XLSX.utils.json_to_sheet(sortedData);
+
+  // Set column widths
   worksheet["!cols"] = colWidths;
 
-  // Add some styling
-  const workbook = XLSX.utils.book_new();
+  // Add column headers with bold styling
+  const headers = [
+    "Registration ID",
+    "Team ID",
+    "Registration Date",
+    "Team Name",
+    "Status",
+    "Payment Status",
+    "Transaction ID",
+    "Payment Date",
+    "Amount",
+    "Leader Name",
+    "Leader Email",
+    "Leader Phone",
+    "Leader College",
+    "Leader Department",
+    "Leader Year",
+    "Leader Gender",
+    "Member 2",
+    "Member 2 Email",
+    "Member 2 Phone",
+    "Member 2 College",
+    "Member 2 Department",
+    "Member 2 Year",
+    "Member 3",
+    "Member 3 Email",
+    "Member 3 Phone",
+    "Member 3 College",
+    "Member 3 Department",
+    "Member 3 Year",
+    "Selected Events",
+    "Game Type",
+    "Game Format",
+    "Player ID",
+  ].map((header) => ({ v: header, t: "s", s: { font: { bold: true } } }));
+
+  // Add headers at the top
+  XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: "A1" });
+
+  // Add the worksheet to the workbook
   XLSX.utils.book_append_sheet(workbook, worksheet, "Registrations");
 
+  // Add the date to the filename
   const date = new Date().toISOString().split("T")[0];
   XLSX.writeFile(workbook, `${filename}_${date}.xlsx`);
 };
@@ -92,15 +147,36 @@ export const formatRegistrationForExcel = (registration: Registration) => {
   const formattedStatus =
     registration.status.charAt(0).toUpperCase() + registration.status.slice(1);
 
+  // Format payment status
+  const formattedPaymentStatus =
+    registration.payment_status.charAt(0).toUpperCase() +
+    registration.payment_status.slice(1);
+
+  // Format selected events
+  const formattedEvents = Array.isArray(registration.selected_events)
+    ? registration.selected_events
+        .map((event) => events.find((e) => e.id === event)?.title || event)
+        .join(", ")
+    : "N/A";
+
+  // Format game details
+  const formatGameDetails = (details: GameDetails) => {
+    if (!details) return "-";
+    return `${details.game?.toUpperCase() || "N/A"} (${details.format?.toUpperCase() || "N/A"})`;
+  };
+
   return {
+    "Registration ID": registration.id || "N/A",
     "Team ID": registration.team_id || "N/A",
     "Registration Date": formatDate(registration.created_at),
     "Team Name": registration.team_name || "N/A",
     Status: formattedStatus,
-    Amount: formattedAmount,
-    "Payment Status": registration.payment_status || "Pending",
+    "Payment Status": formattedPaymentStatus,
     "Transaction ID": registration.transaction_id || "Pending",
-    "Payment Date": formatDate(registration.created_at), // Use registration date as payment date
+    "Payment Date": registration.payment_date
+      ? formatDate(registration.payment_date)
+      : "Pending",
+    Amount: formattedAmount,
 
     // Leader Details
     "Leader Name": registration.team_members[0]?.name || "N/A",
@@ -127,12 +203,10 @@ export const formatRegistrationForExcel = (registration: Registration) => {
     "Member 3 Department": registration.team_members[2]?.department || "-",
     "Member 3 Year": registration.team_members[2]?.year || "-",
 
-    "Selected Events": Array.isArray(registration.selected_events)
-      ? getEventTitles(registration.selected_events)
-      : "N/A",
-    "Game Details": registration.game_details
-      ? formatGameDetails(registration.game_details as GameDetails)
-      : "-",
+    "Selected Events": formattedEvents,
+    "Game Type": registration.game_details?.game?.toUpperCase() || "N/A",
+    "Game Format": registration.game_details?.format?.toUpperCase() || "N/A",
+    "Player ID": registration.team_members[0]?.player_id || "N/A",
   };
 };
 

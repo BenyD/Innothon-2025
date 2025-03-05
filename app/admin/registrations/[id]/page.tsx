@@ -276,32 +276,50 @@ export default function RegistrationDetails() {
             }
           >
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <Button
-                onClick={() => handleStatusUpdate("rejected")}
-                variant="destructive"
-                disabled={updating}
-                className="w-full sm:w-auto bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
-              >
-                {updating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <X className="w-4 h-4 mr-2" />
-                )}
-                Reject
-              </Button>
-              <Button
-                onClick={() => handleStatusUpdate("approved")}
-                variant="default"
-                disabled={updating}
-                className="w-full sm:w-auto bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
-              >
-                {updating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Check className="w-4 h-4 mr-2" />
-                )}
-                Approve
-              </Button>
+              {registration.status === "approved" ? (
+                <Button
+                  variant="outline"
+                  onClick={handleResendEmails}
+                  disabled={updating}
+                  className="w-full sm:w-auto bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  {updating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Mail className="w-4 h-4 mr-2" />
+                  )}
+                  Resend Approval Email
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => handleStatusUpdate("rejected")}
+                    variant="destructive"
+                    disabled={updating}
+                    className="w-full sm:w-auto bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
+                  >
+                    {updating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <X className="w-4 h-4 mr-2" />
+                    )}
+                    Reject
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusUpdate("approved")}
+                    variant="default"
+                    disabled={updating}
+                    className="w-full sm:w-auto bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
+                  >
+                    {updating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4 mr-2" />
+                    )}
+                    Approve
+                  </Button>
+                </>
+              )}
             </div>
           </RoleGuard>
         </div>
@@ -485,28 +503,6 @@ export default function RegistrationDetails() {
                 </div>
               </div>
             </div>
-
-            {/* Resend Email Button */}
-            {registration.status === "approved" && (
-              <Button
-                variant="secondary"
-                onClick={handleResendEmails}
-                disabled={updating}
-                className="w-full bg-white/5 hover:bg-white/10 text-white border-white/10"
-              >
-                {updating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    <span>Resending...</span>
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    <span>Resend Approval Email</span>
-                  </>
-                )}
-              </Button>
-            )}
           </motion.div>
         </div>
       </motion.div>

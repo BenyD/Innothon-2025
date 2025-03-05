@@ -398,25 +398,25 @@ export default function Registrations() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-purple-500/20" />
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleExport("all")}
                 >
                   Export All Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleExport("participants")}
                 >
                   Export All Participants (Approved Only)
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleExport("filtered")}
                 >
                   Export Filtered Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleExport("pending")}
                 >
                   Export Pending Registrations
@@ -481,14 +481,14 @@ export default function Registrations() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative col-span-1 md:col-span-2">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <Search className="w-5 h-5 text-purple-500" strokeWidth={2} />
+              <Search className="w-5 h-5 text-purple-400" strokeWidth={2.5} />
             </div>
             <Input
               type="text"
               placeholder="Search by team ID, member name, email, college..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-black/50 backdrop-blur-sm border border-purple-500/20 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/30 focus-visible:border-purple-500/50"
+              className="pl-10 bg-black/80 border border-purple-500/20 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/30 focus-visible:border-purple-500/50"
             />
           </div>
 
@@ -562,28 +562,28 @@ export default function Registrations() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-purple-500/20" />
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleSort("created_at")}
                 >
                   <span>Date</span>
                   {getSortIcon("created_at")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleSort("team_size")}
                 >
                   <span>Team Size</span>
                   {getSortIcon("team_size")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleSort("total_amount")}
                 >
                   <span>Amount</span>
                   {getSortIcon("total_amount")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer flex items-center justify-between data-[highlighted]:bg-purple-500/10 data-[highlighted]:text-white"
                   onClick={() => handleSort("team_id")}
                 >
                   <span>Team ID</span>
