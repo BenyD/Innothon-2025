@@ -97,8 +97,18 @@ export default function Registrations() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortField>("created_at");
-  const [sortDirection, setSortDirection] = useState<SortOrder>("desc");
+  const [sortBy, setSortBy] = useState<SortField>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("sortBy") as SortField) || "created_at";
+    }
+    return "created_at";
+  });
+  const [sortDirection, setSortDirection] = useState<SortOrder>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("sortDirection") as SortOrder) || "desc";
+    }
+    return "desc";
+  });
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
@@ -266,11 +276,15 @@ export default function Registrations() {
   const handleSort = (field: SortField) => {
     if (sortBy === field) {
       // Toggle sort order if clicking the same field
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      const newDirection = sortDirection === "asc" ? "desc" : "asc";
+      setSortDirection(newDirection);
+      localStorage.setItem("sortDirection", newDirection);
     } else {
       // Set new field and default to descending order
       setSortBy(field);
       setSortDirection("desc");
+      localStorage.setItem("sortBy", field);
+      localStorage.setItem("sortDirection", "desc");
     }
   };
 
