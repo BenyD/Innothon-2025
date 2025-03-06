@@ -548,25 +548,8 @@ export const events: Event[] = [
     title: "Pixel Showdown",
     shortDescription:
       "Multi-game tournament featuring Free Fire, BGMI, and PES",
-    fullDescription: `Join us for an action-packed gaming tournament featuring three competitive esports titles:
-
-• Free Fire (Squad Tournament)
-  - Online Qualifiers (Battle Royale - Bermuda)
-  - Top 15-20 teams advance to Offline Finals
-  - Offline Finals: Clash Squad with Knockout Format
-  - Open to all college students
-  - Prize pool: First ₹3,000, Second ₹1,500
-
-• BGMI (Squad Tournament)
-  - 12 intense matches over 3 days
-  - Point-based scoring system
-  - Prize pool: First ₹3,000, Second ₹1,000
-
-• PES eFootball (Solo)
-  - League stage followed by knockouts
-  - Competitive matches with standard rules
-  - Prize pool: First ₹1,000, Second ₹500`,
-
+    fullDescription:
+      "Join us for an action-packed gaming tournament featuring three competitive esports titles: Free Fire, BGMI, and PES eFootball. Get your squad ready, compete, and claim victory on March 21, 2025!",
     rules: [
       // General Gaming Rules
       "Valid game accounts required for all titles",
@@ -592,16 +575,17 @@ export const events: Event[] = [
       // Technical Guidelines
       "Test your game and setup before tournament day",
       "Keep your game client updated",
-      "Ensure stable internet connection (minimum 10 Mbps)",
+      "Ensure stable internet connection (minimum 5 Mbps)",
       "Use ethernet connection when possible",
 
       // Tournament Guidelines
-      "Join the official Discord server for updates",
+      "Team Leaders are responsible for looking to all the messages sent in the official WhatsApp Group",
       "Check tournament brackets 24 hours before start",
       "Report issues to admins immediately",
       "Save and submit match screenshots as proof",
       "Follow standard competitive settings",
       "Maintain professional conduct throughout",
+      "Poor Behaviour will lead to disqualification",
 
       // Participation Guidelines
       "Keep college ID ready for verification",
@@ -620,14 +604,24 @@ export const events: Event[] = [
         contact: "+91 72001 37507",
       },
       {
+        name: "Fayaz",
+        role: "Freefire Event Coordinator",
+        contact: "+91 93632 11481",
+      },
+      {
+        name: "Jigash",
+        role: "BGMI Event Coordinator",
+        contact: "+91 87787 52144",
+      },
+      {
+        name: "Jagadesh",
+        role: "PES Event Coordinator",
+        contact: "+91 74183 80653",
+      },
+      {
         name: "V Vishal",
         role: "Event Coordinator",
         contact: "+91 93841 59875",
-      },
-      {
-        name: "Anna Elizabeth Pravin",
-        role: "Asst. Event Coordinator",
-        contact: "+91 63824 96273",
       },
     ],
     registrationFee: "Varies by game and team size",
@@ -675,9 +669,10 @@ export const events: Event[] = [
         game: "BGMI",
         registrationFee: "₹200 per team",
         teamSize: "4 members",
-        format: "3 Days, 4 matches per day",
+        format: "3 Days, 2 matches per day - ONLINE QUALIFIERS AND FINALS",
         scoring: {
-          placement: "1st: 15pts, 2nd: 12pts, 3rd: 10pts...",
+          placement:
+            "1st: 12pts, 2nd: 9pts, 3rd: 8pts, 4th: 7pts, 5th: 6pts, 6th: 5pts, 7th: 4pts, 8th: 3pts, 9th: 2pts, 10th: 1pt",
           kills: "1 point per kill",
         },
       },
