@@ -23,6 +23,7 @@ import {
   Mail,
   Phone,
   School,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import type { Registration } from "@/types/registration";
@@ -48,6 +49,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
+import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 
 // Animation variants
 const container = {
@@ -96,6 +98,7 @@ export default function Registrations() {
   >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [updating, setUpdating] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortField>(() => {
     if (typeof window !== "undefined") {
@@ -112,6 +115,121 @@ export default function Registrations() {
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
+
+  const handleApprove = async (registrationId: string) => {
+    try {
+      setUpdating(registrationId);
+      const registration = registrations.find(
+        (reg) => reg.id === registrationId
+      );
+      if (!registration?.team_members) {
+        throw new Error("No team members found");
+      }
+
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          status: "approved",
+          payment_status: "completed",
+        })
+        .eq("id", registrationId);
+
+      if (error) throw error;
+
+      // Send approval emails
+      const emailResult = await sendApprovalEmails(
+        registration.team_members,
+        registration.id,
+        registration.selected_events,
+        registration.total_amount,
+        registration.team_size,
+        registration.team_id
+      );
+
+      if (!emailResult.success) {
+        toast({
+          title: "Warning",
+          description:
+            "Registration approved but failed to send notification emails",
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Registration approved",
+        description: "The team registration has been approved successfully",
+      });
+
+      // Refresh the registrations list
+      fetchRegistrations();
+    } catch (error) {
+      console.error("Error approving registration:", error);
+      toast({
+        title: "Approval failed",
+        description: "Could not approve the registration",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const handleReject = async (registrationId: string) => {
+    try {
+      setUpdating(registrationId);
+      const registration = registrations.find(
+        (reg) => reg.id === registrationId
+      );
+      if (!registration?.team_members) {
+        throw new Error("No team members found");
+      }
+
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          status: "rejected",
+          payment_status: "pending",
+        })
+        .eq("id", registrationId);
+
+      if (error) throw error;
+
+      // Send rejection emails
+      const emailResult = await sendRejectionEmails(
+        registration.team_members,
+        registration.id,
+        registration.selected_events,
+        registration.total_amount,
+        registration.team_size
+      );
+
+      if (!emailResult.success) {
+        toast({
+          title: "Warning",
+          description:
+            "Registration rejected but failed to send notification emails",
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Registration rejected",
+        description: "The team registration has been rejected",
+      });
+
+      // Refresh the registrations list
+      fetchRegistrations();
+    } catch (error) {
+      console.error("Error rejecting registration:", error);
+      toast({
+        title: "Rejection failed",
+        description: "Could not reject the registration",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdating(null);
+    }
+  };
 
   const fetchRegistrations = useCallback(
     async (showToast = false) => {
@@ -705,102 +823,141 @@ export default function Registrations() {
                 variants={item}
                 className="bg-black/50 backdrop-blur-sm border border-purple-500/20 rounded-xl p-5 hover:bg-black/60 transition-colors"
               >
-                <Link
-                  href={`/admin/registrations/${registration.id}`}
-                  className="block"
-                >
-                  <div className="flex flex-col md:flex-row justify-between">
-                    <div className="flex items-start gap-4 mb-4 md:mb-0">
-                      <div className="bg-purple-500/20 rounded-full p-2.5 flex-shrink-0 border border-purple-500/30">
-                        <User2 className="w-6 h-6 text-purple-400" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-lg font-medium text-white">
-                            {registration.team_id || "No Team ID"}
-                          </h3>
-                          <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                            {registration.team_members[0]?.name || "Unnamed"}
-                          </Badge>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <Users className="w-3.5 h-3.5 mr-1.5 text-blue-400" />
-                            {registration.team_size} members
-                          </div>
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <School className="w-3.5 h-3.5 mr-1.5 text-green-400" />
-                            {registration.team_members[0]?.college}
-                          </div>
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <Calendar className="w-3.5 h-3.5 mr-1.5 text-yellow-400" />
-                            {new Date(
-                              registration.created_at
-                            ).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <IndianRupee className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
-                            {registration.total_amount}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {registration.selected_events.map((event) => (
-                            <Badge
-                              key={event}
-                              className="bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                            >
-                              {getEventDisplayName(event)}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <div className="mt-3 pt-3 border-t border-purple-500/10 flex flex-wrap gap-3">
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <Mail className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
-                            {registration.team_members[0]?.email}
-                          </div>
-                          <div className="flex items-center text-gray-400 text-sm">
-                            <Phone className="w-3.5 h-3.5 mr-1.5 text-pink-400" />
-                            {registration.team_members[0]?.phone}
-                          </div>
-                        </div>
-                      </div>
+                <div className="flex flex-col md:flex-row justify-between">
+                  <div className="flex items-start gap-4 mb-4 md:mb-0">
+                    <div className="bg-purple-500/20 rounded-full p-2.5 flex-shrink-0 border border-purple-500/30">
+                      <User2 className="w-6 h-6 text-purple-400" />
                     </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-medium text-white">
+                          {registration.team_id || "No Team ID"}
+                        </h3>
+                        <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          {registration.team_members[0]?.name || "Unnamed"}
+                        </Badge>
+                      </div>
 
-                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-3 mt-3 md:mt-0">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${
-                          registration.status === "approved"
-                            ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                            : registration.status === "rejected"
-                              ? "bg-red-500/20 text-red-300 border border-red-500/30"
-                              : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                        }`}
-                      >
-                        {registration.status === "approved" ? (
-                          <CheckCircle className="w-3 h-3 mr-1.5" />
-                        ) : registration.status === "rejected" ? (
-                          <XCircle className="w-3 h-3 mr-1.5" />
-                        ) : (
-                          <Clock className="w-3 h-3 mr-1.5" />
-                        )}
-                        {registration.status.charAt(0).toUpperCase() +
-                          registration.status.slice(1)}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <Users className="w-3.5 h-3.5 mr-1.5 text-blue-400" />
+                          {registration.team_size} members
+                        </div>
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <School className="w-3.5 h-3.5 mr-1.5 text-green-400" />
+                          {registration.team_members[0]?.college}
+                        </div>
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <Calendar className="w-3.5 h-3.5 mr-1.5 text-yellow-400" />
+                          {new Date(
+                            registration.created_at
+                          ).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <IndianRupee className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
+                          {registration.total_amount}
+                        </div>
+                      </div>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-purple-400 hover:text-purple-300 border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/10 bg-black/30"
-                      >
-                        View Details
-                        <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {registration.selected_events.map((event) => (
+                          <Badge
+                            key={event}
+                            className="bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                          >
+                            {getEventDisplayName(event)}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-purple-500/10 flex flex-wrap gap-3">
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <Mail className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
+                          {registration.team_members[0]?.email}
+                        </div>
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <Phone className="w-3.5 h-3.5 mr-1.5 text-pink-400" />
+                          {registration.team_members[0]?.phone}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </Link>
+
+                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-3 mt-3 md:mt-0">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${
+                        registration.status === "approved"
+                          ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                          : registration.status === "rejected"
+                            ? "bg-red-500/20 text-red-300 border border-red-500/30"
+                            : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                      }`}
+                    >
+                      {registration.status === "approved" ? (
+                        <CheckCircle className="w-3 h-3 mr-1.5" />
+                      ) : registration.status === "rejected" ? (
+                        <XCircle className="w-3 h-3 mr-1.5" />
+                      ) : (
+                        <Clock className="w-3 h-3 mr-1.5" />
+                      )}
+                      {registration.status.charAt(0).toUpperCase() +
+                        registration.status.slice(1)}
+                    </span>
+
+                    <div className="flex gap-2">
+                      {registration.status === "pending" && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-green-400 hover:text-green-300 border-green-500/30 hover:border-green-500/50 hover:bg-green-500/10 bg-black/30"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleApprove(registration.id);
+                            }}
+                            disabled={updating === registration.id}
+                          >
+                            {updating === registration.id ? (
+                              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            ) : (
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                            )}
+                            Accept
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 border-red-500/30 hover:border-red-500/50 hover:bg-red-500/10 bg-black/30"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleReject(registration.id);
+                            }}
+                            disabled={updating === registration.id}
+                          >
+                            {updating === registration.id ? (
+                              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            ) : (
+                              <XCircle className="w-4 h-4 mr-1" />
+                            )}
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                      <Link href={`/admin/registrations/${registration.id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-purple-400 hover:text-purple-300 border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/10 bg-black/30"
+                        >
+                          View Details
+                          <ChevronRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))
           ) : (
