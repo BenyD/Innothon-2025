@@ -26,7 +26,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import type { Registration } from "@/types/registration";
+import type { Registration, TeamMember } from "@/types/registration";
 
 const COLORS = [
   "#3B82F6",
@@ -156,7 +156,7 @@ export default function Analytics() {
       const internalParticipants = registrationsWithTeamMembers.reduce(
         (sum, r) =>
           sum +
-          (r.team_members?.filter((member) => {
+          (r.team_members?.filter((member: TeamMember) => {
             const college = member.college?.toLowerCase() || "";
             return college.includes("hindustan") || college.includes("hits");
           })?.length || 0),
@@ -651,7 +651,7 @@ function processEventParticipants(
 
       // Count internal participants (from Hindustan/HITS)
       const internalParticipantsInEvent =
-        reg.team_members?.filter((member) => {
+        reg.team_members?.filter((member: TeamMember) => {
           const college = member.college?.toLowerCase() || "";
           return college.includes("hindustan") || college.includes("hits");
         })?.length || 0;

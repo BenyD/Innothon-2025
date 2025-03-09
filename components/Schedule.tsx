@@ -11,13 +11,11 @@ import {
   Clock,
   MapPin,
   Trophy,
-  Calendar,
   ChevronRight,
-  ArrowRight,
   Calendar as CalendarIcon,
 } from "lucide-react";
 import { events } from "@/data/events";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 // Organize events by date and time
 const scheduleData = [
@@ -148,17 +146,6 @@ const Schedule = () => {
   // Function to toggle expanded event on mobile
   const toggleEventExpansion = (index: number) => {
     setExpandedEvent(expandedEvent === index ? null : index);
-  };
-
-  // Function to format time for better display
-  const formatTimeDisplay = (timeString: string) => {
-    const [start, end] = timeString.split(" - ");
-    return (
-      <div className="flex flex-col">
-        <span className="font-medium">{start}</span>
-        <span className="text-xs text-gray-400">to {end}</span>
-      </div>
-    );
   };
 
   return (

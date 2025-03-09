@@ -5,15 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { scrollToSection } from "@/utils/scroll";
-import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [totalScrollProgress, setTotalScrollProgress] = useState(0);
-  const pathname = usePathname();
 
   const navItems = [
     { name: "Events", href: "#events", id: "events" },
