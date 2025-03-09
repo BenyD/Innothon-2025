@@ -46,6 +46,13 @@ type RevenueTrendData = {
   revenue: number;
   potentialRevenue: number;
 };
+type ParticipantDistribution = { name: string; value: number };
+type EventParticipantData = {
+  event: string;
+  total: number;
+  internal: number;
+  external: number;
+};
 
 export default function Analytics() {
   const [loading, setLoading] = useState(true);
@@ -57,43 +64,106 @@ export default function Analytics() {
     approvedRegistrations: 0,
     rejectedRegistrations: 0,
     averageTeamSize: 0,
+    totalParticipants: 0,
+    internalParticipants: 0,
+    externalParticipants: 0,
   });
   const [registrationTrend, setRegistrationTrend] = useState<TrendData[]>([]);
   const [eventDistribution, setEventDistribution] = useState<EventData[]>([]);
   const [revenueByEvent, setRevenueByEvent] = useState<RevenueData[]>([]);
   const [revenueTrend, setRevenueTrend] = useState<RevenueTrendData[]>([]);
+  const [participantDistribution, setParticipantDistribution] = useState<
+    ParticipantDistribution[]
+  >([]);
+  const [eventParticipants, setEventParticipants] = useState<
+    EventParticipantData[]
+  >([]);
 
   const fetchStats = useCallback(async () => {
     try {
-      const { data: registrations, error } = await supabase
+      // First, fetch registrations
+      const { data: registrations, error: registrationsError } = await supabase
         .from("registrations")
         .select("*");
 
-      if (error) throw error;
+      if (registrationsError) throw registrationsError;
+
+      if (!registrations || registrations.length === 0) {
+        setStats({
+          totalRegistrations: 0,
+          totalRevenue: 0,
+          approvedRevenue: 0,
+          pendingRegistrations: 0,
+          approvedRegistrations: 0,
+          rejectedRegistrations: 0,
+          averageTeamSize: 0,
+          totalParticipants: 0,
+          internalParticipants: 0,
+          externalParticipants: 0,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Then, fetch team members
+      const { data: teamMembers, error: teamMembersError } = await supabase
+        .from("team_members")
+        .select("*");
+
+      if (teamMembersError) throw teamMembersError;
+
+      // Associate team members with their registrations
+      const registrationsWithTeamMembers = registrations.map((reg) => {
+        const members =
+          teamMembers?.filter((member) => member.team_id === reg.team_id) || [];
+        return {
+          ...reg,
+          team_members: members,
+        };
+      });
 
       // Calculate basic stats
-      const total = registrations.length;
-      const pending = registrations.filter(
+      const total = registrationsWithTeamMembers.length;
+      const pending = registrationsWithTeamMembers.filter(
         (r) => r.status === "pending"
       ).length;
-      const approved = registrations.filter(
+      const approved = registrationsWithTeamMembers.filter(
         (r) => r.status === "approved"
       ).length;
-      const rejected = registrations.filter(
+      const rejected = registrationsWithTeamMembers.filter(
         (r) => r.status === "rejected"
       ).length;
 
       // Calculate both actual and potential revenue
-      const totalRevenue = registrations.reduce(
+      const totalRevenue = registrationsWithTeamMembers.reduce(
         (sum, r) => sum + r.total_amount,
         0
       );
-      const approvedRevenue = registrations
+      const approvedRevenue = registrationsWithTeamMembers
         .filter((r) => r.status === "approved")
         .reduce((sum, r) => sum + r.total_amount, 0);
 
       const avgTeamSize =
-        registrations.reduce((sum, r) => sum + r.team_size, 0) / total;
+        registrationsWithTeamMembers.reduce((sum, r) => sum + r.team_size, 0) /
+        total;
+
+      // Calculate total participants and internal vs external
+      const totalParticipants = registrationsWithTeamMembers.reduce(
+        (sum, r) => sum + (r.team_members?.length || 0),
+        0
+      );
+
+      const internalParticipants = registrationsWithTeamMembers.reduce(
+        (sum, r) =>
+          sum +
+          (r.team_members?.filter((member) => {
+            const college = member.college?.toLowerCase() || "";
+            return college.includes("hindustan") || college.includes("hits");
+          })?.length || 0),
+        0
+      );
+
+      const externalParticipants = totalParticipants - internalParticipants;
 
       setStats({
         totalRegistrations: total,
@@ -103,15 +173,33 @@ export default function Analytics() {
         approvedRegistrations: approved,
         rejectedRegistrations: rejected,
         averageTeamSize: Number(avgTeamSize.toFixed(1)),
+        totalParticipants,
+        internalParticipants,
+        externalParticipants,
       });
 
       // Process all trends and distributions
-      setRegistrationTrend(processRegistrationTrend(registrations));
-      setEventDistribution(processEventDistribution(registrations));
-      setRevenueByEvent(processRevenueByEvent(registrations));
-      setRevenueTrend(processRevenueTrend(registrations));
+      setRegistrationTrend(
+        processRegistrationTrend(registrationsWithTeamMembers)
+      );
+      setEventDistribution(
+        processEventDistribution(registrationsWithTeamMembers)
+      );
+      setRevenueByEvent(processRevenueByEvent(registrationsWithTeamMembers));
+      setRevenueTrend(processRevenueTrend(registrationsWithTeamMembers));
+      setParticipantDistribution([
+        { name: "Internal", value: internalParticipants },
+        { name: "External", value: externalParticipants },
+      ]);
+      setEventParticipants(
+        processEventParticipants(registrationsWithTeamMembers)
+      );
     } catch (error) {
       console.error("Error fetching stats:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
     } finally {
       setLoading(false);
     }
@@ -134,7 +222,7 @@ export default function Analytics() {
         </div>
 
         {/* Stats Overview - Optimized for mobile */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
           <StatCard
             title="Total Registrations"
             value={stats.totalRegistrations}
@@ -144,11 +232,11 @@ export default function Analytics() {
           />
           <StatCard
             title="Revenue"
-            value={`₹${stats.totalRevenue}`}
+            value={`₹${typeof stats.totalRevenue === "number" ? stats.totalRevenue.toLocaleString("en-IN") : 0}`}
             icon={IndianRupee}
             color="text-green-400"
             loading={loading}
-            subtitle={`₹${stats.approvedRevenue} approved`}
+            subtitle={`₹${typeof stats.approvedRevenue === "number" ? stats.approvedRevenue.toLocaleString("en-IN") : 0} approved`}
           />
           <StatCard
             title="Pending"
@@ -171,19 +259,39 @@ export default function Analytics() {
             color="text-red-400"
             loading={loading}
           />
+        </div>
+
+        {/* Participants Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <StatCard
-            title="Avg Team"
-            value={stats.averageTeamSize}
+            title="Total Participants"
+            value={stats.totalParticipants}
+            icon={Users}
+            color="text-blue-400"
+            loading={loading}
+          />
+          <StatCard
+            title="Internal Participants"
+            value={stats.internalParticipants}
+            icon={Users}
+            color="text-emerald-400"
+            loading={loading}
+            subtitle="From Hindustan/HITS"
+          />
+          <StatCard
+            title="External Participants"
+            value={stats.externalParticipants}
             icon={Users}
             color="text-purple-400"
             loading={loading}
+            subtitle="From other institutions"
           />
         </div>
 
         {/* Charts Grid - Optimized for mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Registration Trend */}
-          <div className="p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10">
+          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
             <h3 className="text-lg font-medium text-white mb-4">
               Registration Trend
             </h3>
@@ -219,7 +327,7 @@ export default function Analytics() {
           </div>
 
           {/* Event Distribution */}
-          <div className="p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10">
+          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
             <h3 className="text-lg font-medium text-white mb-4">
               Event Distribution
             </h3>
@@ -253,120 +361,181 @@ export default function Analytics() {
                     }}
                     itemStyle={{ color: "white" }}
                     labelStyle={{ color: "white" }}
-                    formatter={(value, name) => [`${value}`, `${name}`]}
                   />
-                  <Legend
-                    wrapperStyle={{ fontSize: "12px" }}
-                    layout="horizontal"
-                    align="center"
-                  />
+                  <Legend wrapperStyle={{ fontSize: "12px" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
+        </div>
 
-          {/* Revenue Charts - Full width on all screens */}
-          <div className="col-span-1 lg:col-span-2 space-y-4 sm:space-y-6">
-            {/* Revenue Trend */}
-            <div className="p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10">
-              <h3 className="text-lg font-medium text-white mb-4">
-                Revenue Trend
-              </h3>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer>
-                  <LineChart data={revenueTrend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                    <XAxis
-                      dataKey="date"
-                      stroke="#9CA3AF"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) =>
-                        value.split("-").slice(1).join("/")
-                      }
-                    />
-                    <YAxis
-                      stroke="#9CA3AF"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => `₹${value}`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(0, 0, 0, 0.8)",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        borderRadius: "0.5rem",
-                        fontSize: "12px",
-                        color: "white",
-                      }}
-                      itemStyle={{ color: "white" }}
-                      labelStyle={{ color: "white" }}
-                      formatter={(value) => [`₹${value}`, ""]}
-                    />
-                    <Legend wrapperStyle={{ fontSize: "12px" }} />
-                    <Line
-                      type="monotone"
-                      dataKey="revenue"
-                      name="Approved"
-                      stroke="#10B981"
-                      strokeWidth={2}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="potentialRevenue"
-                      name="Potential"
-                      stroke="#6366F1"
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+        {/* Revenue Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Revenue by Event */}
+          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
+            <h3 className="text-lg font-medium text-white mb-4">
+              Revenue by Event
+            </h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer>
+                <BarChart data={revenueByEvent}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis
+                    dataKey="event"
+                    stroke="#9CA3AF"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "0.5rem",
+                      fontSize: "12px",
+                      color: "white",
+                    }}
+                    itemStyle={{ color: "white" }}
+                    labelStyle={{ color: "white" }}
+                    formatter={(value) => [`₹${value}`, ""]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Bar
+                    dataKey="revenue"
+                    name="Approved Revenue"
+                    fill="#10B981"
+                  />
+                  <Bar
+                    dataKey="potentialRevenue"
+                    name="Potential Revenue"
+                    fill="#6366F1"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
+          </div>
 
-            {/* Revenue by Event */}
-            <div className="p-4 sm:p-6 rounded-xl bg-white/5 border border-white/10">
-              <h3 className="text-lg font-medium text-white mb-4">
-                Revenue by Event
-              </h3>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer>
-                  <BarChart data={revenueByEvent}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                    <XAxis
-                      dataKey="event"
-                      stroke="#9CA3AF"
-                      tick={{ fontSize: 12 }}
-                      interval={0}
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis
-                      stroke="#9CA3AF"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => `₹${value}`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(0, 0, 0, 0.8)",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        borderRadius: "0.5rem",
-                        fontSize: "12px",
-                        color: "white",
-                      }}
-                      itemStyle={{ color: "white" }}
-                      labelStyle={{ color: "white" }}
-                      formatter={(value) => [`₹${value}`, ""]}
-                    />
-                    <Legend wrapperStyle={{ fontSize: "12px" }} />
-                    <Bar dataKey="revenue" name="Approved" fill="#10B981" />
-                    <Bar
-                      dataKey="potentialRevenue"
-                      name="Potential"
-                      fill="#6366F1"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          {/* Revenue Trend */}
+          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
+            <h3 className="text-lg font-medium text-white mb-4">
+              Revenue Trend
+            </h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer>
+                <LineChart data={revenueTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#9CA3AF"
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) =>
+                      value.split("-").slice(1).join("/")
+                    }
+                  />
+                  <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "0.5rem",
+                      fontSize: "12px",
+                      color: "white",
+                    }}
+                    itemStyle={{ color: "white" }}
+                    labelStyle={{ color: "white" }}
+                    formatter={(value) => [`₹${value}`, ""]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: "12px" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    name="Approved Revenue"
+                    stroke="#10B981"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="potentialRevenue"
+                    name="Potential Revenue"
+                    stroke="#6366F1"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* New Charts for Participant Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Internal vs External Participants */}
+        <div className="p-5 rounded-xl bg-white/5 border border-white/10">
+          <h3 className="text-lg font-medium text-white mb-4">
+            Internal vs External Participants
+          </h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={participantDistribution}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label={(entry) => `${entry.name}: ${entry.value}`}
+                  labelLine={true}
+                >
+                  <Cell fill="#3B82F6" />
+                  <Cell fill="#8B5CF6" />
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "0.5rem",
+                    fontSize: "12px",
+                    color: "white",
+                  }}
+                  itemStyle={{ color: "white" }}
+                  labelStyle={{ color: "white" }}
+                />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Participants by Event */}
+        <div className="p-5 rounded-xl bg-white/5 border border-white/10">
+          <h3 className="text-lg font-medium text-white mb-4">
+            Participants by Event
+          </h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer>
+              <BarChart data={eventParticipants}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                <XAxis
+                  dataKey="event"
+                  stroke="#9CA3AF"
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "0.5rem",
+                    fontSize: "12px",
+                    color: "white",
+                  }}
+                  itemStyle={{ color: "white" }}
+                  labelStyle={{ color: "white" }}
+                />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
+                <Bar dataKey="total" name="Total" fill="#3B82F6" />
+                <Bar dataKey="internal" name="Internal" fill="#10B981" />
+                <Bar dataKey="external" name="External" fill="#8B5CF6" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -455,4 +624,50 @@ function processRevenueTrend(
       ),
     };
   });
+}
+
+function processEventParticipants(
+  registrations: Registration[]
+): EventParticipantData[] {
+  const eventParticipants: {
+    [key: string]: {
+      total: number;
+      internal: number;
+      external: number;
+    };
+  } = {};
+
+  registrations.forEach((reg) => {
+    if (!reg.selected_events) return;
+
+    reg.selected_events.forEach((event) => {
+      if (!eventParticipants[event]) {
+        eventParticipants[event] = { total: 0, internal: 0, external: 0 };
+      }
+
+      // Count total participants for this event
+      const participantsInEvent = reg.team_members?.length || 0;
+      eventParticipants[event].total += participantsInEvent;
+
+      // Count internal participants (from Hindustan/HITS)
+      const internalParticipantsInEvent =
+        reg.team_members?.filter((member) => {
+          const college = member.college?.toLowerCase() || "";
+          return college.includes("hindustan") || college.includes("hits");
+        })?.length || 0;
+
+      eventParticipants[event].internal += internalParticipantsInEvent;
+      eventParticipants[event].external +=
+        participantsInEvent - internalParticipantsInEvent;
+    });
+  });
+
+  return Object.entries(eventParticipants).map(
+    ([event, { total, internal, external }]) => ({
+      event,
+      total,
+      internal,
+      external,
+    })
+  );
 }
