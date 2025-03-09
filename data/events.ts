@@ -259,13 +259,13 @@ export const events: Event[] = [
       {
         phase: "Round 1: Error Identification Quiz",
         description:
-          "Participants will analyse code snippets to identify syntax, logical, and conceptual errors. Total: 50 questions (1 point each). Categories: Syntax Errors (20), Logical Errors (15), Conceptual Mistakes (10), Edge Case Errors (5).",
-        duration: "1 hour",
+          "The first round consists of 50 questions related to programming concepts. Participants will have 45 minutes to complete the quiz. Each correct answer is worth 1 point. The participants with the highest scores will qualify for the next round. A live leaderboard will display the ranking of participants. Question Types: Syntax errors, Logical errors, Conceptual mistakes, Tricky/edge case errors. Select one language to complete this round: C - 50 Questions, Python - 50 Questions, Java - 50 Questions.",
+        duration: "45 minutes",
       },
       {
         phase: "Round 2: Debugging Challenge",
         description:
-          "Teams will debug code snippets of varying difficulty levels. Total: 13 questions + 1 bonus (60 + 20 points). Easy: 5 questions (2 points each), Medium: 5 questions (4 points each), Hard: 3 questions (10 points each), Bonus: 1 question (20 points).",
+          "The second round is designed to test participants' debugging skills. Participants can choose their preferred programming language: C, Java, or Python. This round consists of three difficulty levels: Easy (10 questions, 2 points each, total 20 points), Medium (5 questions, 6 points each, total 30 points), and Hard (5 questions, 10 points each, total 50 points). Total: 20 questions, 100 points. Question Types: Easy Level - Basic syntax & logical errors, Medium Level - Logical, runtime, and edge case issues, Hard Level - Complex bugs in larger code blocks.",
         duration: "1 hour",
       },
     ],
