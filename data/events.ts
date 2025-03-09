@@ -441,16 +441,65 @@ export const events: Event[] = [
     title: "IdeaFusion",
     shortDescription: "Innovative solution presentation competition",
     fullDescription:
-      "IdeaFusion challenges participants to develop and present innovative solutions to real-world problems. Problem statements will be released 10 days before the event, allowing teams to research, strategize, and create compelling presentations. This competition encourages critical thinking, creativity, and effective communication.",
+      "IdeaFusion challenges participants to develop and present innovative solutions to real-world problems. The problem statements have been released and teams can now start working on their solutions. This competition encourages critical thinking, creativity, and effective communication. Participants can join either offline at the venue or online through our virtual platform.",
     image: "/events/idea-fusion.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 4:00 PM",
-    venue: "Andromeda Hall, Ground Floor, Jubilee Block",
+    venue:
+      "Andromeda Hall, Ground Floor, Jubilee Block (Offline) / Google Meet (Online)",
+    participationMode: "Hybrid (Offline & Online)",
+    problemStatements: [
+      {
+        category: "Artificial Intelligence and Machine Learning",
+        statement:
+          "The ethical deployment of AI in hiring processes is a major concern, as AI models often inherit biases from training data. Develop a solution that ensures fairness and transparency in AI-driven recruitment systems.",
+      },
+      {
+        category: "Cybersecurity and Ethical Hacking",
+        statement:
+          "With the rise of AI-generated deepfakes, misinformation is spreading at an alarming rate. Design an AI-powered solution to detect and prevent deepfake content on social media and news platforms.",
+      },
+      {
+        category: "Blockchain and Web3",
+        statement:
+          "Traditional land ownership records are prone to fraud, manipulation, and loss. Build a blockchain-based land registry system to enhance transparency, security, and accessibility of property ownership records.",
+      },
+      {
+        category: "Fintech and Smart Solutions",
+        statement:
+          "A large section of the population in developing countries lacks access to credit due to insufficient financial history. Create an AI-driven alternative credit scoring model that considers behavioral and transaction-based data to provide financial inclusivity.",
+      },
+      {
+        category: "Sustainable Tech and Social Impact",
+        statement:
+          "The improper disposal of electronic waste (e-waste) is leading to severe environmental pollution. Design a technology-driven solution that incentivizes individuals and businesses to recycle e-waste responsibly.",
+      },
+      {
+        category: "Supply Chain and E-commerce",
+        statement:
+          "Counterfeit products in e-commerce have been increasing, leading to financial losses and trust issues. Build a blockchain-based authentication system to verify product authenticity and ensure consumer protection.",
+      },
+      {
+        category: "Sustainable Fashion & Circular Economy",
+        statement:
+          "The fast fashion industry generates excessive textile waste due to rapid production cycles. Develop a digital platform that promotes and incentivizes clothing upcycling, repair, and resale to reduce waste.",
+      },
+      {
+        category: "Sustainable Development Goals (SDGs)",
+        statement:
+          "Many rural areas still struggle with clean water access. Design an affordable, IoT-based water quality monitoring and filtration system that ensures safe drinking water for underserved communities.",
+      },
+      {
+        category: "Open Category - Choose Your Own Problem",
+        statement:
+          "Identify any pressing issue in today's world—ranging from mental health to space exploration—and propose an innovative technological solution that addresses it effectively.",
+      },
+    ],
     eventStructure: [
       {
-        phase: "Problem Statement Release",
+        phase: "Problem Statement Selection",
         description:
-          "Participants will receive the problem statements 10 days before the event and must select one to work on.",
+          "Participants must select one of the released problem statements to work on.",
       },
       {
         phase: "Presentation Preparation",
@@ -460,20 +509,23 @@ export const events: Event[] = [
       {
         phase: "Presentation Day",
         description:
-          "Each team presents their idea within a 5-minute time limit. A buzzer will sound at the 4-minute mark to indicate one minute remaining, and a final buzzer will ring at 5 minutes. A 2-minute Q&A session will follow each presentation.",
+          "Each team presents their idea within a 5-minute time limit. A buzzer will sound at the 4-minute mark to indicate one minute remaining, and a final buzzer will ring at 5 minutes. A 2-minute Q&A session will follow each presentation. All participants will receive a Google Meet link via email, allowing them to choose whether to present in-person or online.",
       },
       {
         phase: "Winner Selection",
         description:
-          "Based on the judging criteria, the best presentations will be awarded.",
+          "Based on the judging criteria, the best presentations will be awarded. Both online and offline participants will be judged using the same criteria.",
       },
     ],
     rules: [
       "Team size: 1-3 members",
       "Ideas must be original; plagiarism will result in disqualification",
       "Presentations must be submitted one day before the event",
-      "Participants must bring their own laptops for presentations",
+      "Participants attending in-person must bring their own laptops for presentations",
+      "Participants choosing to present online must have a stable internet connection and working camera/microphone",
       "Participants must adhere to the time limit of 5 minutes",
+      "All participants will receive a Google Meet link on the day of the event via email",
+      "Both in-person and online presentations will be judged using the same criteria",
     ],
     guidelines: [
       "Title Slide: Team name, member names, and selected problem statement",

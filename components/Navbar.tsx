@@ -113,12 +113,7 @@ const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-white",
-                    item.href === pathname
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  )}
+                  className="text-sm font-medium text-white transition-colors hover:text-gray-300"
                   onClick={(e) => {
                     e.preventDefault();
                     scrollToSection(item.id);
@@ -200,7 +195,7 @@ const Navbar = () => {
                   <a
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-foreground hover:bg-muted"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:text-gray-300 hover:bg-white/10 transition-colors"
                     onClick={(e) => {
                       e.preventDefault();
                       scrollToSection(item.id);

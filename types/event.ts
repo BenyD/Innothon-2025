@@ -7,6 +7,7 @@ export interface Event {
   date: string;
   time: string;
   venue: string;
+  participationMode?: string;
   rules: string[];
   guidelines: string[];
   prizes: {
@@ -24,6 +25,10 @@ export interface Event {
   registrationFee: string;
   teamSize: string;
   status: string;
+  problemStatements?: {
+    category: string;
+    statement: string;
+  }[];
   judgingCriteria?: {
     criterion: string;
     weightage: string;

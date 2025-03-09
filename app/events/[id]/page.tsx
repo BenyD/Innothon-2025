@@ -23,11 +23,15 @@ import {
   Layers,
   Gamepad2,
   IndianRupee,
+  AlertCircle,
+  X,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EventPage() {
   const params = useParams();
   const [event, setEvent] = useState<Event | undefined>();
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -36,6 +40,18 @@ export default function EventPage() {
     if (params.id) {
       const eventData = getEventById(params.id as string);
       setEvent(eventData);
+
+      // Show notification for IdeaFusion event
+      if (params.id === "idea-fusion") {
+        setShowNotification(true);
+
+        // Auto-hide notification after 8 seconds
+        const timer = setTimeout(() => {
+          setShowNotification(false);
+        }, 8000);
+
+        return () => clearTimeout(timer);
+      }
     }
   }, [params.id]);
 
@@ -43,6 +59,79 @@ export default function EventPage() {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Notification for IdeaFusion */}
+      <AnimatePresence>
+        {showNotification && event.id === "idea-fusion" && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-16 sm:top-20 md:top-24 left-0 right-0 mx-auto z-50 w-[95%] sm:w-[90%] md:w-[85%] max-w-lg px-2 sm:px-0"
+          >
+            <div className="bg-gradient-to-r from-blue-900/90 to-purple-900/90 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-blue-500/30 shadow-lg shadow-blue-500/10">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 hidden sm:block">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <AlertCircle className="h-5 w-5 text-blue-400" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center mb-1 sm:mb-2">
+                    <AlertCircle className="h-5 w-5 text-blue-400 sm:hidden mr-2" />
+                    <h3 className="text-base sm:text-lg font-medium text-white">
+                      Problem Statements Released!
+                    </h3>
+                  </div>
+                  <div className="mt-1 text-sm text-blue-100">
+                    <p className="leading-relaxed">
+                      The problem statements for IdeaFusion are now available.
+                      Scroll down to view them and start working on your
+                      solution!
+                    </p>
+                    {event.id === "idea-fusion" && (
+                      <div className="mt-2 text-green-300 font-medium">
+                        Now available in hybrid mode - participate in-person or
+                        online via Google Meet!
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 sm:mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        document
+                          .getElementById("problem-statements")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                        setShowNotification(false);
+                      }}
+                      className="text-sm font-medium px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-900"
+                    >
+                      View Problem Statements
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowNotification(false)}
+                      className="text-sm font-medium px-3 py-1.5 rounded-lg bg-transparent border border-blue-500/20 text-blue-300 hover:bg-blue-500/10 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-900"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="flex-shrink-0 bg-blue-900/50 rounded-full p-1 hover:bg-blue-800/50 transition-colors"
+                  onClick={() => setShowNotification(false)}
+                  aria-label="Close notification"
+                >
+                  <X className="h-4 w-4 text-blue-300" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hero Section */}
       <div className="relative h-[50vh] w-full">
         {/* Dark overlay for better text visibility */}
@@ -100,6 +189,18 @@ export default function EventPage() {
               >
                 About
               </button>
+              {event.id === "idea-fusion" && event.problemStatements && (
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("problem-statements")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="px-4 py-2 text-sm bg-white/5 rounded-lg border border-white/10 text-gray-300 hover:bg-white/10"
+                >
+                  Problem Statements
+                </button>
+              )}
               <button
                 onClick={() =>
                   document
@@ -174,6 +275,14 @@ export default function EventPage() {
             <Users className="w-4 h-4 text-green-400 shrink-0" />
             <span className="text-sm whitespace-nowrap">{event.teamSize}</span>
           </div>
+          {event.participationMode && (
+            <div className="inline-flex items-center gap-2 text-gray-300 bg-gradient-to-r from-green-900/30 to-green-800/20 px-4 py-2 rounded-lg border border-green-500/20 backdrop-blur-sm">
+              <ExternalLink className="w-4 h-4 text-green-400 shrink-0" />
+              <span className="text-sm whitespace-nowrap font-medium text-green-300">
+                {event.participationMode}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Main Content Grid - Reordered for mobile */}
@@ -408,7 +517,90 @@ export default function EventPage() {
               <p className="text-gray-300 leading-relaxed">
                 {event.fullDescription}
               </p>
+
+              {event.id === "idea-fusion" && (
+                <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-green-900/30 to-transparent border border-green-500/20">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center mt-0.5">
+                      <ExternalLink className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-green-300 font-medium text-lg mb-2">
+                        Hybrid Participation Mode
+                      </h3>
+                      <p className="text-gray-300">
+                        IdeaFusion is now available in hybrid mode! You can
+                        choose how to participate on the day of the event:
+                      </p>
+                      <ul className="mt-2 space-y-1 text-gray-300">
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                          <span>
+                            <strong>Offline:</strong> Present in-person at
+                            Andromeda Hall
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                          <span>
+                            <strong>Online:</strong> Present virtually via
+                            Google Meet
+                          </span>
+                        </li>
+                      </ul>
+                      <p className="mt-2 text-gray-400 text-sm">
+                        All registered participants will receive a Google Meet
+                        link via email on the day of the event. You can decide
+                        on the day whether to attend in-person or join online -
+                        no need to select a preference during registration.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Problem Statements Section - Only for IdeaFusion */}
+            {event.id === "idea-fusion" && event.problemStatements && (
+              <div
+                id="problem-statements"
+                className="bg-white/5 p-6 rounded-xl border border-white/10"
+              >
+                <div className="flex items-center gap-2 mb-6">
+                  <ClipboardList className="w-5 h-5 text-green-400" />
+                  <h2 className="text-xl font-semibold">Problem Statements</h2>
+                </div>
+                <div className="space-y-6">
+                  {event.problemStatements.map((problem, index) => (
+                    <div
+                      key={index}
+                      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-green-500/20 flex items-center justify-center">
+                          <span className="text-white font-medium">
+                            {index + 1}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-white text-lg">
+                          {problem.category}
+                        </h3>
+                      </div>
+                      <div className="mt-3 pl-10">
+                        <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent rounded-lg">
+                          <h4 className="text-blue-300 text-sm font-medium mb-2">
+                            Problem Statement:
+                          </h4>
+                          <p className="text-white leading-relaxed">
+                            {problem.statement}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Event Structure */}
             {event.eventStructure && (
