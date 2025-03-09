@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-import { useEffect, useState, useMemo } from "react";
-import { ArrowRight, Clock, Trophy } from "lucide-react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { ArrowRight, Clock, Trophy, Play, Pause, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { scrollToSection } from "@/utils/scroll";
@@ -18,6 +18,39 @@ const Hero = () => {
     minutes: "00",
     seconds: "00",
   });
+  const [showPodcast, setShowPodcast] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleVideo = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const openPodcast = () => {
+    setShowPodcast(true);
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }, 100);
+  };
+
+  const closePodcast = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+    setIsPlaying(false);
+    setShowPodcast(false);
+  };
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -65,6 +98,43 @@ const Hero = () => {
         <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 -right-20 w-96 h-96 bg-pink-500/20 rounded-full mix-blend-multiply filter blur-[128px] animate-blob animation-delay-4000" />
       </div>
+
+      {/* Podcast Modal */}
+      {showPodcast && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-3xl mx-4">
+            <button
+              onClick={closePodcast}
+              className="absolute -top-12 right-0 p-2 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="relative rounded-xl overflow-hidden border border-white/20 shadow-2xl">
+              <video
+                ref={videoRef}
+                className="w-full aspect-[9/16] max-h-[80vh] object-contain bg-black"
+                src="/videos/event-podcast.mp4"
+                playsInline
+                controls={false}
+              />
+
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                <button
+                  onClick={toggleVideo}
+                  className="p-3 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-colors"
+                >
+                  {isPlaying ? (
+                    <Pause className="w-6 h-6 text-white" />
+                  ) : (
+                    <Play className="w-6 h-6 text-white" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="relative z-10 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -168,6 +238,26 @@ const Hero = () => {
                 </p>
               </div>
 
+              {/* Podcast Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex justify-center lg:justify-start"
+              >
+                <button
+                  onClick={openPodcast}
+                  className="group flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-white/10 hover:border-white/20 transition-all duration-300"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                    <Play className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm sm:text-base text-gray-200">
+                    Watch our event podcast
+                  </span>
+                </button>
+              </motion.div>
+
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
                 {/* Register Button */}
@@ -221,7 +311,7 @@ const Hero = () => {
               </motion.div>
             </motion.div>
 
-            {/* Right Column - Image Grid */}
+            {/* Right Column - Image Grid with Podcast Thumbnail */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -244,34 +334,49 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                {/* Podcast Thumbnail - Replaces one of the images */}
+                <div
+                  className="relative group cursor-pointer"
+                  onClick={openPodcast}
+                >
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur-lg group-hover:blur-xl opacity-30 group-hover:opacity-50 transition-all duration-500"></div>
                   <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 group-hover:opacity-60 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 group-hover:opacity-60 transition-opacity duration-500 z-10" />
                     <Image
-                      src="/event-1.png"
-                      alt="Tech Event"
+                      src="/videos/podcast-thumbnail.jpg"
+                      alt="Event Podcast"
                       fill
                       sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      priority
                     />
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-colors">
+                        <Play className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 sm:p-4 z-10">
+                      <p className="text-white text-sm sm:text-base font-medium">
+                        Event Podcast
+                      </p>
+                      <p className="text-gray-300 text-xs sm:text-sm">
+                        2 min explainer
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3 pt-6">
+              <div className="space-y-3">
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-blue-600 rounded-xl blur-lg group-hover:blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
                   <div className="relative h-44 sm:h-72 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
                     <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-blue-500/10 group-hover:opacity-60 transition-opacity duration-500" />
                     <Image
                       src="/college-2.png"
-                      alt="College Life"
+                      alt="College Campus"
                       fill
                       sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      priority
                     />
                   </div>
                 </div>
@@ -281,12 +386,11 @@ const Hero = () => {
                   <div className="relative h-36 sm:h-56 rounded-xl overflow-hidden border border-white/10 group-hover:border-white/20 transition-colors">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:opacity-60 transition-opacity duration-500" />
                     <Image
-                      src="/event-2.jpg"
-                      alt="Student Activities"
+                      src="/event-1.png"
+                      alt="College Campus"
                       fill
                       sizes="(max-width: 640px) 45vw, (max-width: 1024px) 250px, 400px"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      priority
                     />
                   </div>
                 </div>
