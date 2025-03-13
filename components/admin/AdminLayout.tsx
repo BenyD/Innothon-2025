@@ -18,6 +18,7 @@ import {
   User,
   Home,
   IndianRupee,
+  UserCog,
 } from "lucide-react";
 import Image from "next/image";
 import { useRole } from "@/hooks/useRole";
@@ -77,10 +78,18 @@ const navItems: NavCategory[] = [
         color: "text-yellow-400",
         bgColor: "bg-yellow-400/10",
       },
+      {
+        title: "Messages",
+        href: "/admin/messages",
+        icon: MessagesSquare,
+        color: "text-cyan-400",
+        bgColor: "bg-cyan-400/10",
+        badge: true,
+      },
     ],
   },
   {
-    category: "Event Management",
+    category: "Event Status",
     items: [
       {
         title: "Event Overview",
@@ -113,20 +122,12 @@ const navItems: NavCategory[] = [
     ],
   },
   {
-    category: "Communication",
+    category: "Settings",
     items: [
       {
-        title: "Messages",
-        href: "/admin/messages",
-        icon: MessagesSquare,
-        color: "text-cyan-400",
-        bgColor: "bg-cyan-400/10",
-        badge: true,
-      },
-      {
-        title: "Settings",
+        title: "User Management",
         href: "/admin/settings",
-        icon: Settings,
+        icon: UserCog,
         color: "text-orange-400",
         bgColor: "bg-orange-400/10",
         adminOnly: true,
