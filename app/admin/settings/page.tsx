@@ -236,11 +236,12 @@ export default function Settings() {
         title: "User deleted",
         description: `User ${email} has been successfully deleted.`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting user:", error);
       toast({
         title: "Error deleting user",
-        description: error.message || "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
     } finally {

@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { events } from "@/data/events";
-import type { Registration } from "@/types/registration";
+import type { Registration, TeamMember } from "@/types/registration";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import {
@@ -49,6 +49,36 @@ type EventRegistration = Registration & {
 // Helper function to determine if an event is online (gaming) or offline
 const isOnlineGamingEvent = (eventId: string): boolean => {
   return eventId === "pixel-showdown";
+};
+
+// Helper function to determine if a participant is internal (from HITS/Hindustan)
+const isInternalParticipant = (member: TeamMember): boolean => {
+  const college = member.college?.toLowerCase() || "";
+  return college.includes("hindustan") || college.includes("hits");
+};
+
+// Calculate internal and external participants for an event
+const calculateInternalExternalParticipants = (
+  eventRegistrations: EventRegistration[]
+): { internal: number; external: number } => {
+  // Use a Set to track unique participant IDs
+  const internalParticipantIds = new Set<string>();
+  const externalParticipantIds = new Set<string>();
+
+  eventRegistrations.forEach((reg) => {
+    reg.team_members.forEach((member) => {
+      if (isInternalParticipant(member)) {
+        internalParticipantIds.add(member.id);
+      } else {
+        externalParticipantIds.add(member.id);
+      }
+    });
+  });
+
+  return {
+    internal: internalParticipantIds.size,
+    external: externalParticipantIds.size,
+  };
 };
 
 const container = {
@@ -177,6 +207,30 @@ export default function EventOverview() {
     }, new Set()).size;
   };
 
+  // Calculate total internal and external participants across all events
+  const calculateTotalInternalExternalParticipants = (): {
+    internal: number;
+    external: number;
+  } => {
+    const internalParticipantIds = new Set<string>();
+    const externalParticipantIds = new Set<string>();
+
+    filteredRegistrations.forEach((reg) => {
+      reg.team_members.forEach((member) => {
+        if (isInternalParticipant(member)) {
+          internalParticipantIds.add(member.id);
+        } else {
+          externalParticipantIds.add(member.id);
+        }
+      });
+    });
+
+    return {
+      internal: internalParticipantIds.size,
+      external: externalParticipantIds.size,
+    };
+  };
+
   // Calculate total online (gaming) participants
   const onlineParticipants = Object.entries(groupedRegistrations)
     .filter(([eventId]) => isOnlineGamingEvent(eventId))
@@ -184,12 +238,68 @@ export default function EventOverview() {
       return total + calculateEventParticipants(eventRegistrations);
     }, 0);
 
+  // Calculate internal and external online participants
+  const calculateOnlineInternalExternalParticipants = (): {
+    internal: number;
+    external: number;
+  } => {
+    const internalParticipantIds = new Set<string>();
+    const externalParticipantIds = new Set<string>();
+
+    Object.entries(groupedRegistrations)
+      .filter(([eventId]) => isOnlineGamingEvent(eventId))
+      .forEach(([, eventRegistrations]) => {
+        eventRegistrations.forEach((reg) => {
+          reg.team_members.forEach((member) => {
+            if (isInternalParticipant(member)) {
+              internalParticipantIds.add(member.id);
+            } else {
+              externalParticipantIds.add(member.id);
+            }
+          });
+        });
+      });
+
+    return {
+      internal: internalParticipantIds.size,
+      external: externalParticipantIds.size,
+    };
+  };
+
   // Calculate total offline participants
   const offlineParticipants = Object.entries(groupedRegistrations)
     .filter(([eventId]) => !isOnlineGamingEvent(eventId))
     .reduce((total, [, eventRegistrations]) => {
       return total + calculateEventParticipants(eventRegistrations);
     }, 0);
+
+  // Calculate internal and external offline participants
+  const calculateOfflineInternalExternalParticipants = (): {
+    internal: number;
+    external: number;
+  } => {
+    const internalParticipantIds = new Set<string>();
+    const externalParticipantIds = new Set<string>();
+
+    Object.entries(groupedRegistrations)
+      .filter(([eventId]) => !isOnlineGamingEvent(eventId))
+      .forEach(([, eventRegistrations]) => {
+        eventRegistrations.forEach((reg) => {
+          reg.team_members.forEach((member) => {
+            if (isInternalParticipant(member)) {
+              internalParticipantIds.add(member.id);
+            } else {
+              externalParticipantIds.add(member.id);
+            }
+          });
+        });
+      });
+
+    return {
+      internal: internalParticipantIds.size,
+      external: externalParticipantIds.size,
+    };
+  };
 
   // Update the total participants calculation to count unique participants
   const totalParticipants = filteredRegistrations.reduce((acc, reg) => {
@@ -463,6 +573,29 @@ export default function EventOverview() {
                   </p>
                 </div>
               </div>
+              {/* Add internal/external breakdown */}
+              <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
+                {(() => {
+                  const { internal, external } =
+                    calculateTotalInternalExternalParticipants();
+                  return (
+                    <>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-400">Internal</span>
+                        <span className="text-lg font-semibold text-emerald-400">
+                          {internal}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-400">External</span>
+                        <span className="text-lg font-semibold text-purple-400">
+                          {external}
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </motion.div>
             <motion.div
               variants={item}
@@ -521,6 +654,33 @@ export default function EventOverview() {
                   </div>
                 </div>
                 <div className="mt-2 pt-3 border-t border-white/10">
+                  {/* Add internal/external breakdown */}
+                  <div className="flex justify-between mb-2">
+                    {(() => {
+                      const { internal, external } =
+                        calculateOnlineInternalExternalParticipants();
+                      return (
+                        <>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">
+                              Internal:
+                            </span>
+                            <span className="text-sm font-semibold text-emerald-400">
+                              {internal}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">
+                              External:
+                            </span>
+                            <span className="text-sm font-semibold text-purple-400">
+                              {external}
+                            </span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-400">Pixel Showdown</span>
                     <span className="text-cyan-400 font-medium">
@@ -552,6 +712,33 @@ export default function EventOverview() {
                   </div>
                 </div>
                 <div className="mt-2 pt-3 border-t border-white/10">
+                  {/* Add internal/external breakdown */}
+                  <div className="flex justify-between mb-2">
+                    {(() => {
+                      const { internal, external } =
+                        calculateOfflineInternalExternalParticipants();
+                      return (
+                        <>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">
+                              Internal:
+                            </span>
+                            <span className="text-sm font-semibold text-emerald-400">
+                              {internal}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">
+                              External:
+                            </span>
+                            <span className="text-sm font-semibold text-purple-400">
+                              {external}
+                            </span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     {Object.entries(groupedRegistrations)
                       .filter(([eventId]) => !isOnlineGamingEvent(eventId))
@@ -637,6 +824,25 @@ export default function EventOverview() {
                             {eventParticipants} participant
                             {eventParticipants !== 1 ? "s" : ""}
                           </p>
+                          {/* Add internal/external participant counts */}
+                          {(() => {
+                            const { internal, external } =
+                              calculateInternalExternalParticipants(
+                                eventRegistrations
+                              );
+                            return (
+                              <>
+                                <p className="flex items-center gap-1.5 text-emerald-400">
+                                  <Users className="w-3.5 h-3.5" />
+                                  {internal} internal
+                                </p>
+                                <p className="flex items-center gap-1.5 text-purple-400">
+                                  <Users className="w-3.5 h-3.5" />
+                                  {external} external
+                                </p>
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
