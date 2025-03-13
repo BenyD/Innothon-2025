@@ -26,7 +26,6 @@ import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
 import { toast } from "@/components/ui/use-toast";
-import { calculateRegistrationRevenue } from "@/utils/revenue";
 import {
   DropdownMenu,
   DropdownMenuContent,

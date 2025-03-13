@@ -3,16 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { SectionTitle } from "@/components/ui/section-title";
-import {
-  MapPin,
-  Clock,
-  Calendar,
-  Bus,
-  Train,
-  Car,
-  Phone,
-  Mail,
-} from "lucide-react";
+import { MapPin, Clock, Calendar, Bus, Car, Phone, Mail } from "lucide-react";
 import Link from "next/link";
 
 const Venue = () => {
