@@ -90,6 +90,13 @@ const navItems: NavCategory[] = [
         bgColor: "bg-green-400/10",
       },
       {
+        title: "Event Management",
+        href: "/admin/event-management",
+        icon: Settings,
+        color: "text-indigo-400",
+        bgColor: "bg-indigo-400/10",
+      },
+      {
         title: "Gaming Overview",
         href: "/admin/gaming-overview",
         icon: Gamepad2,

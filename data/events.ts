@@ -678,7 +678,7 @@ export const events: Event[] = [
     ],
     registrationFee: "Varies by game and team size",
     teamSize: "1-4 members (game dependent)",
-    status: "upcoming",
+    status: "closed",
     image: "/events/pixel-showdown.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 4:00 PM",

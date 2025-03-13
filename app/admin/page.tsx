@@ -34,12 +34,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
 

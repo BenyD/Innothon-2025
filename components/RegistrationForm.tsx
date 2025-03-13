@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { events } from "@/data/events";
@@ -45,6 +45,7 @@ import { v4 as uuidv4 } from "uuid";
 import { uploadPaymentProof } from "@/lib/upload-helper";
 import { cleanupFailedRegistration } from "@/lib/cleanup-helper";
 import { generateTeamId } from "@/lib/generate-team-id";
+import { getEventsWithStatus } from "@/lib/event-helpers";
 
 const INITIAL_MEMBER: TeamMember = {
   id: "",
@@ -77,8 +78,14 @@ const MUTUALLY_EXCLUSIVE_EVENTS = [
 
 const isEventDisabled = (
   eventId: string,
-  selectedEvents: string[]
+  selectedEvents: string[],
+  eventStatuses: Record<string, string> = {}
 ): boolean => {
+  // If the event is closed in the database, disable it
+  if (eventStatuses[eventId] === "closed") {
+    return true;
+  }
+
   // Always allow unselecting the currently selected event
   if (selectedEvents.includes(eventId)) {
     return false;
@@ -165,6 +172,52 @@ const RegistrationForm = () => {
     game: "bgmi" | "freefire" | "pes" | null;
     format?: "squad";
   }>();
+  const [eventStatuses, setEventStatuses] = useState<Record<string, string>>(
+    {}
+  );
+
+  // Fetch event statuses when component mounts
+  useEffect(() => {
+    const fetchEventStatuses = async () => {
+      try {
+        const eventsWithStatus = await getEventsWithStatus();
+
+        // Convert to record format
+        const statusesRecord: Record<string, string> = {};
+        eventsWithStatus.forEach((event) => {
+          statusesRecord[event.id] = event.status;
+        });
+
+        setEventStatuses(statusesRecord);
+      } catch (error) {
+        console.error("Error fetching event statuses:", error);
+        toast({
+          title: "Error",
+          description:
+            "Failed to load event statuses. Some events may not be available.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchEventStatuses();
+
+    // Set up real-time subscription for events table
+    const eventsChannel = supabase
+      .channel("events_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "events" },
+        () => {
+          fetchEventStatuses();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(eventsChannel);
+    };
+  }, [toast]);
 
   const calculateTotal = () => {
     if (selectedEvents.includes("digital-divas")) {
@@ -271,6 +324,16 @@ const RegistrationForm = () => {
   };
 
   const handleEventSelection = (eventId: string, checked: boolean) => {
+    // If the event is closed, don't allow selection
+    if (checked && eventStatuses[eventId] === "closed") {
+      toast({
+        title: "Registration Closed",
+        description: "This event is no longer accepting registrations.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (checked) {
       if (eventId === "pixel-showdown") {
         // Reset any other selected events
@@ -597,7 +660,8 @@ const RegistrationForm = () => {
                         {events.map((event) => {
                           const isDisabled = isEventDisabled(
                             event.id,
-                            selectedEvents
+                            selectedEvents,
+                            eventStatuses
                           );
                           return (
                             <label
@@ -652,17 +716,26 @@ const RegistrationForm = () => {
                                 !selectedEvents.includes(event.id) && (
                                   <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
                                     <p className="text-sm text-gray-400 px-4 text-center">
-                                      Cannot be selected with{" "}
-                                      {
-                                        events.find(
-                                          (e) =>
-                                            MUTUALLY_EXCLUSIVE_EVENTS.find(
-                                              (group) =>
-                                                group.includes(event.id)
-                                            )?.find((id) => id !== event.id) ===
-                                            e.id
-                                        )?.title
-                                      }
+                                      {eventStatuses[event.id] === "closed" ? (
+                                        <span className="text-red-300 font-medium">
+                                          Registration closed
+                                        </span>
+                                      ) : (
+                                        <>
+                                          Cannot be selected with{" "}
+                                          {
+                                            events.find(
+                                              (e) =>
+                                                MUTUALLY_EXCLUSIVE_EVENTS.find(
+                                                  (group) =>
+                                                    group.includes(event.id)
+                                                )?.find(
+                                                  (id) => id !== event.id
+                                                ) === e.id
+                                            )?.title
+                                          }
+                                        </>
+                                      )}
                                     </p>
                                   </div>
                                 )}

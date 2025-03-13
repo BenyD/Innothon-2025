@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Download, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AddExpenseModal } from "@/components/admin/expenses/AddExpenseModal";
 import { ExpenseList } from "@/components/admin/expenses/ExpenseList";
