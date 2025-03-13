@@ -15,8 +15,6 @@ export const calculateRegistrationRevenue = (
         totalAmount += 100; // ₹100 per individual
       else if (game === "bgmi")
         totalAmount += 200; // ₹200 per team
-      else if (game === "valorant")
-        totalAmount += 250; // ₹250 per team
       else if (game === "freefire") {
         totalAmount += 200; // ₹200 for squad
       }

@@ -26,6 +26,7 @@ import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { events } from "@/data/events";
 import { motion } from "framer-motion";
 import { RoleGuard } from "@/components/admin/RoleGuard";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 
 const container = {
   hidden: { opacity: 0 },
@@ -438,7 +439,10 @@ export default function RegistrationDetails() {
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                   <span className="text-gray-400">Amount</span>
                   <span className="text-white font-medium">
-                    ₹{registration.total_amount}
+                    ₹
+                    {registration.status === "approved"
+                      ? calculateRegistrationRevenue(registration)
+                      : registration.total_amount}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">

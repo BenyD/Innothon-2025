@@ -42,6 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 
 type EventRegistration = Registration & {
   event_id: string;
@@ -318,7 +319,7 @@ export default function EventOverview() {
     return acc;
   }, new Set()).size;
 
-  // Update revenue calculation to exclude Valorant and only count approved registrations
+  // Calculate revenue for approved registrations
   const calculateRevenue = (registration: EventRegistration) => {
     if (registration.status !== "approved") {
       return 0;
@@ -353,9 +354,6 @@ export default function EventOverview() {
     );
 
     return {
-      valorant: pixelShowdownRegs.filter(
-        (reg) => reg.game_details?.game === "valorant"
-      ).length,
       bgmi: pixelShowdownRegs.filter((reg) => reg.game_details?.game === "bgmi")
         .length,
       pes: pixelShowdownRegs.filter((reg) => reg.game_details?.game === "pes")
@@ -899,10 +897,12 @@ export default function EventOverview() {
                             <IndianRupee className="w-4 h-4" />
                             <span>
                               ₹
-                              {eventRegistrations.reduce(
-                                (sum, reg) => sum + reg.total_amount,
-                                0
-                              )}
+                              {eventRegistrations
+                                .filter((reg) => reg.status === "approved")
+                                .reduce(
+                                  (sum, reg) => sum + calculateRevenue(reg),
+                                  0
+                                )}
                             </span>
                           </div>
                         </div>
@@ -1028,7 +1028,10 @@ export default function EventOverview() {
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right text-gray-300">
-                              ₹{registration.total_amount}
+                              ₹
+                              {registration.status === "approved"
+                                ? calculateRevenue(registration)
+                                : registration.total_amount}
                             </td>
                           </tr>
                         ))}
@@ -1063,8 +1066,8 @@ export default function EventOverview() {
             <h3 className="text-lg font-medium text-white mb-4">
               Game Statistics
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-white/10">
                 <h4 className="text-sm text-gray-400">BGMI Teams</h4>
                 <div className="flex items-end justify-between mt-2">
                   <p className="text-2xl font-bold text-white">
@@ -1086,25 +1089,14 @@ export default function EventOverview() {
                   </span>
                 </div>
               </div>
-              <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-white/10">
-                <h4 className="text-sm text-gray-400">Free Fire Squad</h4>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-white/10">
+                <h4 className="text-sm text-gray-400">Free Fire Teams</h4>
                 <div className="flex items-end justify-between mt-2">
                   <p className="text-2xl font-bold text-white">
                     {gameStats.freefire_squad}
                   </p>
                   <span className="text-xs text-gray-500">
                     ₹{gameStats.freefire_squad * 200}
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/10">
-                <h4 className="text-sm text-gray-400">VALORANT Teams</h4>
-                <div className="flex items-end justify-between mt-2">
-                  <p className="text-2xl font-bold text-white">
-                    {gameStats.valorant}
-                  </p>
-                  <span className="text-xs text-gray-500">
-                    ₹{gameStats.valorant * 250}
                   </span>
                 </div>
               </div>

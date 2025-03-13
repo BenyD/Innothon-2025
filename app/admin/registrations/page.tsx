@@ -44,6 +44,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 
 // Animation variants
 const container = {
@@ -848,7 +849,9 @@ export default function Registrations() {
                         </div>
                         <div className="flex items-center text-gray-400 text-sm">
                           <IndianRupee className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
-                          {registration.total_amount}
+                          {registration.status === "approved"
+                            ? calculateRegistrationRevenue(registration)
+                            : registration.total_amount}
                         </div>
                       </div>
 

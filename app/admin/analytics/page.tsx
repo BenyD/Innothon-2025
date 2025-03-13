@@ -31,6 +31,7 @@ import type { Registration, TeamMember } from "@/types/registration";
 import { events as staticEvents } from "@/data/events"; // Import static events data
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 
 const COLORS = [
   "#3B82F6",
@@ -204,10 +205,10 @@ export default function Analytics() {
         0
       );
 
-      // Calculate approved revenue
+      // Calculate approved revenue using the utility function
       const approvedRevenue = registrationsWithTeamMembers
         .filter((r) => r.status === "approved")
-        .reduce((sum, r) => sum + (r.total_amount || 0), 0);
+        .reduce((sum, r) => sum + calculateRegistrationRevenue(r), 0);
 
       const avgTeamSize =
         total > 0
@@ -923,16 +924,25 @@ function processRevenueByEvent(registrations: Registration[]): RevenueData[] {
     registrations.forEach((reg) => {
       if (!reg.selected_events || !reg.selected_events.length) return;
 
-      const amountPerEvent =
-        (reg.total_amount || 0) / reg.selected_events.length;
+      // Calculate revenue per event using the utility function
+      const approvedAmount =
+        reg.status === "approved" ? calculateRegistrationRevenue(reg) : 0;
+      const potentialAmount = reg.total_amount || 0;
+
+      // Distribute evenly across selected events
+      const approvedAmountPerEvent =
+        approvedAmount / reg.selected_events.length;
+      const potentialAmountPerEvent =
+        potentialAmount / reg.selected_events.length;
+
       reg.selected_events.forEach((event) => {
         if (!eventRevenue[event]) {
           eventRevenue[event] = { approved: 0, potential: 0 };
         }
         if (reg.status === "approved") {
-          eventRevenue[event].approved += amountPerEvent;
+          eventRevenue[event].approved += approvedAmountPerEvent;
         }
-        eventRevenue[event].potential += amountPerEvent;
+        eventRevenue[event].potential += potentialAmountPerEvent;
       });
     });
 
@@ -969,7 +979,7 @@ function processRevenueTrend(
           date,
           revenue: dayRegistrations
             .filter((r) => r.status === "approved")
-            .reduce((sum, r) => sum + (r.total_amount || 0), 0),
+            .reduce((sum, r) => sum + calculateRegistrationRevenue(r), 0),
           potentialRevenue: dayRegistrations.reduce(
             (sum, r) => sum + (r.total_amount || 0),
             0
@@ -1216,9 +1226,17 @@ function prepareEventComparisonData(
       eventRegs.length > 0
         ? Math.round((approvedCount / eventRegs.length) * 100)
         : 0;
+
+    // Calculate revenue using the utility function
     const revenue = eventRegs
       .filter((reg) => reg.status === "approved")
-      .reduce((sum, reg) => sum + (reg.total_amount || 0), 0);
+      .reduce((sum, reg) => {
+        // Calculate per-event revenue (divide by number of events)
+        return (
+          sum + calculateRegistrationRevenue(reg) / reg.selected_events.length
+        );
+      }, 0);
+
     const avgTeamSize =
       eventRegs.length > 0
         ? (
@@ -1236,7 +1254,7 @@ function prepareEventComparisonData(
       internalCount: internal,
       externalCount: external,
       approvedPercentage,
-      revenue,
+      revenue: Math.round(revenue),
       avgTeamSize,
     };
   });

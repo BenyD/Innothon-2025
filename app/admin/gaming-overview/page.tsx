@@ -26,6 +26,7 @@ import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
 import { toast } from "@/components/ui/use-toast";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,19 +109,25 @@ export default function GamingOverview() {
       registrationsData.forEach((registration) => {
         if (registration.game_details?.game === "bgmi") {
           stats.bgmi.count += 1;
-          stats.bgmi.revenue += 200; // ₹200 per team
+          if (registration.status === "approved") {
+            stats.bgmi.revenue += 200; // ₹200 per team
+            stats.total.revenue += 200;
+          }
           stats.total.count += 1;
-          stats.total.revenue += 200;
         } else if (registration.game_details?.game === "freefire") {
           stats.freefire_squad.count += 1;
-          stats.freefire_squad.revenue += 200; // ₹200 per team
+          if (registration.status === "approved") {
+            stats.freefire_squad.revenue += 200; // ₹200 per team
+            stats.total.revenue += 200;
+          }
           stats.total.count += 1;
-          stats.total.revenue += 200;
         } else if (registration.game_details?.game === "pes") {
           stats.pes.count += 1;
-          stats.pes.revenue += 100; // ₹100 per person
+          if (registration.status === "approved") {
+            stats.pes.revenue += 100; // ₹100 per person
+            stats.total.revenue += 100;
+          }
           stats.total.count += 1;
-          stats.total.revenue += 100;
         }
       });
 

@@ -745,24 +745,20 @@ export default function EventPage() {
                     <div
                       key={game.game}
                       className={`p-4 rounded-lg bg-gradient-to-r ${
-                        game.game === "valorant"
-                          ? "from-red-500/10"
-                          : game.game === "Free Fire"
-                            ? "from-orange-500/10"
-                            : game.game === "BGMI"
-                              ? "from-purple-500/10"
-                              : "from-green-500/10"
+                        game.game === "Free Fire"
+                          ? "from-orange-500/10"
+                          : game.game === "BGMI"
+                            ? "from-purple-500/10"
+                            : "from-green-500/10"
                       } to-transparent`}
                     >
                       <h3
                         className={`font-medium mb-4 ${
-                          game.game === "valorant"
-                            ? "text-red-400"
-                            : game.game === "Free Fire"
-                              ? "text-orange-400"
-                              : game.game === "BGMI"
-                                ? "text-purple-400"
-                                : "text-green-400"
+                          game.game === "Free Fire"
+                            ? "text-orange-400"
+                            : game.game === "BGMI"
+                              ? "text-purple-400"
+                              : "text-green-400"
                         }`}
                       >
                         {game.game.toUpperCase()}

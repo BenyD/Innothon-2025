@@ -54,7 +54,7 @@ const faqData = [
       {
         question: "Will internet access be provided?",
         answer:
-          "Yes, Wi-Fi access will be provided to all participants. However, we recommend having backup options like mobile hotspots in case of connectivity issues.",
+          "WiFi access won't be provided, but all lab computers are equipped with internet access. Participants with laptops should ensure they enable mobile hotspot if they need internet connectivity.",
       },
     ],
   },
@@ -64,12 +64,12 @@ const faqData = [
       {
         question: "Is accommodation provided for outstation participants?",
         answer:
-          "We can assist with finding accommodation, but the cost must be borne by participants. Limited hostel accommodations may be available on a first-come, first-served basis.",
+          "Accommodation is not provided in hostels, but we can arrange alternatives. Please contact the organizing team for assistance with accommodation arrangements.",
       },
       {
         question: "Will food be provided during the event?",
         answer:
-          "Yes, refreshments and lunch will be provided on both days of the event. Dinner is not included but can be arranged at an additional cost.",
+          "Refreshments will be provided on March 21st, 2025 only. No food will be provided on other days of the event.",
       },
       {
         question: "How do I reach the venue?",
@@ -89,7 +89,12 @@ const faqData = [
       {
         question: "What are the prizes for winning teams?",
         answer:
-          "Prizes include cash rewards, tech gadgets, internship opportunities, and more. The total prize pool is over ₹2,00,000 across all events.",
+          "Winners will receive certificates and cash prizes depending on the event. The prize amount varies based on the competition category.",
+      },
+      {
+        question: "How will cash prizes be distributed for gaming events?",
+        answer:
+          "E-Certificates will be sent to the respective email address used for registration. The winning team will be contacted personally and will have the option of collecting the cash prize via bank transfer/UPI or offline on the day of the valedictory ceremony.",
       },
       {
         question: "Will all participants receive certificates?",
@@ -100,11 +105,6 @@ const faqData = [
         question: "When will the results be announced?",
         answer:
           "Results for most events will be announced during the valedictory ceremony on March 22, 2025. Some events may have results announced earlier.",
-      },
-      {
-        question: "How will prizes be distributed?",
-        answer:
-          "Prizes will be distributed during the valedictory ceremony. Winners must be present to receive their prizes, or they can authorize a team member to collect on their behalf.",
       },
     ],
   },

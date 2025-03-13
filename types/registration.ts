@@ -25,13 +25,13 @@ export type Registration = {
   payment_method?: string;
   payment_proof?: string;
   game_details?: {
-    game: "bgmi" | "freefire" | "pes" | "valorant" | null;
+    game: "bgmi" | "freefire" | "pes" | null;
     format?: "duo" | "squad";
   } | null;
   payment_date?: string;
 };
 
 export type GameDetails = {
-  game: "bgmi" | "freefire" | "pes" | "valorant";
+  game: "bgmi" | "freefire" | "pes";
   format?: "squad";
 };

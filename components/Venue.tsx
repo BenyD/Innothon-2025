@@ -143,17 +143,6 @@ const Venue = () => {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-full bg-blue-500/10 text-blue-400">
-                    <Train className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm sm:text-base font-medium">By Train</p>
-                    <p className="text-xs sm:text-sm text-gray-400">
-                      Kelambakkam Railway Station (3.5 km) - 10 min by auto/cab
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
                   <div className="p-2 rounded-full bg-green-500/10 text-green-400">
                     <Bus className="w-4 h-4" />
                   </div>

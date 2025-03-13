@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
+import { calculateRegistrationRevenue } from "@/utils/revenue";
 
 // Animation variants
 const container = {
@@ -175,7 +176,7 @@ export default function AdminDashboard() {
   );
   const approvedRevenue = registrations
     .filter((reg) => reg.status === "approved")
-    .reduce((acc, reg) => acc + reg.total_amount, 0);
+    .reduce((acc, reg) => acc + calculateRegistrationRevenue(reg), 0);
   const pendingRegistrations = registrations.filter(
     (reg) => reg.status === "pending"
   ).length;
