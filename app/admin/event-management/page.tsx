@@ -44,6 +44,7 @@ import {
   getEventsWithStatus,
   updateEventStatus,
 } from "@/lib/event-helpers";
+import { useRole } from "@/hooks/useRole";
 
 // Animation variants
 const container = {
@@ -69,6 +70,7 @@ export default function EventManagement() {
   const [saving, setSaving] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
+  const { role } = useRole();
 
   const fetchEventStatuses = useCallback(
     async (showToast = false) => {
@@ -166,6 +168,15 @@ export default function EventManagement() {
   }, [fetchEventStatuses, saving]);
 
   const handleStatusChange = (eventId: string, status: string) => {
+    if (role !== "super-admin") {
+      toast({
+        title: "Access Denied",
+        description: "Only super admins can update event statuses",
+        variant: "destructive",
+      });
+      return;
+    }
+
     console.log(`Changing status of ${eventId} to ${status}`);
     setEventStatuses((prev) => {
       const newStatuses = {
@@ -178,6 +189,15 @@ export default function EventManagement() {
   };
 
   const saveChanges = async () => {
+    if (role !== "super-admin") {
+      toast({
+        title: "Access Denied",
+        description: "Only super admins can update event statuses",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       // Check if we can access the events table
@@ -338,6 +358,9 @@ export default function EventManagement() {
             </h1>
             <p className="text-gray-400 mt-1 sm:mt-2 text-sm sm:text-base">
               Control event registrations and status
+              {role !== "super-admin" && (
+                <span className="text-yellow-400 ml-2">(View Only)</span>
+              )}
             </p>
           </div>
           <div className="flex gap-2">
@@ -365,34 +388,36 @@ export default function EventManagement() {
               </Tooltip>
             </TooltipProvider>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    onClick={saveChanges}
-                    disabled={saving || refreshing}
-                  >
-                    {saving ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Changes
-                      </>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Save all status changes</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {role === "super-admin" && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                      onClick={saveChanges}
+                      disabled={saving || refreshing}
+                    >
+                      {saving ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Changes
+                        </>
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save all status changes</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </motion.div>
 
@@ -422,7 +447,9 @@ export default function EventManagement() {
                     <TableHead className="text-gray-400">
                       Current Status
                     </TableHead>
-                    <TableHead className="text-gray-400">New Status</TableHead>
+                    <TableHead className="text-gray-400">
+                      {role === "super-admin" ? "New Status" : "Status"}
+                    </TableHead>
                     <TableHead className="text-gray-400">
                       Registration
                     </TableHead>
@@ -480,21 +507,29 @@ export default function EventManagement() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Select
-                            value={eventStatuses[event.id] || "upcoming"}
-                            onValueChange={(value) =>
-                              handleStatusChange(event.id, value)
-                            }
-                          >
-                            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:border-white/20 text-white transition-all">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-black/95 backdrop-blur-md border border-white/10">
-                              <SelectItem value="upcoming">Upcoming</SelectItem>
-                              <SelectItem value="ongoing">Ongoing</SelectItem>
-                              <SelectItem value="closed">Closed</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {role === "super-admin" ? (
+                            <Select
+                              value={eventStatuses[event.id] || "upcoming"}
+                              onValueChange={(value) =>
+                                handleStatusChange(event.id, value)
+                              }
+                            >
+                              <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:border-white/20 text-white transition-all">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-black/95 backdrop-blur-md border border-white/10">
+                                <SelectItem value="upcoming">
+                                  Upcoming
+                                </SelectItem>
+                                <SelectItem value="ongoing">Ongoing</SelectItem>
+                                <SelectItem value="closed">Closed</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            getStatusBadge(
+                              eventStatuses[event.id] || event.status
+                            )
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
