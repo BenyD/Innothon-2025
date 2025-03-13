@@ -303,15 +303,15 @@ export default function GamingOverview() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
-                  onClick={() => handleExport("approved")}
-                >
-                  Export Approved Gaming Registrations
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
                   onClick={() => handleExport("filtered")}
                 >
                   Export Filtered Gaming Registrations
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                  onClick={() => handleExport("approved")}
+                >
+                  Export Approved Gaming Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"

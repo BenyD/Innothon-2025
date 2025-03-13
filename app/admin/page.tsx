@@ -285,57 +285,51 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {/* Header Section with Actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="p-2 sm:p-6 space-y-6">
+        {/* Header with Title and Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-xl"
+        >
           <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-              Dashboard Overview
+            <h1 className="text-xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              Admin Dashboard
             </h1>
-            <p className="text-gray-400 mt-1">
-              Welcome back! Here&apos;s what&apos;s happening with Innothon.
+            <p className="text-gray-400 mt-1 sm:mt-2 text-sm sm:text-base">
+              Overview of registrations, revenue, and recent activity
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fetchData(true)}
-                    disabled={refreshing}
-                    className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10"
-                  >
-                    {refreshing ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                    )}
-                    Refresh
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Refresh dashboard data</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchData(true)}
+              disabled={refreshing}
+              className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+            >
+              {refreshing ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Refresh
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
+                <Button className="w-full sm:w-auto flex items-center justify-center gap-2 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all">
+                  <Download className="w-4 h-4" />
+                  Export Data
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-black/95 backdrop-blur-sm border border-white/10">
+              <DropdownMenuContent
+                align="end"
+                className="bg-black/95 backdrop-blur-md border border-white/10 text-white"
+              >
                 <DropdownMenuLabel className="text-gray-400">
-                  Export Options (Excel)
+                  Export Options
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem
@@ -359,7 +353,7 @@ export default function AdminDashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stats Grid */}
         <motion.div

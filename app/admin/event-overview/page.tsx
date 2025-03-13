@@ -13,6 +13,7 @@ import {
   Download,
   Globe,
   MapPin,
+  RefreshCw,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -103,6 +104,7 @@ export default function EventOverview() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -443,6 +445,14 @@ export default function EventOverview() {
     });
   };
 
+  const fetchEventRegistrations = async (refresh: boolean) => {
+    if (refresh) {
+      setRefreshing(true);
+      await fetchRegistrations();
+      setRefreshing(false);
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -463,60 +473,71 @@ export default function EventOverview() {
         className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6"
       >
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-xl"
+        >
           <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+            <h1 className="text-xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
               Event Overview
             </h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-gray-400 mt-1 sm:mt-2 text-sm sm:text-base">
               Track registrations and revenue across all events
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1 sm:flex-none sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search teams or colleges..."
-                className="pl-9 bg-white/5 border-white/10 text-white w-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchEventRegistrations(true)}
+              disabled={refreshing}
+              className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+            >
+              {refreshing ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Refresh
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 hover:text-purple-300 border border-purple-500/20 w-full sm:w-auto">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button className="w-full sm:w-auto flex items-center justify-center gap-2 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all">
+                  <Download className="w-4 h-4" />
                   Export Data
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="bg-black/95 border border-white/10 text-white"
+                className="bg-black/95 backdrop-blur-md border border-white/10 text-white"
               >
                 <DropdownMenuLabel className="text-gray-400">
                   Export Options
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem
-                  className="text-white data-[highlighted]:text-white data-[highlighted]:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
                   onClick={() => handleExportAllRegistrations("all")}
                 >
                   Export All Event Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white data-[highlighted]:text-white data-[highlighted]:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
                   onClick={() => handleExportAllRegistrations("approved")}
                 >
                   Export Approved Event Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white data-[highlighted]:text-white data-[highlighted]:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
                   onClick={() => handleExportAllRegistrations("filtered")}
                 >
                   Export Filtered Event Registrations
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-white data-[highlighted]:text-white data-[highlighted]:bg-purple-500/10 cursor-pointer"
+                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
                   onClick={() => handleExportAllRegistrations("pending")}
                 >
                   Export Pending Event Registrations
@@ -524,35 +545,51 @@ export default function EventOverview() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+        </motion.div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-            <SelectTrigger className="w-full sm:w-64 bg-white/5 border-white/10 text-sm">
-              <SelectValue placeholder="Select Event" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Events</SelectItem>
-              {events.map((event) => (
-                <SelectItem key={event.id} value={event.id}>
-                  {event.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-full sm:w-64 bg-white/5 border-white/10 text-sm">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-3 sm:space-y-0 sm:flex sm:flex-row gap-4 mb-4 sm:mb-6 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-white/10 p-4 sm:p-5 rounded-xl"
+        >
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
+            <Input
+              placeholder="Search teams or colleges..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border-white/10 hover:border-white/20 focus:border-purple-500/50 text-white pl-9 transition-all"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-4">
+            <Select value={selectedEvent} onValueChange={setSelectedEvent}>
+              <SelectTrigger className="w-full sm:w-[180px] bg-white/5 border-white/10 hover:border-white/20 text-white transition-all">
+                <SelectValue placeholder="Select Event" />
+              </SelectTrigger>
+              <SelectContent className="bg-black/95 backdrop-blur-md border border-white/10">
+                <SelectItem value="all">All Events</SelectItem>
+                {events.map((event) => (
+                  <SelectItem key={event.id} value={event.id}>
+                    {event.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-full sm:w-[180px] bg-white/5 border-white/10 hover:border-white/20 text-white transition-all">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-black/95 backdrop-blur-md border border-white/10">
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </motion.div>
 
         {/* Stats Grid - Split into two rows */}
         <div className="space-y-4">

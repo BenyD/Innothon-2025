@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock4,
+  RefreshCw,
 } from "lucide-react";
 import { StatCard } from "@/components/admin/StatCard";
 import {
@@ -28,6 +29,8 @@ import {
 } from "recharts";
 import type { Registration, TeamMember } from "@/types/registration";
 import { events as staticEvents } from "@/data/events"; // Import static events data
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const COLORS = [
   "#3B82F6",
@@ -295,14 +298,37 @@ export default function Analytics() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Analytics Dashboard
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Track registration metrics and revenue
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-white/10 p-4 sm:p-6 rounded-xl"
+        >
+          <div>
+            <h1 className="text-xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+              Analytics Dashboard
+            </h1>
+            <p className="text-gray-400 mt-1 sm:mt-2 text-sm sm:text-base">
+              Comprehensive analytics and insights for all event registrations
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchStats()}
+              disabled={loading}
+              className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+            >
+              {loading ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Refresh
+            </Button>
+          </div>
+        </motion.div>
 
         {/* Display configuration error if any */}
         {configError && (
