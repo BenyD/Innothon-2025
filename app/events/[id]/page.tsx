@@ -305,10 +305,10 @@ export default function EventPage() {
                   </span>
                 </p>
                 {event.id === "pixel-showdown" && (
-                  <div className="flex items-center gap-2 py-2 px-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                    <Calendar className="w-4 h-4 text-yellow-400 shrink-0" />
-                    <p className="text-sm text-yellow-300">
-                      Registrations close on 12th March 2025
+                  <div className="flex items-center gap-2 py-2 px-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                    <Calendar className="w-4 h-4 text-red-400 shrink-0" />
+                    <p className="text-sm text-red-300">
+                      Registrations are now closed
                     </p>
                   </div>
                 )}
