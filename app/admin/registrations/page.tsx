@@ -26,6 +26,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Registration } from "@/types/registration";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,16 @@ import { Label } from "@/components/ui/label";
 import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
 import { sendApprovalEmails, sendRejectionEmails } from "@/lib/send-email";
 import { calculateRegistrationRevenue } from "@/utils/revenue";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 
 // Animation variants
 const container = {
@@ -95,6 +106,21 @@ export default function Registrations() {
   const [refreshing, setRefreshing] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRegistrations, setSelectedRegistrations] = useState<string[]>(
+    []
+  );
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [showApproveDialog, setShowApproveDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [processingTotal, setProcessingTotal] = useState(0);
+  const [currentProcessingEmail, setCurrentProcessingEmail] = useState<
+    string | null
+  >(null);
+  const [processingStatus, setProcessingStatus] = useState<
+    "idle" | "updating" | "emailing" | "complete"
+  >("idle");
+  const [showProgressDialog, setShowProgressDialog] = useState(false);
   const [sortBy, setSortBy] = useState<SortField>(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("sortBy") as SortField) || "created_at";
@@ -109,7 +135,9 @@ export default function Registrations() {
   });
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [selectionMode, setSelectionMode] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleApprove = async (registrationId: string) => {
     try {
@@ -469,6 +497,323 @@ export default function Registrations() {
 
   const statusCounts = getStatusCounts();
 
+  // Function to handle bulk approval
+  const handleBulkApprove = async () => {
+    if (selectedRegistrations.length === 0) {
+      toast({
+        title: "No registrations selected",
+        description: "Please select at least one registration to approve",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setBulkProcessing(true);
+      setShowApproveDialog(false);
+      setShowProgressDialog(true);
+      setProcessingStatus("updating");
+      setProcessingProgress(0);
+
+      // Get the selected registration objects that are pending
+      const selectedRegistrationObjects = registrations.filter(
+        (reg) =>
+          selectedRegistrations.includes(reg.id) && reg.status === "pending"
+      );
+
+      if (selectedRegistrationObjects.length === 0) {
+        toast({
+          title: "No pending registrations",
+          description: "Only pending registrations can be approved",
+          variant: "destructive",
+        });
+        setBulkProcessing(false);
+        setShowProgressDialog(false);
+        return;
+      }
+
+      const pendingIds = selectedRegistrationObjects.map((reg) => reg.id);
+      setProcessingTotal(pendingIds.length);
+
+      // Update all selected pending registrations to approved status
+      setProcessingStatus("updating");
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          status: "approved",
+          payment_status: "completed",
+        })
+        .in("id", pendingIds);
+
+      if (error) throw error;
+
+      // Send approval emails for each registration
+      setProcessingStatus("emailing");
+      let emailFailures = 0;
+      let totalEmails = 0;
+      let sentEmails = 0;
+
+      // Calculate total emails to send
+      selectedRegistrationObjects.forEach((reg) => {
+        if (reg.team_members) {
+          totalEmails += reg.team_members.length;
+        }
+      });
+
+      setProcessingTotal(totalEmails);
+      setProcessingProgress(0);
+
+      for (const registration of selectedRegistrationObjects) {
+        if (!registration.team_members) continue;
+
+        // Process each team member individually
+        for (let i = 0; i < registration.team_members.length; i++) {
+          const member = registration.team_members[i];
+
+          // Update progress for this specific email
+          setProcessingProgress(sentEmails);
+          setCurrentProcessingEmail(`${member.name} (${member.email})`);
+
+          // Small delay to make the progress visible
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          sentEmails++;
+        }
+
+        // Send the actual emails (we keep the original email sending logic)
+        const emailResult = await sendApprovalEmails(
+          registration.team_members,
+          registration.id,
+          registration.selected_events,
+          registration.total_amount,
+          registration.team_size,
+          registration.team_id
+        );
+
+        if (!emailResult.success) {
+          emailFailures++;
+        }
+      }
+
+      // Set to complete
+      setProcessingProgress(totalEmails);
+      setProcessingStatus("complete");
+      setCurrentProcessingEmail(null);
+
+      if (emailFailures > 0) {
+        toast({
+          title: "Warning",
+          description: `${emailFailures} email notifications failed to send`,
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Bulk approval successful",
+        description: `${pendingIds.length} registrations have been approved`,
+      });
+
+      // Clear selection and refresh the registrations list
+      setSelectedRegistrations([]);
+      fetchRegistrations();
+
+      // Close the progress dialog after a short delay
+      setTimeout(() => {
+        setShowProgressDialog(false);
+        setProcessingStatus("idle");
+      }, 1500);
+    } catch (error) {
+      console.error("Error in bulk approval:", error);
+      toast({
+        title: "Bulk approval failed",
+        description: "Could not approve the selected registrations",
+        variant: "destructive",
+      });
+      setShowProgressDialog(false);
+      setProcessingStatus("idle");
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  // Function to handle bulk rejection
+  const handleBulkReject = async () => {
+    if (selectedRegistrations.length === 0) {
+      toast({
+        title: "No registrations selected",
+        description: "Please select at least one registration to reject",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setBulkProcessing(true);
+      setShowRejectDialog(false);
+      setShowProgressDialog(true);
+      setProcessingStatus("updating");
+      setProcessingProgress(0);
+
+      // Get the selected registration objects that are pending
+      const selectedRegistrationObjects = registrations.filter(
+        (reg) =>
+          selectedRegistrations.includes(reg.id) && reg.status === "pending"
+      );
+
+      if (selectedRegistrationObjects.length === 0) {
+        toast({
+          title: "No pending registrations",
+          description: "Only pending registrations can be rejected",
+          variant: "destructive",
+        });
+        setBulkProcessing(false);
+        setShowProgressDialog(false);
+        return;
+      }
+
+      const pendingIds = selectedRegistrationObjects.map((reg) => reg.id);
+      setProcessingTotal(pendingIds.length);
+
+      // Update all selected pending registrations to rejected status
+      setProcessingStatus("updating");
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          status: "rejected",
+          payment_status: "pending",
+        })
+        .in("id", pendingIds);
+
+      if (error) throw error;
+
+      // Send rejection emails for each registration
+      setProcessingStatus("emailing");
+      let emailFailures = 0;
+      let totalEmails = 0;
+      let sentEmails = 0;
+
+      // Calculate total emails to send
+      selectedRegistrationObjects.forEach((reg) => {
+        if (reg.team_members) {
+          totalEmails += reg.team_members.length;
+        }
+      });
+
+      setProcessingTotal(totalEmails);
+      setProcessingProgress(0);
+
+      for (const registration of selectedRegistrationObjects) {
+        if (!registration.team_members) continue;
+
+        // Process each team member individually
+        for (let i = 0; i < registration.team_members.length; i++) {
+          const member = registration.team_members[i];
+
+          // Update progress for this specific email
+          setProcessingProgress(sentEmails);
+          setCurrentProcessingEmail(`${member.name} (${member.email})`);
+
+          // Small delay to make the progress visible
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          sentEmails++;
+        }
+
+        // Send the actual emails (we keep the original email sending logic)
+        const emailResult = await sendRejectionEmails(
+          registration.team_members,
+          registration.id,
+          registration.selected_events,
+          registration.total_amount,
+          registration.team_size
+        );
+
+        if (!emailResult.success) {
+          emailFailures++;
+        }
+      }
+
+      // Set to complete
+      setProcessingProgress(totalEmails);
+      setProcessingStatus("complete");
+      setCurrentProcessingEmail(null);
+
+      if (emailFailures > 0) {
+        toast({
+          title: "Warning",
+          description: `${emailFailures} email notifications failed to send`,
+          variant: "destructive",
+        });
+      }
+
+      toast({
+        title: "Bulk rejection successful",
+        description: `${pendingIds.length} registrations have been rejected`,
+      });
+
+      // Clear selection and refresh the registrations list
+      setSelectedRegistrations([]);
+      fetchRegistrations();
+
+      // Close the progress dialog after a short delay
+      setTimeout(() => {
+        setShowProgressDialog(false);
+        setProcessingStatus("idle");
+      }, 1500);
+    } catch (error) {
+      console.error("Error in bulk rejection:", error);
+      toast({
+        title: "Bulk rejection failed",
+        description: "Could not reject the selected registrations",
+        variant: "destructive",
+      });
+      setShowProgressDialog(false);
+      setProcessingStatus("idle");
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  // Function to toggle selection of a registration
+  const toggleRegistrationSelection = (registrationId: string) => {
+    if (!selectionMode) return;
+
+    setSelectedRegistrations((prev) =>
+      prev.includes(registrationId)
+        ? prev.filter((id) => id !== registrationId)
+        : [...prev, registrationId]
+    );
+  };
+
+  // Function to toggle selection of all visible registrations
+  const toggleSelectAll = () => {
+    if (selectedRegistrations.length === filteredRegistrations.length) {
+      // If all are selected, deselect all
+      setSelectedRegistrations([]);
+    } else {
+      // Otherwise, select all visible registrations
+      setSelectedRegistrations(filteredRegistrations.map((reg) => reg.id));
+    }
+  };
+
+  // Function to enable selection mode and select all
+  const handleSelectAll = () => {
+    setSelectionMode(true);
+    setSelectedRegistrations(filteredRegistrations.map((reg) => reg.id));
+  };
+
+  // Function to enable selection mode
+  const handleSelectMultiple = () => {
+    setSelectionMode(true);
+    setSelectedRegistrations([]);
+  };
+
+  // Function to exit selection mode
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedRegistrations([]);
+  };
+
   return (
     <AdminLayout>
       <motion.div
@@ -493,62 +838,102 @@ export default function Registrations() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fetchRegistrations(true)}
-              disabled={refreshing}
-              className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10 transition-all"
-            >
-              {refreshing ? (
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4 mr-2" />
-              )}
-              Refresh
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="w-full sm:w-auto flex items-center justify-center gap-2 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all">
-                  <Download className="w-4 h-4" />
-                  Export Data
+            {!selectionMode ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchRegistrations(true)}
+                  disabled={refreshing}
+                  className="border-white/10 hover:border-white/20 text-white hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+                >
+                  {refreshing ? (
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                  )}
+                  Refresh
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-black/95 backdrop-blur-md border border-white/10 text-white"
-              >
-                <DropdownMenuLabel className="text-gray-400">
-                  Export Options
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
-                  onClick={() => handleExport("all")}
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="w-full sm:w-auto flex items-center justify-center gap-2 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all">
+                      <Download className="w-4 h-4" />
+                      Export Data
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-black/95 backdrop-blur-md border border-white/10 text-white"
+                  >
+                    <DropdownMenuLabel className="text-gray-400">
+                      Export Options
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem
+                      className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                      onClick={() => handleExport("all")}
+                    >
+                      Export All Registrations
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                      onClick={() => handleExport("participants")}
+                    >
+                      Export All Participants (Approved Only)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                      onClick={() => handleExport("filtered")}
+                    >
+                      Export Filtered Registrations
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
+                      onClick={() => handleExport("pending")}
+                    >
+                      Export Pending Registrations
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectAll}
+                  className="border-purple-500/30 hover:border-purple-500/50 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20"
                 >
-                  Export All Registrations
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
-                  onClick={() => handleExport("participants")}
+                  <Users className="w-4 h-4 mr-2" />
+                  Select All
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectMultiple}
+                  className="border-purple-500/30 hover:border-purple-500/50 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20"
                 >
-                  Export All Participants (Approved Only)
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
-                  onClick={() => handleExport("filtered")}
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Select Multiple
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exitSelectionMode}
+                  className="border-red-500/30 hover:border-red-500/50 text-white hover:text-white bg-red-500/10 hover:bg-red-500/20"
                 >
-                  Export Filtered Registrations
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-white hover:text-white hover:bg-purple-500/10 focus:bg-purple-500/10 cursor-pointer"
-                  onClick={() => handleExport("pending")}
-                >
-                  Export Pending Registrations
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <XCircle className="w-4 h-4 mr-2" />
+                  Cancel Selection
+                </Button>
+
+                <span className="text-sm text-white bg-purple-500/20 px-3 py-1.5 rounded-md border border-purple-500/30">
+                  {selectedRegistrations.length} Selected
+                </span>
+              </>
+            )}
           </div>
         </motion.div>
 
@@ -764,6 +1149,350 @@ export default function Registrations() {
           </div>
         )}
 
+        {/* Bulk Action Section - Only show when in selection mode */}
+        {selectionMode && selectedRegistrations.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 bg-black/50 backdrop-blur-sm border border-purple-500/20 rounded-lg p-4">
+            <div className="flex items-center space-x-3 mb-3 sm:mb-0">
+              <Checkbox
+                id="select-all"
+                checked={
+                  selectedRegistrations.length > 0 &&
+                  selectedRegistrations.length === filteredRegistrations.length
+                }
+                onCheckedChange={toggleSelectAll}
+                className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500 h-6 w-6 rounded-md"
+              />
+              <Label
+                htmlFor="select-all"
+                className="text-sm font-medium text-white cursor-pointer"
+              >
+                {selectedRegistrations.length === 0
+                  ? "Select All Registrations"
+                  : selectedRegistrations.length ===
+                      filteredRegistrations.length
+                    ? "Deselect All Registrations"
+                    : `Selected ${selectedRegistrations.length} of ${filteredRegistrations.length} Registrations`}
+              </Label>
+            </div>
+
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Dialog
+                open={showApproveDialog}
+                onOpenChange={setShowApproveDialog}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-green-400 hover:text-green-300 border-green-500/30 hover:border-green-500/50 hover:bg-green-500/10 bg-black/30 flex-1 sm:flex-auto"
+                    disabled={
+                      bulkProcessing ||
+                      !selectedRegistrations.some(
+                        (id) =>
+                          registrations.find((reg) => reg.id === id)?.status ===
+                          "pending"
+                      )
+                    }
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Approve Pending (
+                    {
+                      selectedRegistrations.filter(
+                        (id) =>
+                          registrations.find((reg) => reg.id === id)?.status ===
+                          "pending"
+                      ).length
+                    }
+                    )
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-black/95 backdrop-blur-md border border-purple-500/30 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Confirm Bulk Approval</DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      You are about to approve{" "}
+                      {
+                        selectedRegistrations.filter(
+                          (id) =>
+                            registrations.find((reg) => reg.id === id)
+                              ?.status === "pending"
+                        ).length
+                      }{" "}
+                      pending registrations. This action will mark them as
+                      approved and send confirmation emails to all team members.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowApproveDialog(false)}
+                      className="border-white/20 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleBulkApprove}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      disabled={bulkProcessing}
+                    >
+                      {bulkProcessing ? (
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                      )}
+                      Confirm Approval
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog
+                open={showRejectDialog}
+                onOpenChange={setShowRejectDialog}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-400 hover:text-red-300 border-red-500/30 hover:border-red-500/50 hover:bg-red-500/10 bg-black/30 flex-1 sm:flex-auto"
+                    disabled={
+                      bulkProcessing ||
+                      !selectedRegistrations.some(
+                        (id) =>
+                          registrations.find((reg) => reg.id === id)?.status ===
+                          "pending"
+                      )
+                    }
+                  >
+                    <XCircle className="w-4 h-4 mr-1" />
+                    Reject Pending (
+                    {
+                      selectedRegistrations.filter(
+                        (id) =>
+                          registrations.find((reg) => reg.id === id)?.status ===
+                          "pending"
+                      ).length
+                    }
+                    )
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-black/95 backdrop-blur-md border border-red-500/30 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Confirm Bulk Rejection</DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      You are about to reject{" "}
+                      {
+                        selectedRegistrations.filter(
+                          (id) =>
+                            registrations.find((reg) => reg.id === id)
+                              ?.status === "pending"
+                        ).length
+                      }{" "}
+                      pending registrations. This action will mark them as
+                      rejected and send rejection emails to all team members.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowRejectDialog(false)}
+                      className="border-white/20 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleBulkReject}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                      disabled={bulkProcessing}
+                    >
+                      {bulkProcessing ? (
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <XCircle className="w-4 h-4 mr-1" />
+                      )}
+                      Confirm Rejection
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        )}
+
+        {/* Progress Dialog */}
+        <Dialog
+          open={showProgressDialog}
+          onOpenChange={(open) => {
+            // Only allow closing if not processing
+            if (!bulkProcessing) setShowProgressDialog(open);
+          }}
+        >
+          <DialogContent className="bg-black/95 backdrop-blur-md border border-purple-500/30 text-white">
+            <DialogHeader>
+              <DialogTitle>
+                {processingStatus === "updating" &&
+                  "Updating Registration Status..."}
+                {processingStatus === "emailing" &&
+                  "Sending Notification Emails..."}
+                {processingStatus === "complete" && "Processing Complete"}
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                {processingStatus === "updating" &&
+                  "Updating database records for selected registrations."}
+                {processingStatus === "emailing" && currentProcessingEmail && (
+                  <span>
+                    Sending email to{" "}
+                    <span className="text-yellow-400 font-medium">
+                      {currentProcessingEmail}
+                    </span>
+                  </span>
+                )}
+                {processingStatus === "complete" &&
+                  "All operations completed successfully."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="my-6">
+              <div className="flex justify-between mb-2">
+                <span className="text-sm text-gray-400">Progress</span>
+                <span className="text-sm text-white font-medium">
+                  {processingProgress} of {processingTotal}
+                  <span className="ml-2 px-2 py-0.5 bg-purple-500/20 rounded-full text-purple-300 text-xs">
+                    {Math.round(
+                      (processingProgress / Math.max(processingTotal, 1)) * 100
+                    )}
+                    %
+                  </span>
+                </span>
+              </div>
+              <Progress
+                value={
+                  (processingProgress / Math.max(processingTotal, 1)) * 100
+                }
+                className="h-3 bg-purple-500/20"
+              />
+
+              {processingStatus === "emailing" && (
+                <div className="mt-6 text-sm text-gray-400">
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="font-medium text-purple-400">Email Queue:</p>
+                    <span className="text-xs bg-black/50 px-2 py-1 rounded-md border border-purple-500/20">
+                      {processingProgress} sent •{" "}
+                      {processingTotal - processingProgress} remaining
+                    </span>
+                  </div>
+                  <div className="max-h-40 overflow-y-auto space-y-1.5 bg-black/50 p-3 rounded-md border border-purple-500/20">
+                    {selectedRegistrations
+                      .filter(
+                        (id) =>
+                          registrations.find((reg) => reg.id === id)?.status ===
+                          "pending"
+                      )
+                      .flatMap((id) => {
+                        const reg = registrations.find((r) => r.id === id);
+                        if (!reg || !reg.team_members) return [];
+
+                        return reg.team_members.map((member, memberIndex) => {
+                          const teamIndex = selectedRegistrations
+                            .filter(
+                              (id) =>
+                                registrations.find((reg) => reg.id === id)
+                                  ?.status === "pending"
+                            )
+                            .indexOf(id);
+
+                          // Calculate overall index for this email
+                          const previousTeamMembersCount = selectedRegistrations
+                            .filter(
+                              (id) =>
+                                registrations.find((reg) => reg.id === id)
+                                  ?.status === "pending"
+                            )
+                            .slice(0, teamIndex)
+                            .reduce((count, id) => {
+                              const r = registrations.find(
+                                (reg) => reg.id === id
+                              );
+                              return count + (r?.team_members?.length || 0);
+                            }, 0);
+
+                          const emailIndex =
+                            previousTeamMembersCount + memberIndex;
+                          const isActive = emailIndex === processingProgress;
+
+                          return (
+                            <div
+                              key={`${id}-${member.email}`}
+                              className={`py-2 px-3 rounded-md ${
+                                emailIndex < processingProgress
+                                  ? "text-green-400 bg-green-500/10 border border-green-500/20"
+                                  : isActive
+                                    ? "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 animate-pulse"
+                                    : "text-gray-500 border border-gray-500/10"
+                              }`}
+                            >
+                              <div className="flex items-center">
+                                {emailIndex < processingProgress && (
+                                  <CheckCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                                )}
+                                {isActive && (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin flex-shrink-0" />
+                                )}
+                                {emailIndex > processingProgress && (
+                                  <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                                )}
+
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium truncate">
+                                    {member.name}{" "}
+                                    {memberIndex === 0 ? "(Team Lead)" : ""}
+                                  </div>
+                                  <div className="text-xs truncate">
+                                    {member.email}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-0.5">
+                                    Team: {reg.team_id || "Unknown"}
+                                  </div>
+                                </div>
+
+                                {emailIndex < processingProgress && (
+                                  <span className="text-xs bg-green-500/20 px-2 py-0.5 rounded-full text-green-300 ml-2">
+                                    Sent
+                                  </span>
+                                )}
+                                {isActive && (
+                                  <span className="text-xs bg-yellow-500/20 px-2 py-0.5 rounded-full text-yellow-300 ml-2">
+                                    Sending...
+                                  </span>
+                                )}
+                                {emailIndex > processingProgress && (
+                                  <span className="text-xs bg-gray-500/20 px-2 py-0.5 rounded-full text-gray-400 ml-2">
+                                    Queued
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        });
+                      })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              {processingStatus === "complete" && (
+                <Button
+                  onClick={() => setShowProgressDialog(false)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Close
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Registrations List */}
         <motion.div
           variants={container}
@@ -815,8 +1544,40 @@ export default function Registrations() {
               <motion.div
                 key={registration.id}
                 variants={item}
-                className="bg-black/50 backdrop-blur-sm border border-purple-500/20 rounded-xl p-5 hover:bg-black/60 transition-colors"
+                className={`bg-black/50 backdrop-blur-sm border ${
+                  selectionMode &&
+                  selectedRegistrations.includes(registration.id)
+                    ? "border-purple-500 ring-1 ring-purple-500/50"
+                    : "border-purple-500/20"
+                } rounded-xl p-5 hover:bg-black/60 transition-colors relative cursor-pointer`}
+                onClick={(e) => {
+                  if (selectionMode) {
+                    toggleRegistrationSelection(registration.id);
+                  } else {
+                    // Only navigate if not in selection mode and not clicking on a button
+                    if (!(e.target as HTMLElement).closest("button")) {
+                      router.push(`/admin/registrations/${registration.id}`);
+                    }
+                  }
+                }}
               >
+                {/* Only show checkbox when in selection mode */}
+                {selectionMode && (
+                  <div className="absolute bottom-4 right-4 md:bottom-5 md:right-5">
+                    <Checkbox
+                      id={`select-${registration.id}`}
+                      checked={selectedRegistrations.includes(registration.id)}
+                      onCheckedChange={() => {
+                        // Prevent the click from bubbling up to the parent div
+                        // which would toggle the selection again
+                        toggleRegistrationSelection(registration.id);
+                      }}
+                      className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500 h-6 w-6 rounded-md"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                )}
+
                 <div className="flex flex-col md:flex-row justify-between">
                   <div className="flex items-start gap-4 mb-4 md:mb-0">
                     <div className="bg-purple-500/20 rounded-full p-2.5 flex-shrink-0 border border-purple-500/30">
