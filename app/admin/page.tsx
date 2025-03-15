@@ -249,32 +249,39 @@ export default function AdminDashboard() {
 
     switch (type) {
       case "all":
-        dataToExport = registrations.map(formatRegistrationForExcel);
+        dataToExport = registrations.flatMap(formatRegistrationForExcel);
         filename = "all-registrations";
         break;
       case "participants":
-        // Only approved registrations
         dataToExport = registrations
           .filter((reg) => reg.status === "approved")
-          .map(formatRegistrationForExcel);
+          .flatMap(formatRegistrationForExcel);
         filename = "approved-participants";
         break;
       case "pending":
         dataToExport = registrations
           .filter((reg) => reg.status === "pending")
-          .map(formatRegistrationForExcel);
+          .flatMap(formatRegistrationForExcel);
         filename = "pending-registrations";
         break;
       default:
-        dataToExport = registrations.map(formatRegistrationForExcel);
-        filename = "registrations";
+        break;
+    }
+
+    if (dataToExport.length === 0) {
+      toast({
+        title: "No data to export",
+        description: "There are no registrations matching your criteria.",
+        variant: "destructive",
+      });
+      return;
     }
 
     exportToExcel(dataToExport, filename);
 
     toast({
       title: "Export started",
-      description: `Your ${filename} data is being prepared for download`,
+      description: "Your registration data is being prepared for download",
     });
   };
 

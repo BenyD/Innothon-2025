@@ -1042,7 +1042,6 @@ export default function EventOverview() {
                           <div className="flex items-center gap-1.5 text-green-400">
                             <IndianRupee className="w-4 h-4" />
                             <span>
-                              ₹
                               {eventRegistrations
                                 .filter((reg) => reg.status === "approved")
                                 .reduce(

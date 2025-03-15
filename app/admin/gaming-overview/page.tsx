@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import type { Registration } from "@/types/registration";
 import { Button } from "@/components/ui/button";
-import { exportToExcel, formatRegistrationForExcel } from "@/utils/excel";
+import { exportToExcel } from "@/utils/excel";
 import { toast } from "@/components/ui/use-toast";
 import {
   DropdownMenu,
@@ -231,16 +231,44 @@ export default function GamingOverview() {
 
     // Format the data for Excel
     const formattedData = gameRegistrations.map((registration) => {
-      const baseFormat = formatRegistrationForExcel(registration);
+      const teamLead = registration.team_members[0] || {};
+      const otherMembers = registration.team_members.slice(1) || [];
 
-      // Add game-specific fields
-      return {
-        ...baseFormat,
+      // Create a properly typed object that matches ExcelData
+      const data: Record<string, string | number | null | undefined> = {
+        "Team ID": registration.team_id || "N/A",
+        "Registration ID": registration.id || "N/A",
         "Game Type": registration.game_details?.game?.toUpperCase() || "N/A",
         "Game Format":
           registration.game_details?.format?.toUpperCase() || "N/A",
-        "Player ID": registration.team_members[0]?.player_id || "N/A",
+        "Player ID": teamLead.player_id || "N/A",
+        "Team Lead": teamLead.name || "N/A",
+        Email: teamLead.email || "N/A",
+        Phone: teamLead.phone || "N/A",
+        College: teamLead.college || "N/A",
+        Department: teamLead.department || "N/A",
+        Year: teamLead.year || "N/A",
+        "Team Size": registration.team_size || 1,
+        Amount: registration.total_amount || 0,
+        Status: (registration.status || "N/A").toUpperCase(),
+        "Registration Date": new Date(
+          registration.created_at || Date.now()
+        ).toLocaleString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        "Team Members":
+          otherMembers.map((m) => m.name || "N/A").join(", ") || "N/A",
+        "Team Members Emails":
+          otherMembers.map((m) => m.email || "N/A").join(", ") || "N/A",
+        "Team Members Phones":
+          otherMembers.map((m) => m.phone || "N/A").join(", ") || "N/A",
       };
+
+      return data;
     });
 
     exportToExcel(formattedData, filename);
