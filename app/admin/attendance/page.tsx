@@ -749,15 +749,55 @@ export default function AttendancePage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {selectedEvent === "all" ? (
-                            <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-4">
+                            {/* Registration Desk Check-in */}
+                            <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                              <Checkbox
+                                id={`registration-desk-${member.id}`}
+                                checked={isAttendanceMarked(
+                                  member.id,
+                                  "registration-desk"
+                                )}
+                                onCheckedChange={(checked) =>
+                                  markAttendance(
+                                    member.id,
+                                    "registration-desk",
+                                    checked === true
+                                  )
+                                }
+                              />
+                              <Label
+                                htmlFor={`registration-desk-${member.id}`}
+                                className="text-sm cursor-pointer whitespace-nowrap"
+                              >
+                                {isAttendanceMarked(
+                                  member.id,
+                                  "registration-desk"
+                                ) ? (
+                                  <span className="text-green-400 flex items-center">
+                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                                    Reported at Registration Desk
+                                  </span>
+                                ) : (
+                                  <span className="text-red-400">
+                                    Not Reported at Registration Desk
+                                  </span>
+                                )}
+                              </Label>
+                            </div>
+
+                            {/* Event Venue Check-ins */}
+                            <div className="space-y-2">
+                              <p className="text-xs text-gray-400 mb-1">
+                                Event Venue Check-in:
+                              </p>
                               {registration.selected_events.map((event) => (
                                 <div
                                   key={event}
                                   className="flex items-center gap-2"
                                 >
                                   <Checkbox
-                                    id={`attendance-${member.id}-${event}`}
+                                    id={`venue-${member.id}-${event}`}
                                     checked={isAttendanceMarked(
                                       member.id,
                                       event
@@ -769,59 +809,39 @@ export default function AttendancePage() {
                                         checked === true
                                       )
                                     }
+                                    disabled={
+                                      !isAttendanceMarked(
+                                        member.id,
+                                        "registration-desk"
+                                      )
+                                    }
                                   />
                                   <Label
-                                    htmlFor={`attendance-${member.id}-${event}`}
-                                    className="text-sm cursor-pointer whitespace-nowrap"
+                                    htmlFor={`venue-${member.id}-${event}`}
+                                    className={`text-sm cursor-pointer whitespace-nowrap ${
+                                      !isAttendanceMarked(
+                                        member.id,
+                                        "registration-desk"
+                                      )
+                                        ? "opacity-50"
+                                        : ""
+                                    }`}
                                   >
                                     {isAttendanceMarked(member.id, event) ? (
                                       <span className="text-green-400 flex items-center">
                                         <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                        Present
+                                        {getEventDisplayName(event)}
                                       </span>
                                     ) : (
                                       <span className="text-red-400">
-                                        Absent
+                                        {getEventDisplayName(event)}
                                       </span>
                                     )}
                                   </Label>
                                 </div>
                               ))}
                             </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id={`attendance-${member.id}-${selectedEvent}`}
-                                checked={isAttendanceMarked(
-                                  member.id,
-                                  selectedEvent
-                                )}
-                                onCheckedChange={(checked) =>
-                                  markAttendance(
-                                    member.id,
-                                    selectedEvent,
-                                    checked === true
-                                  )
-                                }
-                              />
-                              <Label
-                                htmlFor={`attendance-${member.id}-${selectedEvent}`}
-                                className="text-sm cursor-pointer"
-                              >
-                                {isAttendanceMarked(
-                                  member.id,
-                                  selectedEvent
-                                ) ? (
-                                  <span className="text-green-400 flex items-center">
-                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                    Present
-                                  </span>
-                                ) : (
-                                  <span className="text-red-400">Absent</span>
-                                )}
-                              </Label>
-                            </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     ))}
