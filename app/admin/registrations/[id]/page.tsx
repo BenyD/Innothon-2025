@@ -19,6 +19,7 @@ import {
   GraduationCap,
   ExternalLink,
   Gamepad2,
+  User2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -365,9 +366,17 @@ export default function RegistrationDetails() {
                     className="p-3 sm:p-4 rounded-lg bg-white/[0.02] space-y-3"
                   >
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Mail className="w-4 h-4 text-blue-400" />
-                        <span className="truncate">{member.email}</span>
+                      <div className="flex flex-col gap-1 text-gray-400">
+                        <div className="flex items-center gap-2">
+                          <User2 className="w-4 h-4 text-purple-400" />
+                          <span className="font-medium text-white">
+                            {member.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-blue-400" />
+                          <span className="truncate">{member.email}</span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
                         <Phone className="w-4 h-4 text-green-400" />
