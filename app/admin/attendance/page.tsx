@@ -243,14 +243,20 @@ export default function AttendancePage() {
     try {
       if (isChecked) {
         // Add attendance record
-        const { error } = await supabase.from("attendance").insert({
-          team_member_id: teamMemberId,
-          event_id: eventId,
-          marked_at: new Date().toISOString(),
-          marked_by: "admin", // This should be the actual admin user ID in a real app
-        });
+        const { error } = await supabase
+          .from("attendance")
+          .insert({
+            team_member_id: teamMemberId,
+            event_id: eventId,
+            marked_at: new Date().toISOString(),
+            marked_by: "admin",
+          })
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error while marking attendance:", error);
+          throw new Error(`Failed to mark attendance: ${error.message}`);
+        }
 
         // Update local state
         setAttendanceData((prev) => {
@@ -275,7 +281,10 @@ export default function AttendancePage() {
           event_id: eventId,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error while removing attendance:", error);
+          throw new Error(`Failed to remove attendance: ${error.message}`);
+        }
 
         // Update local state
         setAttendanceData((prev) => {
@@ -297,10 +306,17 @@ export default function AttendancePage() {
       // Recalculate stats
       fetchData();
     } catch (error) {
-      console.error("Error marking attendance:", error);
+      console.error(
+        "Error marking attendance:",
+        error instanceof Error ? error.message : "Unknown error",
+        error
+      );
       toast({
         title: "Error",
-        description: "Failed to update attendance",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update attendance. Please try again.",
         variant: "destructive",
       });
     }
