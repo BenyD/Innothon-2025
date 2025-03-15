@@ -446,43 +446,88 @@ export default function Registrations() {
     );
   };
 
-  const handleExport = (type: string) => {
-    let dataToExport: Record<string, string | number>[] = [];
+  const handleExport = async (type: string) => {
+    let registrationsToExport: Registration[] = [];
     let filename = "";
+    let isAccountsSheet = false;
 
     switch (type) {
       case "all":
-        dataToExport = registrations.map(formatRegistrationForExcel);
+        registrationsToExport = registrations;
         filename = "all-registrations";
         break;
       case "filtered":
-        dataToExport = filteredRegistrations.map(formatRegistrationForExcel);
+        registrationsToExport = filteredRegistrations;
         filename = "filtered-registrations";
         break;
       case "participants":
         // Only approved registrations
-        dataToExport = registrations
-          .filter((reg) => reg.status === "approved")
-          .map(formatRegistrationForExcel);
+        registrationsToExport = registrations.filter(
+          (reg) => reg.status === "approved"
+        );
         filename = "approved-participants";
         break;
       case "pending":
-        dataToExport = registrations
-          .filter((reg) => reg.status === "pending")
-          .map(formatRegistrationForExcel);
+        registrationsToExport = registrations.filter(
+          (reg) => reg.status === "pending"
+        );
         filename = "pending-registrations";
         break;
+      case "accounts":
+        registrationsToExport = registrations.filter(
+          (reg) => reg.status === "pending"
+        );
+        filename = "accounts-sheet";
+        isAccountsSheet = true;
+        break;
       default:
-        dataToExport = registrations.map(formatRegistrationForExcel);
+        registrationsToExport = registrations;
         filename = "registrations";
     }
 
-    exportToExcel(dataToExport, filename);
+    try {
+      let formattedData;
 
-    toast({
-      title: "Export started",
-      description: `Your ${filename} data is being prepared for download`,
-    });
+      if (isAccountsSheet) {
+        // Format data specifically for accounts sheet
+        formattedData = registrationsToExport.map((registration) => ({
+          "Team ID": registration.team_id || "N/A",
+          "Amount Paid": registration.total_amount || 0,
+          "Transaction ID": registration.transaction_id || "N/A",
+          "Registration Date": new Date(
+            registration.created_at || Date.now()
+          ).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }),
+          Remarks: "", // Empty column for manual remarks
+        }));
+      } else {
+        // Use existing formatRegistrationForExcel for other exports
+        formattedData = registrationsToExport.flatMap(
+          formatRegistrationForExcel
+        );
+      }
+
+      if (formattedData.length === 0) {
+        throw new Error("No data to export");
+      }
+
+      await exportToExcel(formattedData, filename, isAccountsSheet);
+
+      toast({
+        title: "Export started",
+        description: `Your ${filename} data is being prepared for download`,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export failed",
+        description: "Could not export registration data",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusCounts = () => {
@@ -893,6 +938,13 @@ export default function Registrations() {
                       onClick={() => handleExport("pending")}
                     >
                       Export Pending Registrations
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem
+                      className="text-white hover:text-white hover:bg-yellow-500/10 focus:bg-yellow-500/10 cursor-pointer font-medium"
+                      onClick={() => handleExport("accounts")}
+                    >
+                      Export Accounts Sheet
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

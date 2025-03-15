@@ -27,11 +27,7 @@ import { events } from "@/data/events";
 import type { Registration, TeamMember } from "@/types/registration";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import {
-  exportToExcel,
-  formatRegistrationForExcel,
-  formatEventRegistrationForExcel,
-} from "@/utils/excel";
+import { exportToExcel } from "@/utils/excel";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -395,51 +391,202 @@ export default function EventOverview() {
         break;
     }
 
-    const formattedData = registrationsToExport.map((registration) =>
-      formatEventRegistrationForExcel(registration, eventId)
-    );
+    try {
+      // Format each registration for Excel export
+      const formattedData = registrationsToExport.map((registration) => {
+        const teamLead = registration.team_members[0] || {};
+        const otherMembers = registration.team_members.slice(1) || [];
 
-    exportToExcel(formattedData, `${eventName}${filenameSuffix}-registrations`);
+        // Base data object
+        const data: Record<string, string | number> = {
+          "Team ID": registration.team_id || "N/A",
+          "Registration ID": registration.id || "N/A",
+          Event: eventName,
+          "Team Lead": teamLead.name || "N/A",
+          Email: teamLead.email || "N/A",
+          Phone: teamLead.phone || "N/A",
+          College: teamLead.college || "N/A",
+          Department: teamLead.department || "N/A",
+          Year: teamLead.year || "N/A",
+          "Team Size": registration.team_size || 1,
+          Amount: registration.total_amount || 0,
+          Status: (registration.status || "N/A").toUpperCase(),
+          "Registration Date": new Date(
+            registration.created_at || Date.now()
+          ).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
 
-    toast({
-      title: "Export started",
-      description: `Your ${eventName} registrations data is being prepared for download`,
-    });
+        // Add team members information if they exist
+        if (otherMembers.length > 0) {
+          data["Team Members"] = otherMembers
+            .map((m) => m.name || "N/A")
+            .join(", ");
+          data["Team Members Emails"] = otherMembers
+            .map((m) => m.email || "N/A")
+            .join(", ");
+          data["Team Members Phones"] = otherMembers
+            .map((m) => m.phone || "N/A")
+            .join(", ");
+        } else {
+          data["Team Members"] = "N/A";
+          data["Team Members Emails"] = "N/A";
+          data["Team Members Phones"] = "N/A";
+        }
+
+        // Add game-specific information for Pixel Showdown
+        if (eventId === "pixel-showdown" && registration.game_details) {
+          data["Game"] = (
+            registration.game_details.game || "N/A"
+          ).toUpperCase();
+          data["Format"] = (
+            registration.game_details.format || "N/A"
+          ).toUpperCase();
+          data["Player ID"] = registration.team_members[0]?.player_id || "N/A";
+        }
+
+        return data;
+      });
+
+      if (formattedData.length === 0) {
+        throw new Error("No data to export");
+      }
+
+      exportToExcel(
+        formattedData,
+        `${eventName}${filenameSuffix}-registrations`
+      );
+
+      toast({
+        title: "Export started",
+        description: `Your ${eventName} registrations data is being prepared for download`,
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export failed",
+        description: "Could not export registration data",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExportAllRegistrations = (type: string = "all") => {
-    let registrationsToExport = [...filteredRegistrations];
-    let filenameSuffix = "";
+    try {
+      let registrationsToExport = [...filteredRegistrations];
+      let filenameSuffix = "";
 
-    switch (type) {
-      case "approved":
-        registrationsToExport = filteredRegistrations.filter(
-          (reg) => reg.status === "approved"
-        );
-        filenameSuffix = "-approved";
-        break;
-      case "pending":
-        registrationsToExport = filteredRegistrations.filter(
-          (reg) => reg.status === "pending"
-        );
-        filenameSuffix = "-pending";
-        break;
-      case "filtered":
-        // Already filtered
-        filenameSuffix = "-filtered";
-        break;
-      default:
-        break;
+      switch (type) {
+        case "approved":
+          registrationsToExport = filteredRegistrations.filter(
+            (reg) => reg.status === "approved"
+          );
+          filenameSuffix = "-approved";
+          break;
+        case "pending":
+          registrationsToExport = filteredRegistrations.filter(
+            (reg) => reg.status === "pending"
+          );
+          filenameSuffix = "-pending";
+          break;
+        case "filtered":
+          filenameSuffix = "-filtered";
+          break;
+        default:
+          break;
+      }
+
+      // Format the data with event information
+      const formattedData = registrationsToExport.map((registration) => {
+        const teamLead = registration.team_members[0] || {};
+        const otherMembers = registration.team_members.slice(1) || [];
+        const eventName =
+          events.find((e) => e.id === registration.event_id)?.title ||
+          "Unknown Event";
+
+        // Base data object
+        const data: Record<string, string | number> = {
+          "Team ID": registration.team_id || "N/A",
+          "Registration ID": registration.id || "N/A",
+          Event: eventName,
+          "Team Lead": teamLead.name || "N/A",
+          Email: teamLead.email || "N/A",
+          Phone: teamLead.phone || "N/A",
+          College: teamLead.college || "N/A",
+          Department: teamLead.department || "N/A",
+          Year: teamLead.year || "N/A",
+          "Team Size": registration.team_size || 1,
+          Amount: registration.total_amount || 0,
+          Status: (registration.status || "N/A").toUpperCase(),
+          "Registration Date": new Date(
+            registration.created_at || Date.now()
+          ).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
+
+        // Add team members information if they exist
+        if (otherMembers.length > 0) {
+          data["Team Members"] = otherMembers
+            .map((m) => m.name || "N/A")
+            .join(", ");
+          data["Team Members Emails"] = otherMembers
+            .map((m) => m.email || "N/A")
+            .join(", ");
+          data["Team Members Phones"] = otherMembers
+            .map((m) => m.phone || "N/A")
+            .join(", ");
+        } else {
+          data["Team Members"] = "N/A";
+          data["Team Members Emails"] = "N/A";
+          data["Team Members Phones"] = "N/A";
+        }
+
+        // Add game-specific information for Pixel Showdown
+        if (
+          registration.event_id === "pixel-showdown" &&
+          registration.game_details
+        ) {
+          data["Game"] = (
+            registration.game_details.game || "N/A"
+          ).toUpperCase();
+          data["Format"] = (
+            registration.game_details.format || "N/A"
+          ).toUpperCase();
+          data["Player ID"] = registration.team_members[0]?.player_id || "N/A";
+        }
+
+        return data;
+      });
+
+      if (formattedData.length === 0) {
+        throw new Error("No data to export");
+      }
+
+      exportToExcel(formattedData, `event-registrations${filenameSuffix}`);
+
+      toast({
+        title: "Export started",
+        description:
+          "Your event registrations data is being prepared for download",
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export failed",
+        description: "Could not export registration data",
+        variant: "destructive",
+      });
     }
-
-    const formattedData = registrationsToExport.map(formatRegistrationForExcel);
-    exportToExcel(formattedData, `all${filenameSuffix}-registrations`);
-
-    toast({
-      title: "Export started",
-      description:
-        "Your event registrations data is being prepared for download",
-    });
   };
 
   const fetchEventRegistrations = async (refresh: boolean) => {
