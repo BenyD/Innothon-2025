@@ -35,3 +35,17 @@ export type GameDetails = {
   game: "bgmi" | "freefire" | "pes";
   format?: "squad";
 };
+
+export type Attendance = {
+  id: string;
+  team_member_id: string;
+  event_id: string;
+  marked_at: string;
+  marked_by: string;
+  created_at: string;
+  team_member?: TeamMember;
+};
+
+export type AttendanceWithMember = Attendance & {
+  team_member: TeamMember;
+};

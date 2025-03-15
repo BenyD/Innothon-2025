@@ -19,6 +19,7 @@ import {
   Home,
   IndianRupee,
   UserCog,
+  CheckCircle2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRole } from "@/hooks/useRole";
@@ -77,6 +78,13 @@ const navItems: NavCategory[] = [
         icon: Users,
         color: "text-yellow-400",
         bgColor: "bg-yellow-400/10",
+      },
+      {
+        title: "Attendance",
+        href: "/admin/attendance",
+        icon: CheckCircle2,
+        color: "text-green-400",
+        bgColor: "bg-green-400/10",
       },
       {
         title: "Messages",

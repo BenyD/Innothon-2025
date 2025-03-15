@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { events } from "@/data/events";
-import type { Registration, GameDetails } from "@/types/registration";
+import type { Registration, TeamMember } from "@/types/registration";
 
 type ExcelRow = Record<string, string | number>;
 
@@ -235,4 +235,25 @@ export const formatEventRegistrationForExcel = (
   }
 
   return eventSpecificFormat;
+};
+
+export const formatAttendanceForExcel = (
+  registration: Registration,
+  member: TeamMember,
+  eventName: string,
+  isAttending: boolean
+) => {
+  return {
+    "Team ID": registration.team_id || "N/A",
+    "Team Name": registration.team_name || "N/A",
+    "Member Name": member.name || "N/A",
+    Email: member.email || "N/A",
+    Phone: member.phone || "N/A",
+    College: member.college || "N/A",
+    Department: member.department || "N/A",
+    Year: member.year || "N/A",
+    Event: eventName,
+    "Attendance Status": isAttending ? "Present" : "Absent",
+    Date: new Date().toLocaleDateString(),
+  };
 };

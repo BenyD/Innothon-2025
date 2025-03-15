@@ -52,6 +52,18 @@ export type Tables = {
     Insert: Omit<Tables["events"]["Row"], "created_at" | "updated_at">;
     Update: Partial<Tables["events"]["Row"]>;
   };
+  attendance: {
+    Row: {
+      id: string;
+      team_member_id: string;
+      event_id: string;
+      marked_at: string;
+      marked_by: string;
+      created_at: string;
+    };
+    Insert: Omit<Tables["attendance"]["Row"], "id" | "created_at">;
+    Update: Partial<Tables["attendance"]["Row"]>;
+  };
 };
 
 export type Database = {
