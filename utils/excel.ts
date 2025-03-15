@@ -1,6 +1,10 @@
 import * as XLSX from "xlsx";
 import { events } from "@/data/events";
-import type { Registration, TeamMember } from "@/types/registration";
+import type {
+  Registration,
+  TeamMember,
+  GameDetails,
+} from "@/types/registration";
 
 type ExcelRow = Record<string, string | number>;
 

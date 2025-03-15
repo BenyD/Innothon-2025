@@ -11,7 +11,6 @@ import {
   User2,
   Calendar,
   RefreshCw,
-  Download,
   Percent,
   UserCheck,
   School,
@@ -80,13 +79,27 @@ const getEventDisplayName = (eventCode: string) => {
 
 type SortOrder = "asc" | "desc";
 
+// Add new type for event statistics
+type EventStatistics = {
+  eventId: string;
+  totalRegistered: number;
+  totalPresent: number;
+  attendancePercentage: number;
+};
+
+// Modify the attendance data type to include timestamps
+type AttendanceRecord = {
+  team_member_id: string;
+  marked_at: string;
+};
+
 export default function AttendancePage() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [filteredRegistrations, setFilteredRegistrations] = useState<
     Registration[]
   >([]);
   const [attendanceData, setAttendanceData] = useState<
-    Record<string, string[]>
+    Record<string, AttendanceRecord[]>
   >({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -99,6 +112,7 @@ export default function AttendancePage() {
     attendancePercentage: 0,
   });
   const [activeTab, setActiveTab] = useState("all");
+  const [eventStats, setEventStats] = useState<EventStatistics[]>([]);
   const { toast } = useToast();
 
   // Fetch registrations and attendance data
@@ -153,14 +167,17 @@ export default function AttendancePage() {
         }
 
         // Process attendance data into a more usable format
-        const attendanceMap: Record<string, string[]> = {};
+        const attendanceMap: Record<string, AttendanceRecord[]> = {};
 
         if (attendanceData) {
           attendanceData.forEach((attendance: Attendance) => {
             if (!attendanceMap[attendance.event_id]) {
               attendanceMap[attendance.event_id] = [];
             }
-            attendanceMap[attendance.event_id].push(attendance.team_member_id);
+            attendanceMap[attendance.event_id].push({
+              team_member_id: attendance.team_member_id,
+              marked_at: attendance.marked_at,
+            });
           });
         }
 
@@ -242,13 +259,14 @@ export default function AttendancePage() {
   ) => {
     try {
       if (isChecked) {
+        const marked_at = new Date().toISOString();
         // Add attendance record
         const { error } = await supabase
           .from("attendance")
           .insert({
             team_member_id: teamMemberId,
             event_id: eventId,
-            marked_at: new Date().toISOString(),
+            marked_at,
             marked_by: "admin",
           })
           .select();
@@ -264,9 +282,10 @@ export default function AttendancePage() {
           if (!updated[eventId]) {
             updated[eventId] = [];
           }
-          if (!updated[eventId].includes(teamMemberId)) {
-            updated[eventId] = [...updated[eventId], teamMemberId];
-          }
+          updated[eventId].push({
+            team_member_id: teamMemberId,
+            marked_at,
+          });
           return updated;
         });
 
@@ -291,7 +310,7 @@ export default function AttendancePage() {
           const updated = { ...prev };
           if (updated[eventId]) {
             updated[eventId] = updated[eventId].filter(
-              (id) => id !== teamMemberId
+              (record) => record.team_member_id !== teamMemberId
             );
           }
           return updated;
@@ -325,46 +344,159 @@ export default function AttendancePage() {
   // Check if a team member's attendance is marked
   const isAttendanceMarked = useCallback(
     (teamMemberId: string, eventId: string) => {
-      return attendanceData[eventId]?.includes(teamMemberId) || false;
+      return (
+        attendanceData[eventId]?.some(
+          (record) => record.team_member_id === teamMemberId
+        ) || false
+      );
     },
     [attendanceData]
   );
 
-  // Export attendance data to Excel
-  const handleExport = () => {
-    try {
-      const exportData = registrations.flatMap((registration) => {
-        return registration.team_members.map((member) => {
-          const isAttending =
-            selectedEvent === "all"
-              ? Object.keys(attendanceData).some((eventId) =>
-                  attendanceData[eventId]?.includes(member.id)
-                )
-              : isAttendanceMarked(member.id, selectedEvent);
-
-          return {
-            "Team ID": registration.team_id,
-            "Team Name": registration.team_name,
-            "Member Name": member.name,
-            Email: member.email,
-            Phone: member.phone,
-            College: member.college,
-            Department: member.department,
-            Year: member.year,
-            Event:
-              selectedEvent === "all"
-                ? "All Events"
-                : getEventDisplayName(selectedEvent),
-            "Attendance Status": isAttending ? "Present" : "Absent",
-            Date: new Date().toLocaleDateString(),
-          };
-        });
-      });
-
-      exportToExcel(
-        exportData,
-        `attendance-${selectedEvent}-${new Date().toISOString().split("T")[0]}.xlsx`
+  // Add a function to get attendance timestamp
+  const getAttendanceTimestamp = useCallback(
+    (teamMemberId: string, eventId: string) => {
+      const record = attendanceData[eventId]?.find(
+        (record) => record.team_member_id === teamMemberId
       );
+      return record?.marked_at;
+    },
+    [attendanceData]
+  );
+
+  // Calculate event-wise statistics
+  const calculateEventStats = useCallback(() => {
+    const stats = events.map((event) => {
+      const registeredTeams = registrations.filter((reg) =>
+        reg.selected_events.includes(event.id)
+      );
+
+      const totalRegistered = registeredTeams.reduce(
+        (sum, reg) => sum + reg.team_members.length,
+        0
+      );
+
+      const totalPresent = registeredTeams.reduce(
+        (sum, reg) =>
+          sum +
+          reg.team_members.filter((member) =>
+            isAttendanceMarked(member.id, event.id)
+          ).length,
+        0
+      );
+
+      const attendancePercentage =
+        totalRegistered > 0
+          ? Math.round((totalPresent / totalRegistered) * 100)
+          : 0;
+
+      return {
+        eventId: event.id,
+        totalRegistered,
+        totalPresent,
+        attendancePercentage,
+      };
+    });
+
+    setEventStats(stats);
+  }, [registrations, isAttendanceMarked]);
+
+  // Update event stats when registrations or attendance changes
+  useEffect(() => {
+    calculateEventStats();
+  }, [calculateEventStats]);
+
+  // Add a helper function to safely format timestamps
+  const formatTimestamp = (timestamp: string | undefined): string => {
+    if (!timestamp) return "";
+    try {
+      return new Date(timestamp).toLocaleString();
+    } catch {
+      return "";
+    }
+  };
+
+  // Update the export function to handle different export types
+  const handleExport = (value: string) => {
+    try {
+      const timestamp = new Date().toISOString().split("T")[0];
+      let exportData = [];
+      let fileName = "";
+
+      if (value === "statistics") {
+        // Export event statistics summary
+        exportData = eventStats.map((stat) => ({
+          "Event Name": getEventDisplayName(stat.eventId),
+          "Total Registered": stat.totalRegistered,
+          "Total Present": stat.totalPresent,
+          "Attendance Percentage": `${stat.attendancePercentage}%`,
+        }));
+        fileName = `attendance-statistics-${timestamp}.xlsx`;
+      } else if (value === "all") {
+        // Export all events detailed attendance
+        exportData = registrations.flatMap((registration) =>
+          registration.team_members.map((member) => ({
+            "Team ID": registration.team_id,
+            Name: member.name,
+            College: member.college,
+            "Registration Desk": isAttendanceMarked(
+              member.id,
+              "registration-desk"
+            )
+              ? "Present"
+              : "Not Reported",
+            "Registration Timestamp": formatTimestamp(
+              getAttendanceTimestamp(member.id, "registration-desk")
+            ),
+            ...registration.selected_events.reduce(
+              (acc, event) => ({
+                ...acc,
+                [`${getEventDisplayName(event)}`]: isAttendanceMarked(
+                  member.id,
+                  event
+                )
+                  ? "Present"
+                  : "Not Reported",
+                [`${getEventDisplayName(event)} Timestamp`]: formatTimestamp(
+                  getAttendanceTimestamp(member.id, event)
+                ),
+              }),
+              {}
+            ),
+          }))
+        );
+        fileName = `all-events-attendance-${timestamp}.xlsx`;
+      } else {
+        // Export specific event attendance
+        const eventName = getEventDisplayName(value);
+        exportData = registrations
+          .filter((reg) => reg.selected_events.includes(value))
+          .flatMap((registration) =>
+            registration.team_members.map((member) => ({
+              "Team ID": registration.team_id,
+              Name: member.name,
+              College: member.college,
+              "Registration Desk": isAttendanceMarked(
+                member.id,
+                "registration-desk"
+              )
+                ? "Present"
+                : "Not Reported",
+              "Registration Timestamp": formatTimestamp(
+                getAttendanceTimestamp(member.id, "registration-desk")
+              ),
+              [eventName]: isAttendanceMarked(member.id, value)
+                ? "Present"
+                : "Not Reported",
+              [`${eventName} Timestamp`]: formatTimestamp(
+                getAttendanceTimestamp(member.id, value)
+              ),
+            }))
+          );
+        fileName = `${eventName.toLowerCase()}-attendance-${timestamp}.xlsx`;
+      }
+
+      exportToExcel(exportData, fileName);
 
       toast({
         title: "Export successful",
@@ -509,14 +641,20 @@ export default function AttendancePage() {
               Refresh
             </Button>
 
-            <Button
-              onClick={handleExport}
-              disabled={loading}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 text-white hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all"
-            >
-              <Download className="w-4 h-4" />
-              Export Data
-            </Button>
+            <Select onValueChange={handleExport}>
+              <SelectTrigger className="w-[180px] bg-white/5 border-white/10 hover:border-white/20 text-white transition-all">
+                <SelectValue placeholder="Export Data" />
+              </SelectTrigger>
+              <SelectContent className="bg-black/95 backdrop-blur-md border border-white/10">
+                <SelectItem value="all">Export All Events</SelectItem>
+                {events.map((event) => (
+                  <SelectItem key={event.id} value={event.id}>
+                    Export {event.title}
+                  </SelectItem>
+                ))}
+                <SelectItem value="statistics">Export Statistics</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </motion.div>
 
@@ -635,7 +773,7 @@ export default function AttendancePage() {
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <TabsList className="grid w-full grid-cols-3 bg-white/5">
+              <TabsList className="grid w-full grid-cols-4 bg-white/5">
                 <TabsTrigger
                   value="all"
                   className="data-[state=active]:bg-white/10"
@@ -654,12 +792,18 @@ export default function AttendancePage() {
                 >
                   Absent
                 </TabsTrigger>
+                <TabsTrigger
+                  value="statistics"
+                  className="data-[state=active]:bg-white/10"
+                >
+                  Statistics
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </motion.div>
 
-        {/* Attendance List */}
+        {/* Attendance List or Statistics */}
         <motion.div variants={item} className="space-y-4">
           {loading ? (
             // Loading skeleton
@@ -693,6 +837,43 @@ export default function AttendancePage() {
                     </div>
                   </div>
                 ))}
+            </div>
+          ) : activeTab === "statistics" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {eventStats.map((stat) => (
+                <div
+                  key={stat.eventId}
+                  className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors"
+                >
+                  <h3 className="text-lg font-semibold mb-4">
+                    {getEventDisplayName(stat.eventId)}
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Total Registered:</span>
+                      <span className="font-medium">
+                        {stat.totalRegistered}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Total Present:</span>
+                      <span className="font-medium">{stat.totalPresent}</span>
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-400">Attendance:</span>
+                        <span className="font-medium">
+                          {stat.attendancePercentage}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={stat.attendancePercentage}
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredRegistrations.length > 0 ? (
             <div className="space-y-4">
@@ -790,10 +971,20 @@ export default function AttendancePage() {
                                   member.id,
                                   "registration-desk"
                                 ) ? (
-                                  <span className="text-green-400 flex items-center">
-                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                    Reported at Registration Desk
-                                  </span>
+                                  <div className="flex flex-col">
+                                    <span className="text-green-400 flex items-center">
+                                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                                      Reported at Registration Desk
+                                    </span>
+                                    <span className="text-xs text-gray-400">
+                                      {formatTimestamp(
+                                        getAttendanceTimestamp(
+                                          member.id,
+                                          "registration-desk"
+                                        )
+                                      )}
+                                    </span>
+                                  </div>
                                 ) : (
                                   <span className="text-red-400">
                                     Not Reported at Registration Desk
@@ -844,10 +1035,20 @@ export default function AttendancePage() {
                                     }`}
                                   >
                                     {isAttendanceMarked(member.id, event) ? (
-                                      <span className="text-green-400 flex items-center">
-                                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                        {getEventDisplayName(event)}
-                                      </span>
+                                      <div className="flex flex-col">
+                                        <span className="text-green-400 flex items-center">
+                                          <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                                          {getEventDisplayName(event)}
+                                        </span>
+                                        <span className="text-xs text-gray-400">
+                                          {formatTimestamp(
+                                            getAttendanceTimestamp(
+                                              member.id,
+                                              event
+                                            )
+                                          )}
+                                        </span>
+                                      </div>
                                     ) : (
                                       <span className="text-red-400">
                                         {getEventDisplayName(event)}
