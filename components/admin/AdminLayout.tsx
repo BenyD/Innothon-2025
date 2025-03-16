@@ -302,6 +302,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   }, [loading, role, pathname, router]);
 
+  // Add a new useEffect to handle the redirect when role is not available
+  useEffect(() => {
+    if (!loading && !role) {
+      router.push("/admin/login");
+    }
+  }, [loading, role, router]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
@@ -319,7 +326,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   if (!role) {
-    router.push("/admin/login");
     return null;
   }
 

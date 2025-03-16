@@ -134,6 +134,7 @@ export default function Registrations() {
     return "desc";
   });
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [showMultipleEventsOnly, setShowMultipleEventsOnly] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [selectionMode, setSelectionMode] = useState(false);
   const { toast } = useToast();
@@ -327,6 +328,11 @@ export default function Registrations() {
       );
     }
 
+    // Apply multiple events filter
+    if (showMultipleEventsOnly) {
+      filtered = filtered.filter((reg) => reg.selected_events.length > 1);
+    }
+
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -392,6 +398,7 @@ export default function Registrations() {
     sortDirection,
     selectedEvents,
     activeTab,
+    showMultipleEventsOnly,
   ]);
 
   useEffect(() => {
@@ -1106,6 +1113,28 @@ export default function Registrations() {
                     </div>
                   ))}
                 </div>
+                <DropdownMenuSeparator className="bg-purple-500/20" />
+                <DropdownMenuLabel className="text-gray-400">
+                  Special Filters
+                </DropdownMenuLabel>
+                <div className="px-2 py-2">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Checkbox
+                      id="multiple-events"
+                      checked={showMultipleEventsOnly}
+                      onCheckedChange={(checked) =>
+                        setShowMultipleEventsOnly(checked === true)
+                      }
+                      className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                    />
+                    <Label
+                      htmlFor="multiple-events"
+                      className="text-sm text-white cursor-pointer"
+                    >
+                      Multiple Events Only
+                    </Label>
+                  </div>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -1158,7 +1187,9 @@ export default function Registrations() {
         </div>
 
         {/* Active Filters Display */}
-        {(selectedEvents.length > 0 || activeTab !== "all") && (
+        {(selectedEvents.length > 0 ||
+          activeTab !== "all" ||
+          showMultipleEventsOnly) && (
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-sm text-gray-400">Active filters:</span>
             {activeTab !== "all" && (
@@ -1186,13 +1217,27 @@ export default function Registrations() {
                 </button>
               </Badge>
             ))}
-            {(selectedEvents.length > 0 || activeTab !== "all") && (
+            {showMultipleEventsOnly && (
+              <Badge className="bg-green-500/20 text-green-300 border border-green-500/30">
+                Multiple Events Only
+                <button
+                  className="ml-2 text-gray-400 hover:text-white"
+                  onClick={() => setShowMultipleEventsOnly(false)}
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {(selectedEvents.length > 0 ||
+              activeTab !== "all" ||
+              showMultipleEventsOnly) && (
               <Button
                 variant="link"
                 className="text-sm text-purple-400 hover:text-purple-300 p-0 h-auto"
                 onClick={() => {
                   setSelectedEvents([]);
                   setActiveTab("all");
+                  setShowMultipleEventsOnly(false);
                 }}
               >
                 Clear all

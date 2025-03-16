@@ -10,7 +10,7 @@ export const events: Event[] = [
     image: "/events/hackquest.jpg",
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
-    venue: "Coder's Hub, Main Block, 2nd Floor",
+    venue: "Data Science Lab, 2nd Floor, Computer Science Extension Block",
     eventStructure: [
       {
         phase: "Round 1 (Beginner-Intermediate)",
@@ -97,7 +97,7 @@ export const events: Event[] = [
     image: "/events/ai-genesis.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 1:00 PM",
-    venue: "Data Science Lab, 2nd Floor, Computer Science Extension Block",
+    venue: "Millenium Lab 1 & 2, 2nd Floor, Computer Science Block",
     eventStructure: [
       {
         phase: "Round 1: Slogan & Visual Sprint",
@@ -254,7 +254,7 @@ export const events: Event[] = [
     image: "/events/code-arena.jpg",
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
-    venue: "Data Science Lab, 2nd Floor, Computer Science Extension Block",
+    venue: "Coder's Hub, Main Block, 2nd Floor",
     eventStructure: [
       {
         phase: "Round 1: Error Identification Quiz",
@@ -346,7 +346,7 @@ export const events: Event[] = [
     image: "/events/digital-divas.jpg",
     date: "March 21, 2025",
     time: "11:00 AM - 1:00 PM",
-    venue: "Coder's Hub, Main Block, 2nd Floor",
+    venue: "Data Science Lab, 2nd Floor, Computer Science Extension Block",
     eventStructure: [
       {
         phase: "Topic Announcement",

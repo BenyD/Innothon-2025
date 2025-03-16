@@ -109,7 +109,7 @@ const Venue = () => {
                       Day 1: March 21, 2025
                     </p>
                     <p className="text-xs sm:text-sm text-gray-400">
-                      9:00 AM - 4:30 PM
+                      8:30 AM - 4:30 PM
                     </p>
                   </div>
                 </div>

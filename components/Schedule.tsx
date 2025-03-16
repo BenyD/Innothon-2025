@@ -26,8 +26,8 @@ const scheduleData = [
       {
         time: "08:30 AM - 09:30 AM",
         title: "Registration & Check-in",
-        description: "Collect your event kit and ID Cards",
-        location: "Main Entrance, Architecture Block",
+        description: "Collect your ID Cards and register your attendance",
+        location: "Entrance, Jubilee Block",
         isHighlight: false,
       },
       {
@@ -44,7 +44,7 @@ const scheduleData = [
           "AI Ad Slogan Challenge - Create compelling ad campaigns using AI",
         location:
           events.find((e) => e.id === "ai-genesis")?.venue ||
-          "Data Science Lab, 2nd Floor, Computer Science Extension Block",
+          "Millenium Lab 1 & 2, 2nd Floor, Computer Science Block",
         isHighlight: false,
       },
       {
@@ -53,7 +53,7 @@ const scheduleData = [
         description: "Women-exclusive tech poster design competition",
         location:
           events.find((e) => e.id === "digital-divas")?.venue ||
-          "Coder's Hub, Main Block, 2nd Floor",
+          "Data Science Lab, 2nd Floor, Computer Science Extension Block",
         isHighlight: false,
       },
       {
@@ -77,7 +77,7 @@ const scheduleData = [
       {
         time: "01:00 PM - 02:00 PM",
         title: "Lunch Break",
-        description: "Refreshments provided",
+        description: "Lunch provided",
         location: "Garage Cafe and Other Hangout Spots",
         isHighlight: false,
       },
@@ -87,7 +87,7 @@ const scheduleData = [
         description: "A Capture the Flag (CTF) competition using TryHackMe",
         location:
           events.find((e) => e.id === "hackquest")?.venue ||
-          "Coder's Hub, Main Block, 2nd Floor",
+          "Data Science Lab, 2nd Floor, Computer Science Extension Block",
         isHighlight: false,
       },
       {
@@ -97,7 +97,7 @@ const scheduleData = [
           "Two-round coding competition focusing on error identification and debugging",
         location:
           events.find((e) => e.id === "code-arena")?.venue ||
-          "Data Science Lab, 2nd Floor, Computer Science Extension Block",
+          "Coder's Hub - 1 & 2, Main Block, 2nd Floor",
         isHighlight: false,
       },
     ],

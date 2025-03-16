@@ -19,7 +19,7 @@ const Rules = () => {
       icon: Shield,
       title: "General Rules",
       rules: [
-        "All participants must attend the opening ceremony at 9:00 AM",
+        "All participants must attend the opening ceremony at 9:30 AM",
         "Professional dress code is mandatory for all events",
         "Participants must bring college ID and government photo ID proof",
         "No malpractice or unfair means will be tolerated",
@@ -32,8 +32,9 @@ const Rules = () => {
       icon: Clock,
       title: "Schedule & Timing",
       rules: [
-        "Opening Ceremony: 9:00 AM - 10:30 AM",
-        "Morning Events: 10:45 AM - 1:00 PM",
+        "Opening Ceremony: 9:30 AM - 10:30 AM",
+        "Morning Events: 11:00 AM - 1:00 PM",
+        "Lunch Break: 1:00 PM - 2:00 PM",
         "Afternoon Events: 2:00 PM - 4:00 PM",
         "Valedictory: 22nd March 2025",
         "Report 30 minutes before event start",
@@ -59,11 +60,11 @@ const Rules = () => {
       rules: [
         "Bring your own laptop (recommended)",
         "Required software must be pre-installed",
-        "Stable internet connection needed",
+        "Stable internet connection needed (Mobile Hotspot)",
         "Lab computers available if needed",
         "Technical support will be provided",
         "No unauthorized software or tools allowed",
-        "Internet access will be provided",
+        "Internet access will be provided only to the lab computers",
       ],
     },
     {
@@ -71,7 +72,7 @@ const Rules = () => {
       title: "Registration & Facilities",
       rules: [
         "Registration fees vary by event (₹200-₹500)",
-        "Refreshments will be provided",
+        "Lunch will be provided",
         "Carry all required documents",
         "On-spot registrations not allowed",
         "College ID mandatory for participation",
