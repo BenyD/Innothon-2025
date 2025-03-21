@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Registration } from "@/types/registration";
+import type { Registration, TeamMember } from "@/types/registration";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -66,6 +66,12 @@ const container = {
       staggerChildren: 0.1,
     },
   },
+};
+
+// Helper function to determine if a participant is internal (from HITS/Hindustan)
+const isInternalParticipant = (member: TeamMember): boolean => {
+  const college = member.college?.toLowerCase() || "";
+  return college.includes("hindustan") || college.includes("hits");
 };
 
 const item = {
@@ -135,6 +141,9 @@ export default function Registrations() {
   });
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [showMultipleEventsOnly, setShowMultipleEventsOnly] = useState(false);
+  const [participantFilter, setParticipantFilter] = useState<
+    "all" | "internal" | "external"
+  >("all");
   const [activeTab, setActiveTab] = useState("all");
   const [selectionMode, setSelectionMode] = useState(false);
   const { toast } = useToast();
@@ -333,6 +342,21 @@ export default function Registrations() {
       filtered = filtered.filter((reg) => reg.selected_events.length > 1);
     }
 
+    // Apply internal/external participant filter
+    if (participantFilter !== "all") {
+      filtered = filtered.filter((reg) => {
+        const hasInternalMembers = reg.team_members.some(isInternalParticipant);
+        if (participantFilter === "internal") {
+          return hasInternalMembers;
+        } else {
+          // Filter for external - at least one team member must be external
+          return reg.team_members.some(
+            (member) => !isInternalParticipant(member)
+          );
+        }
+      });
+    }
+
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -399,6 +423,7 @@ export default function Registrations() {
     selectedEvents,
     activeTab,
     showMultipleEventsOnly,
+    participantFilter,
   ]);
 
   useEffect(() => {
@@ -1135,6 +1160,52 @@ export default function Registrations() {
                     </Label>
                   </div>
                 </div>
+                <DropdownMenuSeparator className="bg-purple-500/20" />
+                <DropdownMenuLabel className="text-gray-400">
+                  Participant Type
+                </DropdownMenuLabel>
+                <div className="px-2 py-2">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Checkbox
+                      id="internal-participants"
+                      checked={participantFilter === "internal"}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setParticipantFilter("internal");
+                        } else if (participantFilter === "internal") {
+                          setParticipantFilter("all");
+                        }
+                      }}
+                      className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                    />
+                    <Label
+                      htmlFor="internal-participants"
+                      className="text-sm text-white cursor-pointer"
+                    >
+                      Internal College Only
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="external-participants"
+                      checked={participantFilter === "external"}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setParticipantFilter("external");
+                        } else if (participantFilter === "external") {
+                          setParticipantFilter("all");
+                        }
+                      }}
+                      className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                    />
+                    <Label
+                      htmlFor="external-participants"
+                      className="text-sm text-white cursor-pointer"
+                    >
+                      External College Only
+                    </Label>
+                  </div>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -1189,7 +1260,8 @@ export default function Registrations() {
         {/* Active Filters Display */}
         {(selectedEvents.length > 0 ||
           activeTab !== "all" ||
-          showMultipleEventsOnly) && (
+          showMultipleEventsOnly ||
+          participantFilter !== "all") && (
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-sm text-gray-400">Active filters:</span>
             {activeTab !== "all" && (
@@ -1228,9 +1300,23 @@ export default function Registrations() {
                 </button>
               </Badge>
             )}
+            {participantFilter !== "all" && (
+              <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                {participantFilter === "internal"
+                  ? "Internal Participants (HITS/Hindustan)"
+                  : "External Participants"}
+                <button
+                  className="ml-2 text-gray-400 hover:text-white"
+                  onClick={() => setParticipantFilter("all")}
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
             {(selectedEvents.length > 0 ||
               activeTab !== "all" ||
-              showMultipleEventsOnly) && (
+              showMultipleEventsOnly ||
+              participantFilter !== "all") && (
               <Button
                 variant="link"
                 className="text-sm text-purple-400 hover:text-purple-300 p-0 h-auto"
@@ -1238,6 +1324,7 @@ export default function Registrations() {
                   setSelectedEvents([]);
                   setActiveTab("all");
                   setShowMultipleEventsOnly(false);
+                  setParticipantFilter("all");
                 }}
               >
                 Clear all

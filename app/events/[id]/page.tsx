@@ -560,6 +560,56 @@ export default function EventPage() {
               )}
             </div>
 
+            {/* Competition Links - Only for events with competitionLinks */}
+            {event.competitionLinks && event.competitionLinks.length > 0 && (
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="flex items-center gap-2 mb-4">
+                  <ExternalLink className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-xl font-semibold">
+                    Competition Platform
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {event.competitionLinks.map((link, index) => (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg bg-gradient-to-r from-purple-900/30 to-transparent border border-purple-500/20"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-purple-300 hover:text-purple-200 transition-colors font-medium text-lg"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                            <ExternalLink className="w-4 h-4 text-purple-400" />
+                          </div>
+                          {link.name}
+                        </a>
+                        {link.description && (
+                          <p className="text-gray-300 text-sm">
+                            {link.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="mt-3 ml-10">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 rounded-lg bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-colors text-sm font-medium"
+                        >
+                          Access Platform
+                          <ExternalLink className="w-4 h-4 ml-2" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Problem Statements Section - Only for IdeaFusion */}
             {event.id === "idea-fusion" && event.problemStatements && (
               <div

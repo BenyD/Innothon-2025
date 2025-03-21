@@ -11,6 +11,18 @@ export const events: Event[] = [
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
     venue: "Data Science Lab, 2nd Floor, Computer Science Extension Block",
+    competitionLinks: [
+      {
+        name: "TryHackMe - Round 1",
+        url: "https://tryhackme.com/jr/innothonctfround1",
+        description: "Access the CTF challenges on TryHackMe platform",
+      },
+      {
+        name: "TryHackMe - Round 2",
+        url: "https://tryhackme.com/jr/innothonctfround2",
+        description: "Access the CTF challenges on TryHackMe platform",
+      },
+    ],
     eventStructure: [
       {
         phase: "Round 1 (Beginner-Intermediate)",
@@ -255,6 +267,13 @@ export const events: Event[] = [
     date: "March 21, 2025",
     time: "2:00 PM - 4:00 PM",
     venue: "Coder's Hub, Main Block, 2nd Floor",
+    competitionLinks: [
+      {
+        name: "HackerRank",
+        url: "https://www.hackerrank.com",
+        description: "Access the competition on HackerRank platform",
+      },
+    ],
     eventStructure: [
       {
         phase: "Round 1: Error Identification Quiz",

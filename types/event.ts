@@ -8,6 +8,11 @@ export interface Event {
   time: string;
   venue: string;
   participationMode?: string;
+  competitionLinks?: {
+    name: string;
+    url: string;
+    description?: string;
+  }[];
   rules: string[];
   guidelines: string[];
   prizes: {
