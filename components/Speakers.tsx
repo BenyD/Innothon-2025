@@ -25,11 +25,11 @@ const speakers = [
     type: "keynote",
   },
   {
-    name: "Rahul Narayanan",
-    role: "Principal Data Scientist, AI & Advanced Analytics",
+    name: "Madhumithaa Selvakumar",
+    role: "Director of Operations, PearlTech Consultancy Private Limited",
     company: "Fidelity Investments",
-    image: "/speakers/rahul.jpeg",
-    linkedin: "https://www.linkedin.com/in/rahul-narayanan19/",
+    image: "/speakers/madhu.jpg",
+    linkedin: "https://www.linkedin.com/in/madhumithaa-sr-b0611a1ab/",
     type: "judge",
   },
   {
